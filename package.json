@@ -1,0 +1,17 @@
+{
+  "name": "client-site-templates",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static one-pager templates for small US businesses, plus a quick homepage mockup generator.",
+  "type": "module",
+  "scripts": {
+    "mockup": "node tools/mockup.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

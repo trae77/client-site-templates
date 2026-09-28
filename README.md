@@ -53,6 +53,78 @@ The root [`index.html`](./index.html) links to every template for easy browsing 
 6. **Services / testimonials** — Edit card titles, blurbs, and review quotes to match the real business.
 7. **Form** — Front-end only by default (`preventDefault` + success message). Wire to Formspree, Netlify Forms, or your backend when ready.
 
+## Quick mockups
+
+Generate a personalized homepage mockup (HTML folder + full-page PNG) for a prospect in one command. Handy for "free homepage mockup" outreach.
+
+### Prerequisites (one time)
+
+- Node.js 18+
+- From the repo root:
+
+```bash
+npm install
+npx playwright install chromium
+```
+
+If Playwright's Chromium can't be installed, the script falls back to a system Chrome/Chromium (set `CHROME_PATH` if it's somewhere unusual).
+
+### Command
+
+```bash
+npm run mockup -- --name "Acme Pressure Washing" --trade pressure-washing --city "Aurora, CO" --phone "(303) 555-0142" --primary "#0b5394" --accent "#f1c232" --mobile
+```
+
+| Flag | Required | What it does |
+|------|----------|--------------|
+| `--name` | yes | Business name, exactly as it should appear (header, hero, about, footer, image alts, `<title>`, meta). |
+| `--trade` | yes | Picks the template (aliases below). Unknown trades fall back to `generic-business`. |
+| `--city` | yes | City, optionally with state (`"Thornton, CO"`). Used in the hero badge/lead, about copy, service-area pills, contact card, footer, review locations. |
+| `--phone` | yes | Any format (`7205550187`, `(720) 555-0187`). Shown as `(720) 555-0187`; `tel:` links become `tel:+17205550187`. |
+| `--primary` | no | Main brand hex color: hero, buttons, links. Defaults to the template's palette. |
+| `--accent` | no | Highlight hex color: hero CTA button, badge, accent bars, footer links. Defaults per template. |
+| `--areas` | no | Comma-separated service-area pills, e.g. `"Aurora,Denver,Parker"`. Default: the city plus built-in nearby towns (Front Range and a few big metros), otherwise "Surrounding areas". |
+| `--email` | no | Email to show. Default: `<template's inbox>@<businessname>.com`, e.g. `hello@acmepressurewashing.com`. |
+| `--out` | no | Output HTML folder. Default: `mockups/<slug>/`. |
+| `--png-dir` | no | Where PNGs are written. Default: the parent folder of `--out`. |
+| `--mobile` | no | Also render a 390px-wide mobile screenshot (2x). |
+| `--no-png` | no | Build the HTML folder only. |
+| `--list` / `--help` | no | Show trade aliases / all flags. |
+
+Colors are applied by overriding each template's CSS custom properties (`--accent`, `--accent-dark`, `--bg`, `--footer-bg`, ...) in an override block appended to the copied `styles.css`. Text on the hero and buttons is set to white or dark automatically based on WCAG contrast, and link colors get darkened or lightened until they're readable.
+
+After building, the script checks that no template placeholder name, phone, email, or address is left in the output, and it stops with an error if it finds one.
+
+### Trade aliases
+
+| Template | Accepted `--trade` values |
+|----------|---------------------------|
+| `pressure-washing` | pressure-washing, pressure-wash, pressure, power-washing, power-wash, soft-wash, exterior-cleaning, window-washing |
+| `landscaping` | landscaping, landscape, landscaper, lawn, lawn-care, lawncare, lawn-service, mowing, yard, yard-care, tree-service, snow-removal |
+| `plumbing` | plumbing, plumber, drain, water-heater |
+| `cleaning-service` | cleaning-service, cleaning, cleaner, house-cleaning, maid, janitorial, commercial-cleaning, carpet-cleaning |
+| `restaurant` | restaurant, pizza, pizzeria, cafe, coffee, bakery, food, food-truck, diner, bar, catering |
+| `auto-detailing` | auto-detailing, detailing, detail, car-detailing, mobile-detailing, car-wash, ceramic-coating |
+| `handyman` | handyman, home-repair, repair, home-improvement, remodeling, painting, painter, carpentry, drywall |
+| `generic-business` | generic, business, other, **and anything not recognized** (roofing, HVAC, electrician, ...) |
+
+Matching ignores case and spaces (`"Lawn Care"` works the same as `lawn-care`), and multi-word trades match on a keyword (`"mobile car detailing"` → `auto-detailing`).
+
+### Outputs
+
+```
+mockups/                       # gitignored
+  acme-pressure-washing/       # deployable static site (index.html, styles.css, script.js)
+  acme-pressure-washing-desktop.png   # 1440px-wide full-page screenshot
+  acme-pressure-washing-mobile.png    # with --mobile
+```
+
+The script prints the HTML folder and PNG paths when it finishes. Gallery photos whose URLs are dead (404) and random Picsum placeholders are left out automatically, so the mockup never shows a broken tile.
+
+### Tip for Sales
+
+Attach the desktop PNG (and the mobile one if you like) to the outreach email: "Here's a free homepage mockup for <Business>." When they say yes, the matching HTML folder already has their branding. Swap in their real photos, reviews, and services, then deploy it (see **Deploy** below) as the live site.
+
 ## Deploy
 
 Each template folder is deployable on its own, or host the whole repo and deep-link into folders.
