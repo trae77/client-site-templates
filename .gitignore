@@ -5,3 +5,10 @@ Thumbs.db
 .idea/
 node_modules/
 mockups/
+.env
+.env.local
+upgrade/.env
+upgrade/data.db
+upgrade/data.db-*
+*.sqlite
+*.sqlite3

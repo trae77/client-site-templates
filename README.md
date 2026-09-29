@@ -4,6 +4,46 @@ Polished, mostly-complete **HTML/CSS/JS one-pager templates** for small US busin
 
 Built for quick customization and shipping on sold one-pager jobs.
 
+## Product ladder
+
+A prospect starts with a static one-pager and can step up. These are the only two steps. **Pricing is not set** — this repo and Big Foot (`trae77/bigfootConstruction`) do not list a dollar price for either tier, so none is shown here.
+
+1. **One-pager** — the static templates and the mockup generator (`npm run mockup`). Public homepage, no login. This is what GitHub Pages serves.
+2. **Owner login + estimates** — the optional Node addon in [`upgrade/`](./upgrade/). The one-pager stays the public homepage. A logged-in owner can create, list, and update estimates. This needs a Node host. **GitHub Pages is static and will not run the Express addon.** Do not turn the Pages site into a login wall.
+
+## Owner login and estimates
+
+The addon is reusable for any template or generated mockup. It does not rewrite the HTML into a framework. Express serves the folder you pass with `--site`, plus `/owner/login` and `/owner/estimates`.
+
+Modeled on the private Big Foot app (`server/server.cjs`, `server/init.cjs`):
+
+- SQLite file (`upgrade/data.db`, gitignored), created on startup.
+- Owner password stored as a bcrypt hash (bcryptjs, cost 10 — same as Big Foot client signup). Demo login comes from env, with local defaults below. Big Foot's owner check compares the env password in memory and returns a bearer token; this addon uses an HttpOnly `owner_session` cookie backed by a `sessions` table (the cookie form of Big Foot's `tokens` table) so the estimates page works in a browser.
+- Estimate fields follow Big Foot's `estimates` row where it already fits: `amount` (total), `details`, `phone`, `title`, and status `requested | reviewed | quoted | approved | scheduled | won | lost`. `customer_name` stands in for Big Foot's `clients.name`. Optional `line_items` are stored as JSON. No Stripe, projects board, or client portal.
+
+### Turn it on
+
+From the repo root, for any template or mockup folder that contains `index.html`:
+
+```bash
+npm install
+npm run upgrade:init
+npm run upgrade -- --site plumbing
+# or a generated mockup / prospect folder:
+npm run upgrade -- --site prospects/rj-plumbing
+```
+
+Open `http://127.0.0.1:4317/` for the public one-pager and `http://127.0.0.1:4317/owner/login` for the owner. The static files in the folder are unchanged, so the GitHub Pages copy of a prospect site stays a normal homepage.
+
+Local demo login when `OWNER_EMAIL` and `OWNER_PASSWORD` are unset (or copied from the example):
+
+- Email: `demo@example.com`
+- Password: `demo-password`
+
+Copy [`upgrade/.env.example`](./upgrade/.env.example) to `upgrade/.env` to override them. `NODE_ENV=production` refuses the demo password. Delete `upgrade/data.db` and start again if you change the owner email or password after the first seed. Never commit `.env` or `data.db`.
+
+With the server already running, `npm run upgrade:smoke` checks health, that estimates reject a logged-out caller, login, create, update, list, and that `/` is still the static HTML.
+
 ## Templates
 
 | Folder | Niche | Example business name |

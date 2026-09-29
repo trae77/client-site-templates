@@ -5,12 +5,21 @@
   "description": "Static one-pager templates for small US businesses, plus a quick homepage mockup generator.",
   "type": "module",
   "scripts": {
-    "mockup": "node tools/mockup.mjs"
+    "mockup": "node tools/mockup.mjs",
+    "upgrade:init": "node upgrade/init.cjs",
+    "upgrade": "node upgrade/server.cjs",
+    "upgrade:smoke": "node upgrade/smoke.cjs"
   },
   "engines": {
     "node": ">=18"
   },
   "license": "UNLICENSED",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7"
+  },
   "devDependencies": {
     "playwright": "^1.63.0"
   }

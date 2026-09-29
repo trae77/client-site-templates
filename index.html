@@ -51,6 +51,20 @@
     a.card h2 { margin: 0 0 0.35rem; font-size: 1.15rem; }
     a.card p { margin: 0; color: var(--muted); font-size: 0.92rem; }
     a.card .path { margin-top: 0.85rem; color: var(--accent); font-size: 0.85rem; font-weight: 600; }
+    .ladder {
+      margin-top: 2.25rem; padding: 1.25rem 1.35rem 1.35rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    }
+    .ladder h2 { margin: 0 0 0.4rem; font-size: 1.25rem; letter-spacing: -0.02em; }
+    .ladder > p { margin: 0 0 0.9rem; color: var(--muted); max-width: 68ch; }
+    .ladder ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.75rem; }
+    .ladder li {
+      display: grid; gap: 0.2rem; padding: 0.75rem 0.85rem;
+      border-radius: 12px; border: 1px solid var(--border); background: rgba(11, 18, 32, 0.35);
+    }
+    .ladder li strong { color: var(--text); }
+    .ladder li span, .ladder code { color: var(--muted); }
+    .ladder code { font-size: 0.88em; color: #c7d7ff; }
     footer { margin-top: 3rem; color: var(--muted); font-size: 0.9rem; }
     footer a { color: #93c5fd; }
   </style>
@@ -62,6 +76,21 @@
       <h1>Small-business one-pager templates</h1>
       <p>Eight polished, self-contained HTML/CSS/JS sites. Pick a niche, customize branding, deploy. No build step required.</p>
     </header>
+
+    <section class="ladder" aria-labelledby="ladder-heading">
+      <h2 id="ladder-heading">Product ladder</h2>
+      <p>Two steps. A prospect starts on a static one-pager and can step up to an owner login and estimates. Pricing is not set — nothing in this repo or in Big Foot states a price for these tiers.</p>
+      <ol>
+        <li>
+          <strong>One-pager</strong>
+          <span>The static templates and the mockup generator. A public homepage. No login, no database. This is what GitHub Pages serves.</span>
+        </li>
+        <li>
+          <strong>Owner login + estimates</strong>
+          <span>Optional Node addon in <code>upgrade/</code>. The same one-pager stays the public homepage, and a logged-in owner gets an estimates page. Needs a Node host. GitHub Pages cannot run it.</span>
+        </li>
+      </ol>
+    </section>
 
     <div class="grid">
       <a class="card" href="./pressure-washing/">
