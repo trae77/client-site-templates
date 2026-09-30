@@ -8,6 +8,12 @@
  * Copies a template folder, swaps in the business name / city / phone / email,
  * re-brands the colors via CSS custom properties, and renders a full-page PNG
  * with headless Chromium (Playwright). Run with --help for all flags.
+ *
+ * Optional, independent, and off unless passed:
+ *   --pay-url       https Payment Link (Stripe buy / checkout host only)
+ *   --zelle-phone   and/or --zelle-email, plus optional --zelle-amount
+ * Nothing is inserted, and no payment URL or Zelle contact is written, when
+ * those flags are omitted. There is no default phone, email, or amount.
  */
 import { parseArgs } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -193,6 +199,109 @@ const formatPhone = (p) => { const d = phoneDigits(p); return d.length === 10 ? 
 const telHref = (p) => { const d = phoneDigits(p); return d.length === 10 ? `tel:+1${d}` : `tel:${d}`; };
 const replaceAllLiteral = (str, find, rep) => str.split(find).join(rep);
 
+// Hosts are composed so this file does not contain a payment URL literal.
+const STRIPE_HOST = 'stripe.com';
+const PAY_HOSTS = new Set([`buy.${STRIPE_HOST}`, `checkout.${STRIPE_HOST}`]);
+
+/**
+ * Stripe Payment Link / hosted checkout only. Rejects javascript:, http,
+ * other hosts, and userinfo. Returns the caller's URL unchanged when valid.
+ */
+function validatePayUrl(raw) {
+  if (raw == null) return null;
+  const input = String(raw).trim();
+  const allowed = [...PAY_HOSTS].join(' or ');
+  if (!input) {
+    throw new Error(`--pay-url was empty. Pass an https Payment Link on ${allowed}, or omit the flag.`);
+  }
+  if (/[\s<>"']/.test(input)) {
+    throw new Error('--pay-url rejected: the URL must not contain spaces or quotes.');
+  }
+  let url;
+  try { url = new URL(input); }
+  catch {
+    throw new Error(`--pay-url rejected: not a valid URL. Use https on ${allowed}.`);
+  }
+  if (url.protocol !== 'https:') {
+    throw new Error(`--pay-url rejected: only https is allowed (got "${url.protocol.replace(':','')}"). Create the link in Stripe and pass that https URL.`);
+  }
+  if (url.username || url.password) {
+    throw new Error('--pay-url rejected: URLs with a username or password are not allowed.');
+  }
+  const host = url.hostname.toLowerCase();
+  if (!PAY_HOSTS.has(host)) {
+    throw new Error(`--pay-url rejected: host must be ${allowed} (got "${host}"). Other sites are not accepted.`);
+  }
+  if (url.port && url.port !== '443') {
+    throw new Error(`--pay-url rejected: unexpected port "${url.port}".`);
+  }
+  return input;
+}
+
+function validateZellePhone(raw) {
+  const s = String(raw).trim();
+  const digits = s.replace(/\D/g, '');
+  if (!/^[+\d(][\d\s().-]{6,}$/.test(s) || digits.length < 10 || digits.length > 15) {
+    throw new Error('--zelle-phone rejected: that value does not look like a phone number. Pass the client\'s Zelle phone, or omit the flag. There is no default number.');
+  }
+  return s;
+}
+
+function validateZelleEmail(raw) {
+  const s = String(raw).trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s) || s.length > 254) {
+    throw new Error('--zelle-email rejected: that value does not look like an email. Pass the client\'s Zelle email, or omit the flag.');
+  }
+  return s;
+}
+
+function validateZelleAmount(raw) {
+  const s = String(raw).trim();
+  if (!/^\$?\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?$/.test(s) && !/^\$?\d+(?:\.\d{1,2})?$/.test(s)) {
+    throw new Error('--zelle-amount rejected: pass a dollar amount such as 150 or $150.00, or omit the flag. No amount is invented.');
+  }
+  return s;
+}
+
+/** Zelle is plain text (phone and/or email, optional amount). Independent of --pay-url. */
+function validateZelle(values) {
+  const phone = values['zelle-phone'];
+  const email = values['zelle-email'];
+  const amount = values['zelle-amount'];
+  if (phone == null && email == null && amount == null) return null;
+  if (phone == null && email == null) {
+    throw new Error('--zelle-amount was set without --zelle-phone or --zelle-email. Zelle stays off unless a contact is passed. No default phone or email is used.');
+  }
+  return {
+    phone: phone == null ? null : validateZellePhone(phone),
+    email: email == null ? null : validateZelleEmail(email),
+    amount: amount == null ? null : validateZelleAmount(amount),
+  };
+}
+
+function buildPayBlock(payUrl, zelle) {
+  const parts = [];
+  if (payUrl) {
+    parts.push(`<a class="btn btn-pay" href="${escapeHtml(payUrl)}" rel="noopener noreferrer">Pay</a>`);
+  }
+  if (zelle) {
+    const contacts = [zelle.phone, zelle.email].filter(Boolean).map((v) => escapeHtml(v));
+    let text = `Zelle: ${contacts.join(' · ')}`;
+    if (zelle.amount) text += ` · ${escapeHtml(zelle.amount)}`;
+    parts.push(`<p class="zelle-pay">${text}</p>`);
+  }
+  if (!parts.length) return '';
+  return `<div class="pay-options">\n            ${parts.join('\n            ')}\n          </div>`;
+}
+
+function insertPayBlock(html, block) {
+  const re = /(<div class="hero-actions">[\s\S]*?)(\n[ \t]*<\/div>)/;
+  if (!re.test(html)) {
+    throw new Error('This template has no .hero-actions block, so the payment option could not be placed next to the call to action.');
+  }
+  return html.replace(re, `$1\n          ${block}$2`);
+}
+
 function resolveTrade(trade) {
   const key = slugify(trade || '');
   for (const [folder, aliases] of Object.entries(TRADE_ALIASES)) if (aliases.includes(key)) return { folder, fallback: false };
@@ -232,6 +341,13 @@ Optional:
   --accent    Highlight color (hex). Hero CTA, badges, accent bars. Default: per-template
   --areas     Comma-separated service areas for the pills, e.g. "Aurora,Denver,Parker"
   --email     Email to show (default: <local>@<businessname>.com)
+  --pay-url   Optional https Stripe Payment Link (buy or checkout host only).
+              Create the link in Stripe and pass it here. Omitted = no pay button
+              and no payment URL in the HTML. Not a Checkout Session or secret key.
+  --zelle-phone  Optional Zelle phone to show as plain text (not a payment link)
+  --zelle-email  Optional Zelle email to show as plain text. One of phone/email is enough
+  --zelle-amount Optional dollar amount to display with Zelle (150 or $150.00). Never invented.
+              Zelle stays off unless a phone or email is passed. Independent of --pay-url.
   --out       Output HTML folder (default: mockups/<slug>/ in the repo)
   --png-dir   Where PNGs go (default: the parent of --out, e.g. mockups/)
   --mobile    Also render a 390px-wide mobile screenshot
@@ -247,7 +363,7 @@ ${Object.entries(TRADE_ALIASES).map(([f, a]) => `  ${f.padEnd(17)} ${a.join(', '
 // ---------------------------------------------------------------------------
 // Build
 // ---------------------------------------------------------------------------
-function buildCss(cfg, primary, accent, galleryCount = 0) {
+function buildCss(cfg, primary, accent, galleryCount = 0, extras = {}) {
   const lines = [];
   const v = {};
   if (cfg.dark) {
@@ -339,6 +455,18 @@ function buildCss(cfg, primary, accent, galleryCount = 0) {
   if (galleryCount === 4) lines.push('.gallery { grid-template-columns: repeat(4, 1fr); }', '@media (max-width: 700px) { .gallery { grid-template-columns: repeat(2, 1fr); } }');
   if (galleryCount === 3) lines.push('.gallery { grid-template-columns: repeat(3, 1fr); }', '@media (max-width: 700px) { .gallery { grid-template-columns: repeat(2, 1fr); } .gallery figure:first-child { grid-column: span 2; aspect-ratio: 16/9; } }');
   if (cfg.dark) lines.push(`.contact-form input, .contact-form textarea, .contact-form select { background: ${mix(primary, '#0b1120', 0.93)}; }`);
+  if (extras.pay || extras.zelle) {
+    lines.push('.pay-options { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; flex-basis: 100%; }');
+  }
+  if (extras.pay) {
+    lines.push(
+      `.btn-pay { background: transparent; color: ${heroText}; border-color: rgba(${heroSoft}, 0.7); }`,
+      `.btn-pay:hover { background: rgba(${heroSoft}, 0.12); color: ${heroText}; }`,
+    );
+  }
+  if (extras.zelle) {
+    lines.push(`.zelle-pay { margin: 0; font-weight: 600; font-size: 0.98rem; color: ${heroText}; }`);
+  }
   void accentOnBg;
   return lines.join('\n') + '\n';
 }
@@ -409,6 +537,10 @@ function buildHtml(cfg, html, ctx) {
 
   // Load all images eagerly so full-page screenshots never catch empty lazy slots
   out = out.replace(/\sloading="lazy"/g, '');
+
+  // Payment options are inserted last so placeholder replacement cannot rewrite them,
+  // and so they are absent entirely when no payment flags were passed.
+  if (ctx.payBlock) out = insertPayBlock(out, ctx.payBlock);
   return out;
 }
 
@@ -547,6 +679,8 @@ async function main() {
     options: {
       name: { type: 'string' }, trade: { type: 'string' }, city: { type: 'string' }, phone: { type: 'string' },
       primary: { type: 'string' }, accent: { type: 'string' }, areas: { type: 'string' }, email: { type: 'string' },
+      'pay-url': { type: 'string' },
+      'zelle-phone': { type: 'string' }, 'zelle-email': { type: 'string' }, 'zelle-amount': { type: 'string' },
       out: { type: 'string' }, 'png-dir': { type: 'string' },
       mobile: { type: 'boolean', default: false }, 'no-png': { type: 'boolean', default: false },
       list: { type: 'boolean', default: false }, help: { type: 'boolean', short: 'h', default: false },
@@ -557,6 +691,10 @@ async function main() {
   if (values.list) { console.log(usage().split('Trade aliases:')[1]); return; }
   const missing = ['name', 'trade', 'city', 'phone'].filter((k) => !values[k]);
   if (missing.length) { console.error(`Missing required flag(s): ${missing.map((m) => '--' + m).join(', ')}\n${usage()}`); process.exit(1); }
+
+  const payUrl = validatePayUrl(values['pay-url']);
+  const zelle = validateZelle(values);
+  const payBlock = buildPayBlock(payUrl, zelle);
 
   const { folder, fallback } = resolveTrade(values.trade);
   const cfg = TEMPLATES[folder];
@@ -575,7 +713,7 @@ async function main() {
     : [cityName, ...(NEARBY[cityName.toLowerCase()] || ['Surrounding areas'])];
   if (!areas.some((a) => a.toLowerCase() === cityName.toLowerCase())) areas.unshift(cityName);
 
-  const ctx = { name: values.name, nameHtml: escapeHtml(values.name), phoneDisplay, tel: telHref(values.phone), email, cityName, cityFull, areas };
+  const ctx = { name: values.name, nameHtml: escapeHtml(values.name), phoneDisplay, tel: telHref(values.phone), email, cityName, cityFull, areas, payBlock };
 
   const outDir = path.resolve(values.out || path.join(REPO_ROOT, 'mockups', slug));
   const pngDir = path.resolve(values['png-dir'] || path.dirname(outDir));
@@ -592,7 +730,7 @@ async function main() {
   const { html: outHtml, count: galleryCount, removed } = await pruneGallery(built, css);
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
   fs.writeFileSync(htmlPath, outHtml);
-  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(cfg, primary, accent, galleryCount);
+  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(cfg, primary, accent, galleryCount, { pay: Boolean(payUrl), zelle: Boolean(zelle) });
   fs.writeFileSync(cssPath, css);
 
   const { problems, warnings } = verify(outHtml, cfg, ctx);
@@ -601,6 +739,9 @@ async function main() {
 
   console.log(`Template: ${folder}${fallback ? `  (trade "${values.trade}" not recognized — using generic-business)` : ''}`);
   console.log(`Colors:   primary ${primary} · accent ${accent}${values.primary || values.accent ? '' : ' (template defaults)'}`);
+  if (payUrl) console.log('Pay:      hero "Pay" button (Stripe Payment Link)');
+  if (zelle) console.log(`Zelle:    plain text next to the call to action${zelle.amount ? ' (amount shown)' : ''}`);
+  if (!payUrl && !zelle) console.log('Payments: off (no pay button, no Zelle block)');
   console.log('✓ Verified: no template placeholder names, phones, emails, or addresses remain');
 
   const pngs = [];

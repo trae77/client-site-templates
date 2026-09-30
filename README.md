@@ -125,6 +125,10 @@ npm run mockup -- --name "Acme Pressure Washing" --trade pressure-washing --city
 | `--accent` | no | Highlight hex color: hero CTA button, badge, accent bars, footer links. Defaults per template. |
 | `--areas` | no | Comma-separated service-area pills, e.g. `"Aurora,Denver,Parker"`. Default: the city plus built-in nearby towns (Front Range and a few big metros), otherwise "Surrounding areas". |
 | `--email` | no | Email to show. Default: `<template's inbox>@<businessname>.com`, e.g. `hello@acmepressurewashing.com`. |
+| `--pay-url` | no | Optional **Pay** button in the hero, next to the existing call to action. Create a Payment Link (or hosted checkout link) in Stripe and pass that https URL here. Only Stripe's buy and checkout hosts are accepted; anything else, including `http` and `javascript:` links, is rejected. Omitted = no pay button and no payment URL in the HTML. This is a normal link, not Stripe.js, not a Checkout Session API, and not a server route. No dollar amount is invented. |
+| `--zelle-phone` | no | Optional Zelle phone, shown as plain text a customer can type into their bank app. Not a payment link and not a form that sends money. No default number. |
+| `--zelle-email` | no | Optional Zelle email, same plain-text treatment. Phone, email, or both are enough. Independent of `--pay-url`. |
+| `--zelle-amount` | no | Optional dollar amount to display with Zelle (`150` or `$150.00`). Shown only when passed. Ignored-as-error if you pass an amount without a phone or email. No amount is invented. |
 | `--out` | no | Output HTML folder. Default: `mockups/<slug>/`. |
 | `--png-dir` | no | Where PNGs are written. Default: the parent folder of `--out`. |
 | `--mobile` | no | Also render a 390px-wide mobile screenshot (2x). |
@@ -132,6 +136,23 @@ npm run mockup -- --name "Acme Pressure Washing" --trade pressure-washing --city
 | `--list` / `--help` | no | Show trade aliases / all flags. |
 
 Colors are applied by overriding each template's CSS custom properties (`--accent`, `--accent-dark`, `--bg`, `--footer-bg`, ...) in an override block appended to the copied `styles.css`. Text on the hero and buttons is set to white or dark automatically based on WCAG contrast, and link colors get darkened or lightened until they're readable.
+
+### Optional Stripe and Zelle
+
+GitHub Pages has no server, so neither option calls Stripe or moves money. Both stay completely off unless you pass them. The static templates and published prospect pages do not include a pay button, a payment URL, or a Zelle contact.
+
+```bash
+# Stripe only — button href is the URL you pass
+npm run mockup -- --name "Acme Plumbing" --trade plumbing --city "Aurora, CO" --phone "(303) 555-0142" \
+  --pay-url "https://<your-stripe-payment-link>"
+
+# Zelle only — plain text, no payment URL
+npm run mockup -- --name "Acme Plumbing" --trade plumbing --city "Aurora, CO" --phone "(303) 555-0142" \
+  --zelle-email "pay@acmeplumbing.com" --zelle-amount 150
+```
+
+Create the Payment Link in Stripe, then pass it to `--pay-url`. The generator places one **Pay** link inside the hero actions, beside the existing call to action. Zelle, when a phone and/or email is passed, is plain text in that same spot (with `--zelle-amount` only if you supply one). You can pass both, either, or neither.
+
 
 After building, the script checks that no template placeholder name, phone, email, or address is left in the output, and it stops with an error if it finds one.
 
