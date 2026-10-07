@@ -97,6 +97,8 @@ The root [`index.html`](./index.html) links to every template for easy browsing 
 
 Generate a personalized homepage mockup (HTML folder + full-page PNG) for a prospect in one command. Handy for "free homepage mockup" outreach.
 
+**Facts only by default.** The generated page states only what you pass on the command line: business name, trade, city, phone, and email (if you pass one). The template's marketing copy is replaced with neutral wording. By default the page has no "licensed and insured", no years in business, no business hours, no reviews or star ratings, no 24/7 / emergency / same-day promises, no free-estimate offers, and no street address. Each real fact can be added with its own flag (see **Opt-in facts** below). **The default output is safe to send to a real prospect:** it makes no claim about their business that they didn't give you.
+
 ### Prerequisites (one time)
 
 - Node.js 18+
@@ -119,12 +121,17 @@ npm run mockup -- --name "Acme Pressure Washing" --trade pressure-washing --city
 |------|----------|--------------|
 | `--name` | yes | Business name, exactly as it should appear (header, hero, about, footer, image alts, `<title>`, meta). |
 | `--trade` | yes | Picks the template (aliases below). Unknown trades fall back to `generic-business`. |
-| `--city` | yes | City, optionally with state (`"Thornton, CO"`). Used in the hero badge/lead, about copy, service-area pills, contact card, footer, review locations. |
+| `--city` | yes | City, optionally with state (`"Thornton, CO"`). Used in the headline, hero badge/lead, about copy, service-area pill, contact card, and footer. |
 | `--phone` | yes | Any format (`7205550187`, `(720) 555-0187`). Shown as `(720) 555-0187`; `tel:` links become `tel:+17205550187`. |
 | `--primary` | no | Main brand hex color: hero, buttons, links. Defaults to the template's palette. |
 | `--accent` | no | Highlight hex color: hero CTA button, badge, accent bars, footer links. Defaults per template. |
-| `--areas` | no | Comma-separated service-area pills, e.g. `"Aurora,Denver,Parker"`. Default: the city plus built-in nearby towns (Front Range and a few big metros), otherwise "Surrounding areas". |
-| `--email` | no | Email to show. Default: `<template's inbox>@<businessname>.com`, e.g. `hello@acmepressurewashing.com`. |
+| `--areas` | no | Comma-separated service-area pills, e.g. `"Aurora,Denver,Parker"`. Default: just the `--city` (no nearby towns are guessed). |
+| `--email` | no | Email to show in the about copy, contact card, and footer. Default: **no email on the page**. None is invented. |
+| `--licensed` | no | Shows "Licensed & insured" in the hero badge, about copy, and a stat. Pass it only if the business is. |
+| `--years` | no | Whole number of years in business (1–150), e.g. `--years 12`. Shows "12 years in business" in the hero badge, about copy, and a stat. |
+| `--hours` | no | Business hours shown verbatim in the contact card and a footer column, e.g. `--hours "Mon-Fri 8-5"` (max 120 chars). Default: no hours anywhere. |
+| `--tagline` | no | Headline to use instead of the neutral `<Trade> in <City>` (max 90 chars). Shown verbatim in the hero, `<title>`, and footer. |
+| `--sample-reviews` | no | Adds a reviews section headed **Sample Reviews** ("Sample reviews: your real customer reviews go here."). Every card is signed "Sample customer", with no stars or ratings. Default: no reviews section and no Reviews nav link. |
 | `--pay-url` | no | Optional **Pay** button in the hero, next to the existing call to action. Create a Payment Link (or hosted checkout link) in Stripe and pass that https URL here. Only Stripe's buy and checkout hosts are accepted; anything else, including `http` and `javascript:` links, is rejected. Omitted = no pay button and no payment URL in the HTML. This is a normal link, not Stripe.js, not a Checkout Session API, and not a server route. No dollar amount is invented. |
 | `--zelle-phone` | no | Optional Zelle phone, shown as plain text a customer can type into their bank app. Not a payment link and not a form that sends money. No default number. |
 | `--zelle-email` | no | Optional Zelle email, same plain-text treatment. Phone, email, or both are enough. Independent of `--pay-url`. |
@@ -136,6 +143,28 @@ npm run mockup -- --name "Acme Pressure Washing" --trade pressure-washing --city
 | `--list` / `--help` | no | Show trade aliases / all flags. |
 
 Colors are applied by overriding each template's CSS custom properties (`--accent`, `--accent-dark`, `--bg`, `--footer-bg`, ...) in an override block appended to the copied `styles.css`. Text on the hero and buttons is set to white or dark automatically based on WCAG contrast, and link colors get darkened or lightened until they're readable.
+
+### Opt-in facts
+
+Only add these when the business has told you they're true (their Google profile, their site, or the owner). The trade, tagline, and hours text you pass is shown exactly as written.
+
+```bash
+# Default: facts only. Safe to send.
+npm run mockup -- --name "Acme Plumbing" --trade plumbing --city "Aurora, CO" --phone "(303) 555-0142" \
+  --email "office@acmeplumbing.com"
+
+# With facts the business supplied, plus clearly labeled sample reviews
+npm run mockup -- --name "Acme Plumbing" --trade plumbing --city "Aurora, CO" --phone "(303) 555-0142" \
+  --licensed --years 12 --hours "Mon-Fri 8-5" --sample-reviews
+```
+
+What the default page contains:
+
+- **Headline:** `<Trade> in <City>` (e.g. "Plumbing in Aurora, CO"), or your `--tagline`.
+- **Services:** four plain service cards for the template, introduced as "Typical services shown for this mockup", with no promises in the descriptions.
+- **About:** "<Name> serves customers in <City>. Call <phone> (or email <email>) to talk about your project." The stat row appears only with `--licensed` and/or `--years`.
+- **Photos:** stock photos labeled "Sample photos for this mockup".
+- **Contact:** phone, email (if passed), service area (the city), and hours (only with `--hours`). The demo form's thank-you note says it doesn't send messages yet.
 
 ### Optional Stripe and Zelle
 
@@ -154,7 +183,10 @@ npm run mockup -- --name "Acme Plumbing" --trade plumbing --city "Aurora, CO" --
 Create the Payment Link in Stripe, then pass it to `--pay-url`. The generator places one **Pay** link inside the hero actions, beside the existing call to action. Zelle, when a phone and/or email is passed, is plain text in that same spot (with `--zelle-amount` only if you supply one). You can pass both, either, or neither.
 
 
-After building, the script checks that no template placeholder name, phone, email, or address is left in the output, and it stops with an error if it finds one.
+After building, the script runs two checks and stops with an error (no PNG) if either fails:
+
+1. **Placeholders:** no template placeholder name, phone, email, or address is left in the output.
+2. **Claims:** it scans the page text (including alt text, `<title>`, and meta description) for claims nobody supplied. Those are licensed / insured / bonded, certified, warranty / guarantee, years in business or "since / founded", family or locally owned, job or customer counts ("500+"), stars and ratings, reviews, "#1 / best / top-rated / award", BBB, business hours, 24/7 / emergency / same-day, response-time promises, free estimates or pricing promises, "trusted / reliable / professional"-style quality claims, crews and team size, and street addresses. Text you passed yourself (name, city, trade, email, areas, tagline, hours, Zelle details) is skipped. `--licensed`, `--years`, `--hours`, and `--sample-reviews` each allow only their own pattern. With `--sample-reviews` the check also requires the "Sample" heading and the generic "Sample customer" attribution.
 
 ### Trade aliases
 
@@ -184,7 +216,7 @@ The script prints the HTML folder and PNG paths when it finishes. Gallery photos
 
 ### Tip for Sales
 
-Attach the desktop PNG (and the mobile one if you like) to the outreach email: "Here's a free homepage mockup for <Business>." When they say yes, the matching HTML folder already has their branding. Swap in their real photos, reviews, and services, then deploy it (see **Deploy** below) as the live site.
+Attach the desktop PNG (and the mobile one if you like) to the outreach email: "Here's a free homepage mockup for <Business>." When they say yes, the matching HTML folder already has their branding. Swap in their real photos, reviews, services, and any facts they confirm (license, years, hours), then deploy it (see **Deploy** below) as the live site.
 
 ## Deploy
 

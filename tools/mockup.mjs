@@ -9,7 +9,18 @@
  * re-brands the colors via CSS custom properties, and renders a full-page PNG
  * with headless Chromium (Playwright). Run with --help for all flags.
  *
+ * Facts only by default: the page states the name, trade, city, phone, and
+ * (if passed) email. Template marketing copy that asserts things nobody
+ * supplied (licensed/insured, years in business, hours, reviews, ratings,
+ * 24/7, free estimates, ...) is rebuilt into neutral wording, and a
+ * post-build claim check fails the run if any of it slips through.
+ *
  * Optional, independent, and off unless passed:
+ *   --licensed      shows "Licensed & insured"
+ *   --years N       shows "N years in business"
+ *   --hours TEXT    shows TEXT verbatim as business hours
+ *   --tagline TEXT  replaces the neutral "<Trade> in <City>" headline
+ *   --sample-reviews  a reviews section clearly labeled as samples
  *   --pay-url       https Payment Link (Stripe buy / checkout host only)
  *   --zelle-phone   and/or --zelle-email, plus optional --zelle-amount
  * Nothing is inserted, and no payment URL or Zelle contact is written, when
@@ -36,7 +47,12 @@ const TEMPLATES = {
     homeCity: 'Denver',
     address: '1840 Ridgeway Ave, Denver, CO 80204',
     defaults: { primary: '#0369a1', accent: '#facc15' },
-    extra: (c) => [['serving the Denver metro', `serving ${c.cityName} and the surrounding area`]],
+    services: [
+      ['House Washing', 'Siding, trim, and entryways.'],
+      ['Driveways & Concrete', 'Driveways, sidewalks, and patios.'],
+      ['Decks & Fences', 'Wood and composite decks, fences, and railings.'],
+      ['Commercial Exteriors', 'Storefronts and other commercial buildings.'],
+    ],
   },
   landscaping: {
     name: 'Greenhaven Lawn & Landscape',
@@ -45,7 +61,12 @@ const TEMPLATES = {
     homeCity: 'Fort Collins',
     address: '920 Maple Crest Dr, Fort Collins, CO 80525',
     defaults: { primary: '#15803d', accent: '#facc15' },
-    extra: (c) => [['keeps Northern Colorado yards', `keeps ${c.cityName}-area yards`]],
+    services: [
+      ['Lawn Mowing', 'Mowing, edging, and cleanup.'],
+      ['Mulch & Beds', 'Mulch, bed edging, and planting.'],
+      ['Tree & Shrub Care', 'Pruning and shaping for trees and shrubs.'],
+      ['Yard Cleanup', 'Leaves, branches, and seasonal cleanup.'],
+    ],
   },
   plumbing: {
     name: 'Ridge Line Plumbing',
@@ -54,6 +75,12 @@ const TEMPLATES = {
     homeCity: 'Colorado Springs',
     address: '410 Industrial Blvd, Colorado Springs, CO 80907',
     defaults: { primary: '#1e40af', accent: '#f97316' },
+    services: [
+      ['Plumbing Repairs', 'Leaks, pipes, and fixtures.'],
+      ['Water Heaters', 'Tank and tankless water heaters.'],
+      ['Drain Clearing', 'Clogged sinks, tubs, and main lines.'],
+      ['Fixture Installs', 'Faucets, toilets, and garbage disposals.'],
+    ],
   },
   'cleaning-service': {
     name: 'BrightNest Cleaning Co.',
@@ -62,6 +89,12 @@ const TEMPLATES = {
     homeCity: 'Boulder',
     address: '55 Pearl St, Suite 200, Boulder, CO 80302',
     defaults: { primary: '#6d28d9', accent: '#2dd4bf' },
+    services: [
+      ['Home Cleaning', 'Regular cleaning for houses and apartments.'],
+      ['Deep Cleaning', 'A top-to-bottom clean, including the details.'],
+      ['Move-In / Move-Out', 'Cleaning for an empty home before or after a move.'],
+      ['Office Cleaning', 'Cleaning for offices and workspaces.'],
+    ],
   },
   restaurant: {
     name: "Nonna's Wood-Fired Pizza",
@@ -71,6 +104,14 @@ const TEMPLATES = {
     address: '312 Main Street, Golden, CO 80401',
     addressLabel: 'Location',
     defaults: { primary: '#b91c1c', accent: '#f59e0b' },
+    servicesNote: 'Sample menu sections for this mockup. The menu can be matched to exactly what {name} serves.',
+    ask: 'with any questions',
+    services: [
+      ['Menu Favorites', 'Your most-ordered dishes go here.'],
+      ['Specials', 'Daily or seasonal specials go here.'],
+      ['Sides & Extras', 'Sides, add-ons, and extras go here.'],
+      ['Groups & Catering', 'Group or catering options go here, if offered.'],
+    ],
   },
   'auto-detailing': {
     name: 'MirrorFinish Auto Detail',
@@ -80,7 +121,12 @@ const TEMPLATES = {
     address: '780 Commerce Park Rd, Aurora, CO 80011',
     dark: true,
     defaults: { primary: '#0891b2', accent: '#fbbf24' },
-    extra: () => [['Real protection.. Serving', 'Real protection. Serving']],
+    services: [
+      ['Exterior Detail', 'Wash, decontamination, and wax.'],
+      ['Interior Detail', 'Vacuum, wipe-down, and upholstery care.'],
+      ['Paint Correction', 'Polishing to reduce swirls and light scratches.'],
+      ['Ceramic Coating', 'Coating applied over the paint.'],
+    ],
   },
   handyman: {
     name: 'SteadyHands Home Repair',
@@ -89,6 +135,12 @@ const TEMPLATES = {
     homeCity: 'Denver',
     address: '2200 Blake St, Denver, CO 80205',
     defaults: { primary: '#b45309', accent: '#0f766e' },
+    services: [
+      ['Home Repairs', 'Doors, trim, drywall patches, and small fixes.'],
+      ['Mounting & Assembly', 'TVs, shelves, and furniture.'],
+      ['Painting', 'Interior rooms, trim, and touch-ups.'],
+      ['Fixture Installs', 'Light fixtures, faucets, and hardware.'],
+    ],
   },
   'generic-business': {
     name: 'Northstar Local Co.',
@@ -97,13 +149,11 @@ const TEMPLATES = {
     homeCity: 'Your Town',
     address: '100 Market Street, Your Town, USA 00000',
     defaults: { primary: '#1e40af', accent: '#f59e0b' },
-    extra: (c) => [
-      [
-        /<!-- COMPANY_NAME -->\s*Northstar Local Co\. is a placeholder small-business one-pager\.[^<]*/,
-        `${c.nameHtml} is a locally owned business serving ${c.cityName} and nearby communities. ` +
-          `We keep it simple: clear pricing, reliable scheduling, and work we are proud to put our name on.`,
-      ],
-      ['Nearby City', c.areas[1] || c.cityName],
+    services: [
+      ['Main Service', 'A short description of this service goes here.'],
+      ['Second Service', 'A short description of this service goes here.'],
+      ['Third Service', 'A short description of this service goes here.'],
+      ['Other Requests', 'Ask about anything not listed here.'],
     ],
   },
 };
@@ -118,45 +168,6 @@ const TRADE_ALIASES = {
   'auto-detailing': ['auto-detailing', 'detailing', 'detail', 'detailer', 'car-detailing', 'mobile-detailing', 'auto-detail', 'car-wash', 'ceramic-coating'],
   handyman: ['handyman', 'handy-man', 'home-repair', 'home-repairs', 'repair', 'repairs', 'home-improvement', 'remodeling', 'painting', 'painter', 'carpentry', 'drywall'],
   'generic-business': ['generic', 'generic-business', 'business', 'other', 'default'],
-};
-
-// Nearby-area suggestions for service-area pills (Front Range + a few big metros).
-// Anything not listed gets [City, "Surrounding areas"] unless --areas is passed.
-const NEARBY = {
-  denver: ['Aurora', 'Lakewood', 'Englewood', 'Arvada', 'Westminster'],
-  aurora: ['Denver', 'Centennial', 'Parker', 'Commerce City', 'Englewood'],
-  thornton: ['Northglenn', 'Westminster', 'Brighton', 'Commerce City', 'Broomfield'],
-  westminster: ['Arvada', 'Broomfield', 'Thornton', 'Northglenn', 'Federal Heights'],
-  arvada: ['Westminster', 'Wheat Ridge', 'Golden', 'Lakewood', 'Broomfield'],
-  lakewood: ['Denver', 'Golden', 'Wheat Ridge', 'Littleton', 'Arvada'],
-  littleton: ['Englewood', 'Centennial', 'Highlands Ranch', 'Lakewood', 'Ken Caryl'],
-  centennial: ['Aurora', 'Littleton', 'Greenwood Village', 'Parker', 'Englewood'],
-  englewood: ['Denver', 'Littleton', 'Centennial', 'Sheridan', 'Cherry Hills Village'],
-  'highlands ranch': ['Littleton', 'Lone Tree', 'Centennial', 'Castle Rock', 'Parker'],
-  parker: ['Aurora', 'Castle Rock', 'Centennial', 'Lone Tree', 'Elizabeth'],
-  'castle rock': ['Parker', 'Castle Pines', 'Highlands Ranch', 'Larkspur', 'Sedalia'],
-  broomfield: ['Westminster', 'Louisville', 'Superior', 'Thornton', 'Erie'],
-  northglenn: ['Thornton', 'Westminster', 'Federal Heights', 'Broomfield', 'Commerce City'],
-  'commerce city': ['Denver', 'Thornton', 'Brighton', 'Aurora', 'Henderson'],
-  brighton: ['Thornton', 'Commerce City', 'Henderson', 'Fort Lupton', 'Northglenn'],
-  golden: ['Lakewood', 'Arvada', 'Wheat Ridge', 'Evergreen', 'Morrison'],
-  boulder: ['Louisville', 'Lafayette', 'Superior', 'Longmont', 'Niwot'],
-  longmont: ['Boulder', 'Niwot', 'Firestone', 'Frederick', 'Berthoud'],
-  'fort collins': ['Loveland', 'Windsor', 'Timnath', 'Wellington', 'Greeley'],
-  loveland: ['Fort Collins', 'Berthoud', 'Johnstown', 'Windsor', 'Greeley'],
-  greeley: ['Evans', 'Windsor', 'Johnstown', 'Loveland', 'Eaton'],
-  'colorado springs': ['Monument', 'Fountain', 'Manitou Springs', 'Falcon', 'Woodland Park'],
-  pueblo: ['Pueblo West', 'Colorado City', 'Canon City', 'Fountain', 'Rye'],
-  phoenix: ['Scottsdale', 'Tempe', 'Mesa', 'Glendale', 'Chandler'],
-  dallas: ['Plano', 'Irving', 'Garland', 'Richardson', 'Mesquite'],
-  houston: ['Katy', 'Sugar Land', 'Pearland', 'The Woodlands', 'Pasadena'],
-  austin: ['Round Rock', 'Cedar Park', 'Pflugerville', 'Georgetown', 'Leander'],
-  atlanta: ['Marietta', 'Decatur', 'Sandy Springs', 'Alpharetta', 'Smyrna'],
-  charlotte: ['Concord', 'Matthews', 'Huntersville', 'Gastonia', 'Mint Hill'],
-  nashville: ['Franklin', 'Brentwood', 'Murfreesboro', 'Hendersonville', 'Mount Juliet'],
-  tampa: ['St. Petersburg', 'Clearwater', 'Brandon', 'Wesley Chapel', 'Riverview'],
-  'salt lake city': ['Sandy', 'West Valley City', 'Murray', 'Draper', 'South Jordan'],
-  'las vegas': ['Henderson', 'North Las Vegas', 'Summerlin', 'Paradise', 'Enterprise'],
 };
 
 // ---------------------------------------------------------------------------
@@ -330,6 +341,11 @@ Usage:
   npm run mockup -- --name "Acme Pressure Washing" --trade pressure-washing \\
     --city "Aurora, CO" --phone "(303) 555-0142" [--primary "#0b5394"] [--accent "#f1c232"] [--mobile]
 
+By default the page states only what you pass: name, trade, city, phone, and
+email (if given). No licensed/insured, years, hours, reviews, ratings, 24/7,
+or free-estimate claims. Add those only with the flags below, and only when
+the business has told you they are true.
+
 Required:
   --name      Business name (exactly as it should appear)
   --trade     Trade / template alias (see below). Unknown trades fall back to generic-business
@@ -340,7 +356,18 @@ Optional:
   --primary   Main brand color (hex). Hero, buttons, links. Default: per-template
   --accent    Highlight color (hex). Hero CTA, badges, accent bars. Default: per-template
   --areas     Comma-separated service areas for the pills, e.g. "Aurora,Denver,Parker"
-  --email     Email to show (default: <local>@<businessname>.com)
+              Default: just the --city
+  --email     Email to show. Omitted = no email on the page (none is invented)
+
+Opt-in facts (off unless passed; the post-build check fails if they appear without the flag):
+  --licensed        Show "Licensed & insured" (hero badge, about, stat)
+  --years N         Show "N years in business" (whole number 1-150)
+  --hours "TEXT"    Show business hours verbatim, e.g. "Mon-Fri 8-5" (max 120 chars)
+  --tagline "TEXT"  Headline instead of the neutral "<Trade> in <City>" (max 90 chars)
+  --sample-reviews  Add a reviews section labeled "Sample reviews" with generic
+                    "Sample customer" cards and no star ratings
+
+Payments (off unless passed):
   --pay-url   Optional https Stripe Payment Link (buy or checkout host only).
               Create the link in Stripe and pass it here. Omitted = no pay button
               and no payment URL in the HTML. Not a Checkout Session or secret key.
@@ -348,6 +375,8 @@ Optional:
   --zelle-email  Optional Zelle email to show as plain text. One of phone/email is enough
   --zelle-amount Optional dollar amount to display with Zelle (150 or $150.00). Never invented.
               Zelle stays off unless a phone or email is passed. Independent of --pay-url.
+
+Output:
   --out       Output HTML folder (default: mockups/<slug>/ in the repo)
   --png-dir   Where PNGs go (default: the parent of --out, e.g. mockups/)
   --mobile    Also render a 390px-wide mobile screenshot
@@ -455,6 +484,11 @@ function buildCss(cfg, primary, accent, galleryCount = 0, extras = {}) {
   if (galleryCount === 4) lines.push('.gallery { grid-template-columns: repeat(4, 1fr); }', '@media (max-width: 700px) { .gallery { grid-template-columns: repeat(2, 1fr); } }');
   if (galleryCount === 3) lines.push('.gallery { grid-template-columns: repeat(3, 1fr); }', '@media (max-width: 700px) { .gallery { grid-template-columns: repeat(2, 1fr); } .gallery figure:first-child { grid-column: span 2; aspect-ratio: 16/9; } }');
   if (cfg.dark) lines.push(`.contact-form input, .contact-form textarea, .contact-form select { background: ${mix(primary, '#0b1120', 0.93)}; }`);
+  // Facts-only layout: the about panel spans the row when there is no stat row, the
+  // stat row sizes to the opt-in facts, and the footer drops the hours column.
+  if (!extras.stats) lines.push('.about-grid { grid-template-columns: 1fr; }', '.about-panel { max-width: 820px; width: 100%; margin-inline: auto; }');
+  else lines.push(`.stat-row { grid-template-columns: repeat(${extras.stats}, 1fr); }`);
+  if (!extras.hours) lines.push('@media (min-width: 701px) { .footer-grid { grid-template-columns: 1.4fr 1fr; } }');
   if (extras.pay || extras.zelle) {
     lines.push('.pay-options { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; flex-basis: 100%; }');
   }
@@ -471,8 +505,179 @@ function buildCss(cfg, primary, accent, galleryCount = 0, extras = {}) {
   return lines.join('\n') + '\n';
 }
 
+// ---------------------------------------------------------------------------
+// Facts-only copy. Everything below is built from command-line values only.
+// ---------------------------------------------------------------------------
+const GENERIC_TRADES = new Set(TRADE_ALIASES['generic-business']);
+/** "pressure-washing" -> "pressure washing"; generic aliases -> null. */
+function tradeLabel(trade) {
+  const raw = String(trade || '').replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!raw || GENERIC_TRADES.has(slugify(raw))) return null;
+  return raw.toLowerCase();
+}
+const capFirst = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+function validateYears(raw) {
+  if (raw == null) return null;
+  const s = String(raw).trim();
+  if (!/^\d{1,3}$/.test(s) || Number(s) < 1 || Number(s) > 150) {
+    throw new Error('--years must be a whole number of years in business from 1 to 150 (e.g. --years 12). Omit it if the business has not told you.');
+  }
+  return Number(s);
+}
+
+function validateText(flag, raw, max) {
+  if (raw == null) return null;
+  const s = String(raw).replace(/\s+/g, ' ').trim();
+  if (!s) throw new Error(`--${flag} was empty. Pass the text to show, or omit the flag.`);
+  if (s.length > max) throw new Error(`--${flag} is ${s.length} characters; keep it to ${max} or fewer.`);
+  return s;
+}
+
+/** Opt-in facts shown in the hero badge, about copy, and stat row. */
+function factLines(ctx) {
+  const out = [];
+  if (ctx.years) out.push({ badge: `${ctx.years} years in business`, stat: [String(ctx.years), 'Years in business'] });
+  if (ctx.licensed) out.push({ badge: 'Licensed &amp; insured', stat: ['✓', 'Licensed &amp; insured'] });
+  return out;
+}
+
+const SAMPLE_REVIEWS = [
+  'Sample review. A real customer quote goes here.',
+  'Sample review. Replace this with a real review before the site goes live.',
+  'Sample review. This text is a placeholder, not a quote from a customer.',
+];
+
+function rebuildCopy(cfg, html, ctx, tok) {
+  const { nameHtml, phoneDisplay, tel, email, cityFull } = ctx;
+  const phone = escapeHtml(phoneDisplay);
+  const city = escapeHtml(cityFull);
+  const label = ctx.label ? escapeHtml(ctx.label) : null;
+  const headline = ctx.tagline ? escapeHtml(ctx.tagline) : label ? `${capFirst(label)} in ${city}` : `Serving ${city}`;
+  const facts = factLines(ctx);
+  const emailHtml = email ? escapeHtml(email) : null;
+  const ask = cfg.ask || 'to ask about your job';
+  const sub = (re, rep, what) => {
+    if (!re.test(html)) throw new Error(`Template ${what} block not found; update rebuildCopy() in tools/mockup.mjs.`);
+    html = html.replace(re, () => tok(rep));
+  };
+
+  // <head>
+  const meta = `${nameHtml}${label ? `: ${label}` : ''} in ${city}. Call ${phone}.`;
+  sub(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${meta}">`, 'meta description');
+  sub(/<title>[^<]*<\/title>/, `<title>${nameHtml} | ${headline}</title>`, '<title>');
+
+  // Nav: no reviews link unless sample reviews; the contact link is just "Contact".
+  if (!ctx.sampleReviews) html = html.replace(/\n[ \t]*<a href="#testimonials">[^<]*<\/a>/, '');
+  sub(/<a href="#contact">[^<]*<\/a>/, '<a href="#contact">Contact</a>', 'nav contact link');
+
+  // Hero
+  const badge = [...facts.map((f) => f.badge), city].join(' · ');
+  const lead = `${nameHtml}${label ? ` — ${label} in ${city}` : ` — serving ${city}`}. Call ${phone} or send a message ${ask}.`;
+  sub(/<section class="hero"[\s\S]*?<\/section>/, `<section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+        <span class="hero-badge">${badge}</span>
+        <h1 id="hero-title">${headline}</h1>
+        <p class="lead">${lead}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#contact">Send a Message</a>
+          <a class="btn btn-ghost" href="${tel}">${phone}</a>
+        </div>
+      </div>
+    </section>`, 'hero');
+
+  // Services
+  const note = (cfg.servicesNote || 'Typical services shown for this mockup. The list can be matched to exactly what {name} offers.').replace('{name}', nameHtml);
+  const cards = cfg.services.map(([t, d], i) => `
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">${String(i + 1).padStart(2, '0')}</div>
+            <h3>${escapeHtml(t)}</h3>
+            <p>${escapeHtml(d)}</p>
+          </article>`).join('');
+  sub(/<section id="services"[\s\S]*?<\/section>/, `<section id="services" aria-labelledby="services-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="services-title">Services</h2>
+          <p>${note}</p>
+        </div>
+        <div class="cards">${cards}
+        </div>
+      </div>
+    </section>`, 'services');
+
+  // About: neutral paragraph + service-area pills. Stat row only for opt-in facts.
+  const aboutFacts = facts.map((f) => ` ${capFirst(f.badge)}.`).join('');
+  const aboutAsk = cfg.ask ? ` Call ${phone}${emailHtml ? ` or email ${emailHtml}` : ''} ${cfg.ask}.` : ` Call ${phone}${emailHtml ? ` or email ${emailHtml}` : ''} to talk about your project.`;
+  const stats = facts.length
+    ? `\n        <div class="stat-row" role="list">\n${facts.map((f) => `          <div class="stat" role="listitem"><strong>${f.stat[0]}</strong><span>${f.stat[1]}</span></div>`).join('\n')}\n        </div>`
+    : '';
+  sub(/<section id="about"[\s\S]*?<\/section>/, `<section id="about" aria-labelledby="about-title">
+      <div class="container about-grid">
+        <div class="about-panel">
+          <h2 id="about-title">About ${nameHtml}</h2>
+          <p>${nameHtml} serves customers in ${city}.${aboutFacts}${aboutAsk}</p>
+          <p><strong>Service areas:</strong></p>
+          <div class="pill-list">
+            ${ctx.areas.map((x) => `<span class="pill">${escapeHtml(x)}</span>`).join('')}
+          </div>
+        </div>${stats}
+      </div>
+    </section>`, 'about');
+
+  // Gallery: stock photos are labeled as samples, not "Recent Work".
+  sub(/(?<=<section id="gallery"[^>]*>\s*<div class="container">\s*)<div class="section-head">[\s\S]*?<\/div>/, `<div class="section-head">
+          <h2 id="gallery-title">Photos</h2>
+          <p>Sample photos for this mockup. ${nameHtml}'s own photos go here.</p>
+        </div>`, 'gallery heading');
+  html = html.replace(/alt="[^"]*project photo (\d+)"/g, 'alt="Sample photo $1"');
+
+  // Reviews: removed unless --sample-reviews, and then clearly labeled samples.
+  const reviewsRe = /\n\n[ \t]*<section id="testimonials"[\s\S]*?<\/section>/;
+  if (!reviewsRe.test(html)) throw new Error('Template reviews section not found; update rebuildCopy() in tools/mockup.mjs.');
+  html = html.replace(reviewsRe, () => (ctx.sampleReviews ? tok(`
+
+    <section id="testimonials" aria-labelledby="reviews-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="reviews-title">Sample Reviews</h2>
+          <p>Sample reviews: your real customer reviews go here. These are placeholders, not quotes from customers.</p>
+        </div>
+        <div class="testimonials">${SAMPLE_REVIEWS.map((q) => `
+        <blockquote class="quote">
+          <p>“${q}”</p>
+          <footer>— Sample customer</footer>
+        </blockquote>`).join('')}
+        </div>
+      </div>
+    </section>`) : ''));
+
+  // Contact
+  sub(/(?<=<section id="contact"[^>]*>\s*<div class="container">\s*<div class="section-head">\s*<h2[^>]*>[^<]*<\/h2>\s*)<p>[^<]*<\/p>/,
+    `<p>${emailHtml ? 'Call, email, or send a message.' : 'Call or send a message.'}</p>`, 'contact intro');
+  const areaLabel = cfg.addressLabel || 'Service area';
+  const contactItems = [
+    `<li><strong>Phone:</strong> <a href="${tel}">${phone}</a></li>`,
+    emailHtml && `<li><strong>Email:</strong> <a href="mailto:${emailHtml}">${emailHtml}</a></li>`,
+    `<li><strong>${areaLabel}:</strong> ${city}</li>`,
+    ctx.hours && `<li><strong>Hours:</strong> ${escapeHtml(ctx.hours)}</li>`,
+  ].filter(Boolean);
+  sub(/<ul class="contact-list">[\s\S]*?<\/ul>/, `<ul class="contact-list">\n              ${contactItems.join('\n              ')}\n            </ul>`, 'contact list');
+  sub(/(?<=<option value="">[^<]*<\/option>)[\s\S]*?(?=\s*<\/select>)/,
+    `\n                ${cfg.services.map(([t]) => `<option>${escapeHtml(t)}</option>`).join('')}\n                <option>Other / Not sure</option>`, 'service select');
+  sub(/<p class="form-success"([^>]*)>[^<]*<\/p>/, `<p class="form-success" hidden role="status">Thanks! This mockup form does not send messages yet. Please call ${nameHtml} at ${phone}.</p>`, 'form success message');
+
+  // Footer: name + headline, hours only with --hours, contact.
+  const footerCols = [
+    `<div>\n        <h4>${nameHtml}</h4>\n        <p>${ctx.tagline ? headline : `${headline}.`}</p>\n      </div>`,
+    ctx.hours && `<div>\n        <h4>Hours</h4>\n        <p>${escapeHtml(ctx.hours)}</p>\n      </div>`,
+    `<div>\n        <h4>Contact</h4>\n        <p><a href="${tel}">${phone}</a><br>\n        ${emailHtml ? `<a href="mailto:${emailHtml}">${emailHtml}</a><br>\n        ` : ''}${city}</p>\n      </div>`,
+  ].filter(Boolean);
+  sub(/(?<=<div class="container footer-grid">)[\s\S]*?(?=\n[ \t]*<\/div>\s*<div class="container footer-bottom">)/, `\n      ${footerCols.join('\n      ')}`, 'footer');
+  return html;
+}
+
 function buildHtml(cfg, html, ctx) {
-  const { nameHtml, phoneDisplay, tel, email, cityName, cityFull, areas } = ctx;
+  const { nameHtml, phoneDisplay, tel, cityName } = ctx;
   const oldNames = [cfg.name, escapeHtml(cfg.name), cfg.name.replace(/'/g, '&#39;'), cfg.name.replace(/'/g, '’')];
   // Pass 1 swaps placeholders for tokens, pass 2 renames the template's home city in the
   // remaining copy, pass 3 fills tokens. This keeps new values (e.g. a "Denver" service
@@ -481,52 +686,23 @@ function buildHtml(cfg, html, ctx) {
   const tok = (value) => { tokens.push(value); return `\u0000${tokens.length - 1}\u0000`; };
   let out = html;
 
-  // Template-specific copy first (may reference the old name).
-  for (const [find, rep] of cfg.extra ? cfg.extra(ctx) : []) {
-    const r = tok(rep);
-    out = find instanceof RegExp ? out.replace(new RegExp(find.source, find.flags.includes('g') ? find.flags : find.flags + 'g'), () => r) : replaceAllLiteral(out, find, r);
-  }
+  // Replace every block of template marketing copy with facts-only copy.
+  out = rebuildCopy(cfg, out, ctx, tok);
 
   // Copyright line (avoid "Co.. All rights")
   for (const n of oldNames) out = replaceAllLiteral(out, `${n}. All rights`, tok(`${nameHtml}${nameHtml.endsWith('.') ? '' : '.'} All rights`));
 
-  // Business name everywhere
+  // Business name everywhere else (logo, comments)
   const nameTok = tok(nameHtml);
   for (const n of oldNames) out = replaceAllLiteral(out, n, nameTok);
 
-  // Phone text + tel: links
+  // Remaining phone text + tel: links (nav "Call Now", "Click to Call")
   out = replaceAllLiteral(out, `tel:+1${phoneDigits(cfg.phone)}`, tok(tel));
   out = replaceAllLiteral(out, cfg.phone, tok(escapeHtml(phoneDisplay)));
 
-  // Email
-  out = replaceAllLiteral(out, cfg.email, tok(escapeHtml(email)));
-
-  // Address -> service area (a fake street address would look like the prospect's real one)
-  const label = cfg.addressLabel || 'Service area';
-  const areaText = cfg.addressLabel ? escapeHtml(cityFull) : `${escapeHtml(cityFull)} &amp; surrounding areas`;
-  out = replaceAllLiteral(out, `<strong>Address:</strong> ${cfg.address}`, tok(`<strong>${label}:</strong> ${areaText}`));
-  out = replaceAllLiteral(out, cfg.address, tok(cfg.addressLabel ? escapeHtml(cityFull) : `Proudly serving ${escapeHtml(cityFull)}`));
-
-  // Service-area pills
-  out = out.replace(/(<div class="pill-list">)[\s\S]*?(<\/div>)/, (_, a, b) =>
-    `${a}\n            ${tok(areas.map((x) => `<span class="pill">${escapeHtml(x)}</span>`).join(''))}\n          ${b}`);
-
-  // Testimonial locations rotate through the service areas
-  let i = 0;
-  const realAreas = areas.filter((a) => !/surrounding/i.test(a));
-  out = out.replace(/(<footer>— [^,<]+, )([^<]+)(<\/footer>)/g, (_, a, _loc, b) => `${a}${tok(escapeHtml(realAreas[i++ % realAreas.length] || cityName))}${b}`);
-
-  // Hero personalization
-  out = replaceAllLiteral(out, 'Locally owned · Fully insured', tok(`Locally owned · Serving ${escapeHtml(cityFull)}`));
-  out = replaceAllLiteral(out, 'delivers reliable, professional service you can book with confidence.',
-    tok(`delivers reliable, professional service in ${escapeHtml(cityName)} and surrounding areas — book with confidence.`));
-
-  // Sales-friendly replacements for template-only notes
-  out = replaceAllLiteral(out, 'Placeholder photos — replace with your own project shots.', tok(`A look at the kind of results we deliver around ${escapeHtml(cityName)}.`));
-  out = replaceAllLiteral(out, 'Real-sounding placeholders — swap in verified reviews before launch.', tok('Sample reviews shown — your real Google reviews go here.'));
   out = replaceAllLiteral(out, 'Template — customize before publishing.', tok('Homepage mockup · design concept'));
 
-  // Pass 2: remaining home-city mentions ("Serving Denver and nearby communities", "shop in Aurora", ...)
+  // Pass 2: any remaining home-city mentions
   out = out.replace(new RegExp(`\\b${escapeRe(cfg.homeCity)}\\b`, 'g'), escapeHtml(cityName));
 
   // Pass 3: fill tokens
@@ -566,8 +742,7 @@ async function pruneGallery(html, css) {
   let count = figs.length - removed.length;
   const heroUrl = (css.match(/\.hero::before\s*{[^}]*url\(['"]?([^'")]+)/) || [])[1];
   if (count < 3 && heroUrl) {
-    const alt = (html.match(/<img src="[^"]+" alt="([^"]*?) project photo/) || [])[1] || 'Project';
-    const tile = `\n        <figure><img src="${heroUrl.replace(/w=\d+/, 'w=800')}" alt="${alt} project photo" width="800" height="600"></figure>`;
+    const tile = `\n        <figure><img src="${heroUrl.replace(/w=\d+/, 'w=800')}" alt="Sample photo" width="800" height="600"></figure>`;
     html = html.replace(/(<div class="gallery">)/, `$1${tile}`);
     count++;
   }
@@ -588,6 +763,78 @@ function verify(outHtml, cfg, ctx) {
   if (!outHtml.includes(ctx.nameHtml)) problems.push('new business name not found in output');
   if (!outHtml.includes(ctx.tel)) problems.push('new tel: link not found in output');
   return { problems: [...new Set(problems)], warnings };
+}
+
+// ---------------------------------------------------------------------------
+// Claim check: no factual claim may appear unless the flag that supplies it
+// was passed. Runs on the visible text (plus alt / aria-label / title / meta
+// content), after removing values the user passed verbatim (name, city, trade,
+// email, areas, tagline, hours, Zelle details), which are theirs to vouch for.
+// `flag` names the ctx key that allows the rule; rules without one never pass.
+// ---------------------------------------------------------------------------
+const CLAIM_RULES = [
+  { what: 'licensed / insured', flag: 'licensed', re: /\b(licen[sc]ed?|insured|insurance)\b/i },
+  { what: 'bonded', re: /\bbonded\b/i },
+  { what: 'certified / accredited', re: /\b(certified|certification|accredited|accreditation|master (plumber|electrician))\b/i },
+  { what: 'warranty / guarantee', re: /\b(warrant(y|ies|eed)|guarantee[ds]?|satisfaction)\b/i },
+  { what: 'years in business', flag: 'years', re: /\b\d+\s*\+?\s*(years?|yrs?)\b|\byears?\s+(serving|in business|of experience|experience)\b/i },
+  { what: 'since / founded date', re: /\b(since|founded|established|est\.)\b/i },
+  { what: 'ownership claim (family / locally owned)', re: /\b(family|locally|veteran|woman|women|minority)[- ]owned\b/i },
+  { what: 'job / customer counts', re: /\b\d[\d,]*\s*\+|\b(happy|satisfied)\s+(clients|customers)\b|\b\d[\d,]*\s+(jobs|projects|homes|customers|clients|cars|vehicles)\b/i },
+  { what: 'star rating', re: /[★☆⭐]|\bstars?\b|\b(rating|ratings|rated)\b|\bfive[- ]star\b/i },
+  { what: 'reviews / testimonials', flag: 'sampleReviews', re: /\b(reviews?|reviewers?|testimonials?)\b/i },
+  { what: '#1 / best / top-rated / award', re: /#\s?1\b|\bnumber one\b|\bbest\b|\btop[- ]rated\b|\bleading\b|\bpremier\b|\baward/i },
+  { what: 'BBB', re: /\bBBB\b|better business bureau/i },
+  { what: 'business hours', flag: 'hours', re: /\bhours\b|\b\d{1,2}(:\d{2})?\s*(am|pm)\b|\b(mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun)(day)?\b|\bby appointment\b|\bappointments?\b/i },
+  { what: '24/7 / emergency / same-day availability', re: /\b24\s*\/\s*7\b|\b24[- ]hour|\bemergenc(y|ies)\b|\bsame[- ]day\b|\bnext[- ]day\b|\bon[- ]call\b|\bweekends?\b|\bevenings?\b/i },
+  { what: 'response-time promise', re: /\bwithin\s+(\d+|an?|one)\b|\b\d+\s*(minutes?|mins?|hours?|hrs?)\b|\bminutes\b|\b(fast|quick|quickly|prompt|promptly|rapid|shortly|on[- ]time|on schedule|one visit|first time|typically reply)\b/i },
+  { what: 'free estimate / pricing promise', re: /\bfree\b|\bno[- ]obligation\b|\bdiscounts?\b|\bvolume pricing\b|\bno (surprise|hidden|mystery)\b|\b(upfront|clear|honest|transparent|fair) (quotes?|pricing|prices|rates)\b/i },
+  { what: 'quality / trust claim', re: /\b(trusted|reliable|honest|upfront|transparent|expert|experts|experienced|professional|pro-grade|eco[- ]?(friendly|conscious)|trained|craftsmanship|showroom)\b/i },
+  { what: 'team size / crews', re: /\b(crews?|teams?|technicians?|staff|employees|trucks?|fleet of)\b/i },
+  { what: 'street address', re: /\b\d{1,6}\s+(?:[A-Z][\w.]*\s+){1,4}(St|Street|Ave|Avenue|Blvd|Boulevard|Rd|Road|Dr|Drive|Ln|Lane|Way|Ct|Court|Pkwy|Parkway|Pl|Place|Hwy|Highway)\b|\bSuite\s+\d+|\b\d{5}(-\d{4})?\b/ },
+];
+
+const decodeEntities = (s) => s
+  .replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
+  .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+
+/** Visible text plus the attribute text a reader or search engine sees. */
+function claimText(html) {
+  return decodeEntities(html
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/<[^>]*>/g, (tag) => {
+      const attrs = [...tag.matchAll(/\s(?:alt|aria-label|title|content|placeholder)="([^"]*)"/gi)].map((m) => m[1]);
+      return ` ${attrs.join(' ')} `;
+    }))
+    .replace(/\s+/g, ' ');
+}
+
+function checkClaims(outHtml, ctx) {
+  let text = claimText(outHtml);
+  const supplied = [ctx.name, ctx.cityFull, ctx.cityName, ctx.label, ctx.tagline, ctx.hours, ctx.email, ctx.phoneDisplay,
+    ...ctx.areas, ...(ctx.zelle ? [ctx.zelle.phone, ctx.zelle.email, ctx.zelle.amount] : [])]
+    .filter(Boolean).map((v) => String(v).replace(/\s+/g, ' ').trim()).sort((a, b) => b.length - a.length);
+  for (const v of supplied) text = text.replace(new RegExp(escapeRe(v), 'gi'), ' ');
+
+  const problems = [];
+  for (const rule of CLAIM_RULES) {
+    if (rule.flag && ctx[rule.flag]) continue;
+    const m = text.match(rule.re);
+    if (m) {
+      const at = Math.max(0, m.index - 40);
+      problems.push(`${rule.what}: "…${text.slice(at, m.index + m[0].length + 40).trim()}…"` +
+        (rule.flag ? ` (allowed only with --${rule.flag.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())})` : ''));
+    }
+  }
+  if (ctx.sampleReviews) {
+    const attributions = [...outHtml.matchAll(/<blockquote class="quote">[\s\S]*?<footer>([^<]*)<\/footer>/g)].map((m) => m[1].trim());
+    if (!/<h2 id="reviews-title">Sample/.test(outHtml)) problems.push('sample reviews section is not labeled "Sample"');
+    if (!attributions.length) problems.push('--sample-reviews was passed but no review cards were found');
+    attributions.filter((a) => a !== '— Sample customer').forEach((a) => problems.push(`review attribution "${a}" is not the generic "Sample customer"`));
+  }
+  return problems;
 }
 
 // ---------------------------------------------------------------------------
@@ -681,6 +928,8 @@ async function main() {
       primary: { type: 'string' }, accent: { type: 'string' }, areas: { type: 'string' }, email: { type: 'string' },
       'pay-url': { type: 'string' },
       'zelle-phone': { type: 'string' }, 'zelle-email': { type: 'string' }, 'zelle-amount': { type: 'string' },
+      licensed: { type: 'boolean', default: false }, years: { type: 'string' }, hours: { type: 'string' },
+      tagline: { type: 'string' }, 'sample-reviews': { type: 'boolean', default: false },
       out: { type: 'string' }, 'png-dir': { type: 'string' },
       mobile: { type: 'boolean', default: false }, 'no-png': { type: 'boolean', default: false },
       list: { type: 'boolean', default: false }, help: { type: 'boolean', short: 'h', default: false },
@@ -695,6 +944,9 @@ async function main() {
   const payUrl = validatePayUrl(values['pay-url']);
   const zelle = validateZelle(values);
   const payBlock = buildPayBlock(payUrl, zelle);
+  const years = validateYears(values.years);
+  const hours = validateText('hours', values.hours, 120);
+  const tagline = validateText('tagline', values.tagline, 90);
 
   const { folder, fallback } = resolveTrade(values.trade);
   const cfg = TEMPLATES[folder];
@@ -702,18 +954,20 @@ async function main() {
   const accent = toHex(parseHex(values.accent || cfg.defaults.accent));
   const { cityName, cityFull } = parseCity(values.city);
   const slug = slugify(values.name) || 'mockup';
-  const compact = slug.replace(/-/g, '');
-  const emailLocal = cfg.email.split('@')[0];
-  const email = values.email || `${emailLocal}@${compact}.com`;
+  const email = values.email ? values.email.trim() : null;
   const phoneDisplay = formatPhone(values.phone);
   if (phoneDigits(values.phone).length !== 10) console.warn(`! Phone "${values.phone}" is not a 10-digit US number; using it as-is.`);
 
   const areas = values.areas
     ? values.areas.split(',').map((s) => s.trim()).filter(Boolean)
-    : [cityName, ...(NEARBY[cityName.toLowerCase()] || ['Surrounding areas'])];
+    : [cityName];
   if (!areas.some((a) => a.toLowerCase() === cityName.toLowerCase())) areas.unshift(cityName);
 
-  const ctx = { name: values.name, nameHtml: escapeHtml(values.name), phoneDisplay, tel: telHref(values.phone), email, cityName, cityFull, areas, payBlock };
+  const ctx = {
+    name: values.name, nameHtml: escapeHtml(values.name), phoneDisplay, tel: telHref(values.phone), email, cityName, cityFull, areas,
+    label: tradeLabel(values.trade), payBlock, zelle,
+    licensed: values.licensed, years, hours, tagline, sampleReviews: values['sample-reviews'],
+  };
 
   const outDir = path.resolve(values.out || path.join(REPO_ROOT, 'mockups', slug));
   const pngDir = path.resolve(values['png-dir'] || path.dirname(outDir));
@@ -730,19 +984,28 @@ async function main() {
   const { html: outHtml, count: galleryCount, removed } = await pruneGallery(built, css);
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
   fs.writeFileSync(htmlPath, outHtml);
-  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(cfg, primary, accent, galleryCount, { pay: Boolean(payUrl), zelle: Boolean(zelle) });
+  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(cfg, primary, accent, galleryCount, { pay: Boolean(payUrl), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
   fs.writeFileSync(cssPath, css);
 
   const { problems, warnings } = verify(outHtml, cfg, ctx);
   warnings.forEach((w) => console.warn(`! ${w}`));
   if (problems.length) { console.error(`✗ Verification failed:\n  - ${problems.join('\n  - ')}`); process.exit(2); }
+  const claims = checkClaims(outHtml, ctx);
+  if (claims.length) {
+    console.error(`✗ Claim check failed. The page states things that were not passed on the command line:\n  - ${claims.join('\n  - ')}\n` +
+      'Fix the copy in tools/mockup.mjs (rebuildCopy), or pass the matching flag if the business told you it is true.');
+    process.exit(3);
+  }
 
   console.log(`Template: ${folder}${fallback ? `  (trade "${values.trade}" not recognized — using generic-business)` : ''}`);
   console.log(`Colors:   primary ${primary} · accent ${accent}${values.primary || values.accent ? '' : ' (template defaults)'}`);
   if (payUrl) console.log('Pay:      hero "Pay" button (Stripe Payment Link)');
   if (zelle) console.log(`Zelle:    plain text next to the call to action${zelle.amount ? ' (amount shown)' : ''}`);
   if (!payUrl && !zelle) console.log('Payments: off (no pay button, no Zelle block)');
+  const optIn = [values.licensed && '--licensed', years && '--years', hours && '--hours', tagline && '--tagline', values['sample-reviews'] && '--sample-reviews'].filter(Boolean);
+  console.log(`Claims:   ${optIn.length ? `opt-in ${optIn.join(', ')}` : 'facts only (name, trade, city, phone' + (email ? ', email' : '') + ')'}`);
   console.log('✓ Verified: no template placeholder names, phones, emails, or addresses remain');
+  console.log('✓ Claim check: nothing asserted beyond the flags passed');
 
   const pngs = [];
   if (!values['no-png']) {
