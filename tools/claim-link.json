@@ -1,0 +1,1 @@
+{ "url": "https://buy.stripe.com/test_3cI14nb2T5t050CbwR4ko00", "note": "$200 One-page website Payment Link (TEST mode). Replace with live link when Stripe is activated, then rerun: node tools/claim-bar.mjs prospects/*/index.html" }

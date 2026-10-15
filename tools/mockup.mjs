@@ -27,6 +27,7 @@
  * those flags are omitted. There is no default phone, email, or amount.
  */
 import { parseArgs } from 'node:util';
+import { addClaimBar } from './claim-bar.mjs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -927,6 +928,7 @@ async function main() {
       name: { type: 'string' }, trade: { type: 'string' }, city: { type: 'string' }, phone: { type: 'string' },
       primary: { type: 'string' }, accent: { type: 'string' }, areas: { type: 'string' }, email: { type: 'string' },
       'pay-url': { type: 'string' },
+      'no-claim': { type: 'boolean' },
       'zelle-phone': { type: 'string' }, 'zelle-email': { type: 'string' }, 'zelle-amount': { type: 'string' },
       licensed: { type: 'boolean', default: false }, years: { type: 'string' }, hours: { type: 'string' },
       tagline: { type: 'string' }, 'sample-reviews': { type: 'boolean', default: false },
@@ -983,7 +985,7 @@ async function main() {
   const built = buildHtml(cfg, fs.readFileSync(htmlPath, 'utf8'), ctx);
   const { html: outHtml, count: galleryCount, removed } = await pruneGallery(built, css);
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
-  fs.writeFileSync(htmlPath, outHtml);
+  fs.writeFileSync(htmlPath, values['no-claim'] ? outHtml : addClaimBar(outHtml));
   css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(cfg, primary, accent, galleryCount, { pay: Boolean(payUrl), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
   fs.writeFileSync(cssPath, css);
 
