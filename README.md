@@ -188,6 +188,64 @@ After building, the script runs two checks and stops with an error (no PNG) if e
 1. **Placeholders:** no template placeholder name, phone, email, or address is left in the output.
 2. **Claims:** it scans the page text (including alt text, `<title>`, and meta description) for claims nobody supplied. Those are licensed / insured / bonded, certified, warranty / guarantee, years in business or "since / founded", family or locally owned, job or customer counts ("500+"), stars and ratings, reviews, "#1 / best / top-rated / award", BBB, business hours, 24/7 / emergency / same-day, response-time promises, free estimates or pricing promises, "trusted / reliable / professional"-style quality claims, crews and team size, and street addresses. Text you passed yourself (name, city, trade, email, areas, tagline, hours, Zelle details) is skipped. `--licensed`, `--years`, `--hours`, and `--sample-reviews` each allow only their own pattern. With `--sample-reviews` the check also requires the "Sample" heading and the generic "Sample customer" attribution.
 
+### Optional chat widget (`--chat`)
+
+A zero-cost "ask a question" bubble for any one-pager. Source: [`widgets/chat/`](./widgets/chat/) (`chat-widget.js` + `chat-widget.css`, no dependencies, ~14 KB unminified, ~5 KB gzipped). It answers in the browser by keyword + FAQ matching against a per-site `chat-facts.json`, so it works on GitHub Pages with **no API key, no paid service, and no network calls** other than loading that JSON from the same site. Off unless `--chat` is passed.
+
+```bash
+npm run mockup -- --name "Acme Plumbing" --trade plumbing --city "Aurora, CO" \
+  --phone "(303) 555-0142" --email "office@acmeplumbing.com" --chat
+```
+
+`--chat` copies the widget to `<out>/chat/`, adds one `<link>` and one `<script>` tag, and writes `<out>/chat-facts.json` from **only** what you passed: name, trade, city / `--areas`, phone, `--email`, `--hours` (only if given), and the service cards shown on the page. The facts file goes through the same claim check as the page.
+
+Behavior: it answers only from the facts. Prices always get "Please call <phone>". Hours get "Please call" unless `hours` is set. Weak matches and unknown questions get "Please call <phone>" (or email if there is no phone). It never invents prices, promises, hours, or claims.
+
+Lead capture: name + phone/email (+ optional note). There is no backend. Submitting builds a `mailto:` to the business email with the details prefilled and tells the visitor nothing is sent until they press Send in their mail app. With no email in the facts, it shows a `tel:` link instead.
+
+Accessibility: labeled bubble (`aria-expanded`), dialog panel, `aria-live` replies, focus moves to the question box on open and back to the bubble on close, Escape closes, 44px targets, 16px inputs on mobile, `prefers-reduced-motion` respected.
+
+**Add it to an existing page by hand** (do not regenerate the page): copy `widgets/chat/chat-widget.js` and `.css` into `<site>/chat/`, add `<link rel="stylesheet" href="chat/chat-widget.css">` in `<head>` and `<script src="chat/chat-widget.js" data-facts="chat-facts.json" defer></script>` before `</body>`, and write `<site>/chat-facts.json`. See `prospects/rj-plumbing/`.
+
+**Editing `chat-facts.json`** (only put in what the business has told you is true):
+
+```json
+{
+  "name": "Acme Plumbing",
+  "trade": "plumbing",
+  "phone": "(303) 555-0142",
+  "email": "office@acmeplumbing.com",
+  "hours": "Mon-Fri 8-5",
+  "areas": ["Aurora, CO", "Parker"],
+  "services": [
+    { "name": "Water Heaters", "keywords": ["tankless", "hot water"] },
+    "Drain Cleaning"
+  ],
+  "faq": [
+    { "q": "Do you work on commercial buildings?", "a": "Yes, call (303) 555-0142 to set it up." }
+  ]
+}
+```
+
+`name` and `phone` (or `email`) are required. `email`, `hours`, and `faq` are optional. Omit `hours` when unknown. A service is a string or `{ name, keywords }`. Keywords help matching and are never shown. FAQ entries are checked first. A question matches when at least half of the FAQ question's meaningful words appear in it. The `a` text is shown verbatim, so write only what the owner confirmed.
+
+**Optional LLM hook (off by default, not wired to anything):** before the widget script, set
+
+```html
+<script>
+  window.ChatWidgetConfig = {
+    // Either a function...
+    answerHook: async (question, facts) => null, // return a string, or null to use the built-in rules
+    // ...or a POST endpoint you host: receives {question, facts}, returns {answer}
+    // endpoint: "https://your-server.example/chat"
+  };
+</script>
+```
+
+If the hook throws or returns nothing, the built-in facts-only rules answer. Keep any API key on your server, never in the page. `ChatWidgetConfig.facts` (an object) or a `<script type="application/json" id="chat-facts">` block can replace the JSON file.
+
+Demo (fake data): [`widgets/chat/demo/`](./widgets/chat/demo/). Built with `npm run mockup -- --name "Example Plumbing Co (Demo)" --trade plumbing --city "Springfield, IL" --phone "(555) 010-0199" --email demo@example.com --chat --no-png --no-claim --out widgets/chat/demo`, plus a demo banner.
+
 ### Trade aliases
 
 | Template | Accepted `--trade` values |

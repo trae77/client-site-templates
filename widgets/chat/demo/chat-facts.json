@@ -1,0 +1,36 @@
+{
+  "name": "Example Plumbing Co (Demo)",
+  "trade": "plumbing",
+  "phone": "(555) 010-0199",
+  "email": "demo@example.com",
+  "areas": [
+    "Springfield, IL"
+  ],
+  "services": [
+    {
+      "name": "Plumbing Repairs",
+      "keywords": [
+        "Leaks, pipes, and fixtures."
+      ]
+    },
+    {
+      "name": "Water Heaters",
+      "keywords": [
+        "Tank and tankless water heaters."
+      ]
+    },
+    {
+      "name": "Drain Clearing",
+      "keywords": [
+        "Clogged sinks, tubs, and main lines."
+      ]
+    },
+    {
+      "name": "Fixture Installs",
+      "keywords": [
+        "Faucets, toilets, and garbage disposals."
+      ]
+    }
+  ],
+  "faq": []
+}

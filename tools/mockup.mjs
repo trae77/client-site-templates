@@ -23,6 +23,8 @@
  *   --sample-reviews  a reviews section clearly labeled as samples
  *   --pay-url       https Payment Link (Stripe buy / checkout host only)
  *   --zelle-phone   and/or --zelle-email, plus optional --zelle-amount
+ *   --chat          zero-cost chat widget (widgets/chat) + chat-facts.json built
+ *                   only from the values above; no network calls, no API key
  * Nothing is inserted, and no payment URL or Zelle contact is written, when
  * those flags are omitted. There is no default phone, email, or amount.
  */
@@ -376,6 +378,14 @@ Payments (off unless passed):
   --zelle-email  Optional Zelle email to show as plain text. One of phone/email is enough
   --zelle-amount Optional dollar amount to display with Zelle (150 or $150.00). Never invented.
               Zelle stays off unless a phone or email is passed. Independent of --pay-url.
+
+Chat add-on (off unless passed):
+  --chat      Copy widgets/chat/ into <out>/chat/, write <out>/chat-facts.json from ONLY
+              the facts passed here (name, trade, city/--areas, phone, --email, --hours
+              if given, and the services shown on the page), and add the tags.
+              Answers are rule/FAQ matching in the browser: no API key, no network
+              calls, works on GitHub Pages. Unknowns and prices reply "Please call".
+              Add FAQ entries by editing chat-facts.json (see README).
 
 Output:
   --out       Output HTML folder (default: mockups/<slug>/ in the repo)
@@ -795,6 +805,35 @@ const CLAIM_RULES = [
   { what: 'street address', re: /\b\d{1,6}\s+(?:[A-Z][\w.]*\s+){1,4}(St|Street|Ave|Avenue|Blvd|Boulevard|Rd|Road|Dr|Drive|Ln|Lane|Way|Ct|Court|Pkwy|Parkway|Pl|Place|Hwy|Highway)\b|\bSuite\s+\d+|\b\d{5}(-\d{4})?\b/ },
 ];
 
+// ---------------------------------------------------------------------------
+// Chat add-on (--chat). Facts JSON is built from command-line values plus the
+// service cards already on the page, and is claim-checked like the page.
+// ---------------------------------------------------------------------------
+const CHAT_SRC = path.join(REPO_ROOT, 'widgets', 'chat');
+function buildChatFacts(cfg, ctx) {
+  const facts = {
+    name: ctx.name,
+    trade: ctx.label || undefined,
+    phone: ctx.phoneDisplay,
+    email: ctx.email || undefined,
+    hours: ctx.hours || undefined,
+    areas: ctx.areas.map((a) => (a.toLowerCase() === ctx.cityName.toLowerCase() ? ctx.cityFull : a)),
+    services: cfg.services.map(([t, d]) => ({ name: t, keywords: [d] })),
+    faq: [],
+  };
+  return JSON.parse(JSON.stringify(facts));
+}
+function chatFactsAsHtml(facts) {
+  const vals = [facts.name, facts.trade, facts.phone, facts.email, facts.hours, ...facts.areas,
+    ...facts.services.flatMap((s) => [s.name, ...(s.keywords || [])]), ...facts.faq.flatMap((f) => [f.q, f.a])];
+  return vals.filter(Boolean).map((v) => `<p>${escapeHtml(v)}</p>`).join('\n');
+}
+function addChatTags(html) {
+  if (!/<\/head>/.test(html) || !/<\/body>/.test(html)) throw new Error('--chat: page has no </head> or </body>');
+  return html.replace('</head>', '  <link rel="stylesheet" href="chat/chat-widget.css">\n</head>')
+    .replace(/<\/body>(?![\s\S]*<\/body>)/, '  <script src="chat/chat-widget.js" data-facts="chat-facts.json" defer></script>\n</body>');
+}
+
 const decodeEntities = (s) => s
   .replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
   .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
@@ -931,6 +970,7 @@ async function main() {
       'no-claim': { type: 'boolean' },
       'zelle-phone': { type: 'string' }, 'zelle-email': { type: 'string' }, 'zelle-amount': { type: 'string' },
       licensed: { type: 'boolean', default: false }, years: { type: 'string' }, hours: { type: 'string' },
+      chat: { type: 'boolean', default: false },
       tagline: { type: 'string' }, 'sample-reviews': { type: 'boolean', default: false },
       out: { type: 'string' }, 'png-dir': { type: 'string' },
       mobile: { type: 'boolean', default: false }, 'no-png': { type: 'boolean', default: false },
@@ -983,7 +1023,15 @@ async function main() {
   const cssPath = path.join(outDir, 'styles.css');
   let css = fs.readFileSync(cssPath, 'utf8');
   const built = buildHtml(cfg, fs.readFileSync(htmlPath, 'utf8'), ctx);
-  const { html: outHtml, count: galleryCount, removed } = await pruneGallery(built, css);
+  let { html: outHtml, count: galleryCount, removed } = await pruneGallery(built, css);
+  let chatFacts = null;
+  if (values.chat) {
+    chatFacts = buildChatFacts(cfg, ctx);
+    outHtml = addChatTags(outHtml);
+    fs.mkdirSync(path.join(outDir, 'chat'), { recursive: true });
+    for (const f of ['chat-widget.js', 'chat-widget.css']) fs.copyFileSync(path.join(CHAT_SRC, f), path.join(outDir, 'chat', f));
+    fs.writeFileSync(path.join(outDir, 'chat-facts.json'), JSON.stringify(chatFacts, null, 2) + '\n');
+  }
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
   fs.writeFileSync(htmlPath, values['no-claim'] ? outHtml : addClaimBar(outHtml));
   css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(cfg, primary, accent, galleryCount, { pay: Boolean(payUrl), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
@@ -993,6 +1041,7 @@ async function main() {
   warnings.forEach((w) => console.warn(`! ${w}`));
   if (problems.length) { console.error(`✗ Verification failed:\n  - ${problems.join('\n  - ')}`); process.exit(2); }
   const claims = checkClaims(outHtml, ctx);
+  if (chatFacts) checkClaims(chatFactsAsHtml(chatFacts), ctx).forEach((c) => claims.push(`chat-facts.json ${c}`));
   if (claims.length) {
     console.error(`✗ Claim check failed. The page states things that were not passed on the command line:\n  - ${claims.join('\n  - ')}\n` +
       'Fix the copy in tools/mockup.mjs (rebuildCopy), or pass the matching flag if the business told you it is true.');
@@ -1004,6 +1053,7 @@ async function main() {
   if (payUrl) console.log('Pay:      hero "Pay" button (Stripe Payment Link)');
   if (zelle) console.log(`Zelle:    plain text next to the call to action${zelle.amount ? ' (amount shown)' : ''}`);
   if (!payUrl && !zelle) console.log('Payments: off (no pay button, no Zelle block)');
+  console.log(`Chat:     ${chatFacts ? `on (chat/ + chat-facts.json: ${chatFacts.services.length} services, ${chatFacts.areas.length} area(s)${chatFacts.hours ? ', hours' : ', no hours'})` : 'off'}`);
   const optIn = [values.licensed && '--licensed', years && '--years', hours && '--hours', tagline && '--tagline', values['sample-reviews'] && '--sample-reviews'].filter(Boolean);
   console.log(`Claims:   ${optIn.length ? `opt-in ${optIn.join(', ')}` : 'facts only (name, trade, city, phone' + (email ? ', email' : '') + ')'}`);
   console.log('✓ Verified: no template placeholder names, phones, emails, or addresses remain');

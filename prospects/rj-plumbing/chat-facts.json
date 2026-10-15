@@ -1,0 +1,16 @@
+{
+  "name": "RJ Plumbing",
+  "trade": "plumbing",
+  "phone": "610-451-2176",
+  "email": "RJPlumbing17@gmail.com",
+  "areas": ["Berks County and surrounding areas"],
+  "services": [
+    { "name": "Water Heaters" },
+    { "name": "Bathroom Remodeling" },
+    { "name": "Leak Detection" },
+    { "name": "Drain Cleaning" },
+    { "name": "Garbage Disposal Installs", "keywords": ["garbage disposal"] },
+    { "name": "Dishwasher Installs", "keywords": ["dishwasher"] }
+  ],
+  "faq": []
+}
