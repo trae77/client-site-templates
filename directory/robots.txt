@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://trae77.github.io/client-site-templates/directory/sitemap.xml
