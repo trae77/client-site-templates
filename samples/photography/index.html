@@ -37,8 +37,29 @@
         <h1 id="hero-title">Photography in Aurora, CO</h1>
         <p class="lead">Sample Photography — photography in Aurora, CO. Call (555) 010-0199 or send a message to check a date.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#booking">Book a Visit</a>
+          <a class="btn btn-primary" href="#money">Choose a Package</a>
           <a class="btn btn-ghost" href="tel:+15550100199">(555) 010-0199</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="money" class="money" aria-labelledby="money-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="money-title">Choose a Package</h2>
+          <p>Pick what fits and Sample Photography confirms the details and price with you.</p>
+        </div>
+        <div class="feature-grid"><div class="panel"><h3>Portraits</h3><p>Individual and family portraits.</p></div><div class="panel"><h3>Events</h3><p>Parties, celebrations, and gatherings.</p></div><div class="panel"><h3>Weddings</h3><p>Wedding day photography.</p></div><div class="panel"><h3>Headshots</h3><p>Headshots for work and profiles.</p></div></div>
+        <div class="panel money-panel">
+        <form class="lib-form money-form" data-kind="package-picker"  novalidate>
+          <fieldset class="m-group"><legend>Package</legend><label class="m-choice" for="m-package-0"><input type="radio" id="m-package-0" name="package" value="Portraits"> Portraits</label><label class="m-choice" for="m-package-1"><input type="radio" id="m-package-1" name="package" value="Events"> Events</label><label class="m-choice" for="m-package-2"><input type="radio" id="m-package-2" name="package" value="Weddings"> Weddings</label><label class="m-choice" for="m-package-3"><input type="radio" id="m-package-3" name="package" value="Headshots"> Headshots</label></fieldset>
+          <label for="m-date">Date you have in mind</label><input id="m-date" name="date" type="date">
+          <label for="m-name">Name</label><input id="m-name" name="name" type="text" autocomplete="name" required>
+          <label for="m-phone">Phone</label><input id="m-phone" name="phone" type="tel" autocomplete="tel" required>
+          <label for="m-notes">Notes</label><textarea id="m-notes" name="notes" rows="3"></textarea>
+          <button class="btn btn-primary m-submit" type="submit">Request this package</button>
+          <p class="lib-note m-status" role="status" aria-live="polite" hidden></p>
+        </form>
         </div>
       </div>
     </section>
@@ -229,6 +250,46 @@
       note.hidden = false;
     });
   });
+  </script>
+  <script>
+  /* Money form + ZIP check + listing filters. No backend; nothing is charged. */
+  (function () {
+    document.querySelectorAll('.money-form').forEach(function (f) {
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var st = f.querySelector('.m-status'); st.hidden = false;
+        var nm = f.querySelector('[name=name]'), ph = f.querySelector('[name=phone]');
+        if ((nm && !nm.value.trim()) || (ph && !ph.value.trim())) { st.textContent = 'Please add your name and phone.'; return; }
+        var data = {}, lines = [];
+        new FormData(f).forEach(function (v, k) { if (!v) return; data[k] = data[k] ? data[k] + ', ' + v : v; });
+        Object.keys(data).forEach(function (k) { var el = f.querySelector('[name="' + k + '"]'); var lab = el && (el.closest('fieldset') ? el.closest('fieldset').querySelector('legend') : f.querySelector('label[for="' + el.id + '"]')); lines.push((lab ? lab.textContent.trim() : k) + ': ' + data[k]); });
+        var ep = f.getAttribute('data-endpoint'), to = f.getAttribute('data-mailto');
+        if (ep) {
+          st.textContent = 'Sending…';
+          fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(Object.assign({ _subject: f.getAttribute('data-kind') }, data)) })
+            .then(function (r) { if (!r.ok) throw 0; st.textContent = 'Sent. Thank you.'; f.reset(); })
+            .catch(function () { st.textContent = "This mockup does not send messages yet. Please call Sample Photography at (555) 010-0199."; });
+        } else if (to) {
+          location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(f.getAttribute('data-kind')) + '&body=' + encodeURIComponent(lines.join('\n'));
+          st.textContent = 'Your email app should open with these details filled in.';
+        } else { st.textContent = "This mockup does not send messages yet. Please call Sample Photography at (555) 010-0199."; }
+      });
+    });
+    var zf = document.querySelector('.zip-check');
+    if (zf) zf.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = zf.querySelector('input').value.trim().toLowerCase(), out = document.querySelector('.zip-result');
+      var list = JSON.parse(zf.getAttribute('data-areas'));
+      if (!v) { out.textContent = 'Enter a ZIP code or town.'; return; }
+      var hit = list.filter(function (a) { return a.toLowerCase() === v || (v.length > 2 && isNaN(v) && a.toLowerCase().indexOf(v) === 0); })[0];
+      out.textContent = hit ? 'Yes, ' + hit + ' is in the service area.' : v + ' is not on the list. Call to ask.';
+    });
+    var sels = document.querySelectorAll('[data-filter]');
+    sels.forEach(function (s) { s.addEventListener('change', function () {
+      var area = document.querySelector('[data-filter=area]').value, beds = +document.querySelector('[data-filter=beds]').value || 0;
+      document.querySelectorAll('.m-listing').forEach(function (c) { c.hidden = (area && c.getAttribute('data-area') !== area) || +c.getAttribute('data-beds') < beds; });
+    }); });
+  })();
   </script>
 <div data-claim-bar style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;background:rgba(17,24,39,.92);color:#fff;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:500 15px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;width:max-content;max-width:calc(100% - 24px);box-sizing:border-box;">
   <span>Love it? Make it yours for $200</span>

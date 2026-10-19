@@ -45,6 +45,17 @@
       </div>
     </section>
 
+    <section id="order" aria-labelledby="order-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="order-title">Order for Pickup (Sample Menu)</h2>
+          <p>Sample menu: placeholder items and prices, not Sample Kitchen's real menu. Pick your items and a pickup time. Pay at pickup. No payment is taken on this page.</p>
+        </div>
+        <div id="order-app"><noscript><p>Ordering needs JavaScript. Please call (555) 010-0199.</p></noscript></div>
+        <script type="application/json" id="order-data">{"site":"sample-kitchen","name":"Sample Kitchen","phone":"(555) 010-0199","email":"orders@example.com","menu":[{"section":"Sample Mains","items":[{"name":"Sample item A","desc":"Placeholder description.","price":"$10.00","options":[{"name":"Size","required":true,"choices":[{"label":"Regular"},{"label":"Large","price":"+$2.00"}]},{"name":"Extras","multi":true,"choices":[{"label":"Extra topping","price":"+$1.00"},{"label":"Side sauce","price":"+$0.50"}]}]},{"name":"Sample item B","desc":"Placeholder description.","price":"$12.00","options":[{"name":"Choice","required":true,"choices":[{"label":"Option 1"},{"label":"Option 2"}]}]},{"name":"Sample item C","desc":"Placeholder description.","price":"$9.00"}]},{"section":"Sample Sides & Drinks","items":[{"name":"Sample side","price":"$4.00"},{"name":"Sample drink","price":"$3.00","options":[{"name":"Size","required":true,"choices":[{"label":"Small"},{"label":"Large","price":"+$1.00"}]}]}]}]}</script>
+      </div>
+    </section>
+
     <section id="services" aria-labelledby="services-title">
       <div class="container">
         <div class="section-head">
@@ -94,17 +105,6 @@
             <div class="menu-item"><div><strong>Sample drink</strong></div><span class="menu-price">$3.00</span></div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section id="order" aria-labelledby="order-title">
-      <div class="container">
-        <div class="section-head">
-          <h2 id="order-title">Order for Pickup (Sample Menu)</h2>
-          <p>Sample menu: placeholder items and prices, not Sample Kitchen's real menu. Pick your items and a pickup time. Pay at pickup. No payment is taken on this page.</p>
-        </div>
-        <div id="order-app"><noscript><p>Ordering needs JavaScript. Please call (555) 010-0199.</p></noscript></div>
-        <script type="application/json" id="order-data">{"site":"sample-kitchen","name":"Sample Kitchen","phone":"(555) 010-0199","email":"orders@example.com","menu":[{"section":"Sample Mains","items":[{"name":"Sample item A","desc":"Placeholder description.","price":"$10.00","options":[{"name":"Size","required":true,"choices":[{"label":"Regular"},{"label":"Large","price":"+$2.00"}]},{"name":"Extras","multi":true,"choices":[{"label":"Extra topping","price":"+$1.00"},{"label":"Side sauce","price":"+$0.50"}]}]},{"name":"Sample item B","desc":"Placeholder description.","price":"$12.00","options":[{"name":"Choice","required":true,"choices":[{"label":"Option 1"},{"label":"Option 2"}]}]},{"name":"Sample item C","desc":"Placeholder description.","price":"$9.00"}]},{"section":"Sample Sides & Drinks","items":[{"name":"Sample side","price":"$4.00"},{"name":"Sample drink","price":"$3.00","options":[{"name":"Size","required":true,"choices":[{"label":"Small"},{"label":"Large","price":"+$1.00"}]}]}]}]}</script>
       </div>
     </section>
 
@@ -235,7 +235,7 @@
 
   <div class="call-bar" role="region" aria-label="Contact shortcuts">
     <a class="cb-call" href="tel:+15550100199">Call (555) 010-0199</a>
-    <a class="cb-alt" href="#order">Order for Pickup</a>
+    <a class="cb-alt cb-money" href="#order">Order for Pickup</a>
   </div>
   <script src="order/order.js" defer></script>
 <div data-claim-bar style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;background:rgba(17,24,39,.92);color:#fff;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:500 15px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;width:max-content;max-width:calc(100% - 24px);box-sizing:border-box;">

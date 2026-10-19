@@ -37,8 +37,29 @@
         <h1 id="hero-title">Dental &amp; medical care in Aurora, CO</h1>
         <p class="lead">Sample Family Dental — dental &amp; medical care in Aurora, CO. Call (555) 010-0199 or send a message to request a visit.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#booking">Book a Visit</a>
+          <a class="btn btn-primary" href="#money">Request a Visit</a>
           <a class="btn btn-ghost" href="tel:+15550100199">(555) 010-0199</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="money" class="money" aria-labelledby="money-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="money-title">Request a Visit</h2>
+          <p>Please do not include medical details in this form.</p>
+        </div>
+        
+        <div class="panel money-panel">
+        <form class="lib-form money-form" data-kind="appointment-request"  novalidate>
+          <fieldset class="m-group"><legend>Patient</legend><label class="m-choice" for="m-patient-0"><input type="radio" id="m-patient-0" name="patient" value="New patient"> New patient</label><label class="m-choice" for="m-patient-1"><input type="radio" id="m-patient-1" name="patient" value="Current patient"> Current patient</label></fieldset>
+          <label for="m-visit">Visit type</label><select id="m-visit" name="visit"><option value="">Choose one</option><option>Checkups</option><option>Cleanings</option><option>New Patients</option><option>Other Services</option></select>
+          <label for="m-when">Preferred days and times</label><input id="m-when" name="when" type="text">
+          <label for="m-name">Name</label><input id="m-name" name="name" type="text" autocomplete="name" required>
+          <label for="m-phone">Phone</label><input id="m-phone" name="phone" type="tel" autocomplete="tel" required>
+          <button class="btn btn-primary m-submit" type="submit">Request a visit</button>
+          <p class="lib-note m-status" role="status" aria-live="polite" hidden></p>
+        </form>
         </div>
       </div>
     </section>
@@ -243,8 +264,48 @@
   </script>
   <div class="call-bar" role="region" aria-label="Contact shortcuts">
     <a class="cb-call" href="tel:+15550100199">Call (555) 010-0199</a>
-    <a class="cb-alt" href="#booking">Book a Visit</a>
+    <a class="cb-alt cb-money" href="#money">Request visit</a>
   </div>
+  <script>
+  /* Money form + ZIP check + listing filters. No backend; nothing is charged. */
+  (function () {
+    document.querySelectorAll('.money-form').forEach(function (f) {
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var st = f.querySelector('.m-status'); st.hidden = false;
+        var nm = f.querySelector('[name=name]'), ph = f.querySelector('[name=phone]');
+        if ((nm && !nm.value.trim()) || (ph && !ph.value.trim())) { st.textContent = 'Please add your name and phone.'; return; }
+        var data = {}, lines = [];
+        new FormData(f).forEach(function (v, k) { if (!v) return; data[k] = data[k] ? data[k] + ', ' + v : v; });
+        Object.keys(data).forEach(function (k) { var el = f.querySelector('[name="' + k + '"]'); var lab = el && (el.closest('fieldset') ? el.closest('fieldset').querySelector('legend') : f.querySelector('label[for="' + el.id + '"]')); lines.push((lab ? lab.textContent.trim() : k) + ': ' + data[k]); });
+        var ep = f.getAttribute('data-endpoint'), to = f.getAttribute('data-mailto');
+        if (ep) {
+          st.textContent = 'Sending…';
+          fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(Object.assign({ _subject: f.getAttribute('data-kind') }, data)) })
+            .then(function (r) { if (!r.ok) throw 0; st.textContent = 'Sent. Thank you.'; f.reset(); })
+            .catch(function () { st.textContent = "This mockup does not send messages yet. Please call Sample Family Dental at (555) 010-0199."; });
+        } else if (to) {
+          location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(f.getAttribute('data-kind')) + '&body=' + encodeURIComponent(lines.join('\n'));
+          st.textContent = 'Your email app should open with these details filled in.';
+        } else { st.textContent = "This mockup does not send messages yet. Please call Sample Family Dental at (555) 010-0199."; }
+      });
+    });
+    var zf = document.querySelector('.zip-check');
+    if (zf) zf.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = zf.querySelector('input').value.trim().toLowerCase(), out = document.querySelector('.zip-result');
+      var list = JSON.parse(zf.getAttribute('data-areas'));
+      if (!v) { out.textContent = 'Enter a ZIP code or town.'; return; }
+      var hit = list.filter(function (a) { return a.toLowerCase() === v || (v.length > 2 && isNaN(v) && a.toLowerCase().indexOf(v) === 0); })[0];
+      out.textContent = hit ? 'Yes, ' + hit + ' is in the service area.' : v + ' is not on the list. Call to ask.';
+    });
+    var sels = document.querySelectorAll('[data-filter]');
+    sels.forEach(function (s) { s.addEventListener('change', function () {
+      var area = document.querySelector('[data-filter=area]').value, beds = +document.querySelector('[data-filter=beds]').value || 0;
+      document.querySelectorAll('.m-listing').forEach(function (c) { c.hidden = (area && c.getAttribute('data-area') !== area) || +c.getAttribute('data-beds') < beds; });
+    }); });
+  })();
+  </script>
 <div data-claim-bar style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;background:rgba(17,24,39,.92);color:#fff;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:500 15px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;width:max-content;max-width:calc(100% - 24px);box-sizing:border-box;">
   <span>Love it? Make it yours for $200</span>
   <a href="https://buy.stripe.com/9B6fZhcgd9xYaxK35O7ss00" rel="noopener noreferrer" style="background:#22c55e;color:#06210f;text-decoration:none;font-weight:700;padding:8px 16px;border-radius:999px;white-space:nowrap;">Get this site</a>

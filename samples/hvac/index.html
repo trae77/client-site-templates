@@ -36,8 +36,29 @@
         <h1 id="hero-title">Heating &amp; cooling in Aurora, CO</h1>
         <p class="lead">Sample Heating &amp; Air — heating &amp; cooling in Aurora, CO. Call (555) 010-0199 or send a message to ask about your job.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#quote">Request a Quote</a>
+          <a class="btn btn-primary" href="#money">Need Help Now?</a>
           <a class="btn btn-ghost" href="tel:+15550100199">(555) 010-0199</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="money" class="money" aria-labelledby="money-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="money-title">Need Help Now?</h2>
+          <p>To reach Sample Heating &amp; Air right away, call <a href="tel:+15550100199">(555) 010-0199</a>. Or send the details below.</p>
+        </div>
+        
+        <div class="panel money-panel">
+        <form class="lib-form money-form" data-kind="emergency-request"  novalidate>
+          <label for="m-name">Name</label><input id="m-name" name="name" type="text" autocomplete="name" required>
+          <label for="m-phone">Phone</label><input id="m-phone" name="phone" type="tel" autocomplete="tel" required>
+          <label for="m-problem">What is going on?</label><select id="m-problem" name="problem"><option value="">Choose one</option><option>Heating Repair</option><option>AC Repair</option><option>System Installs</option><option>Maintenance Visits</option></select>
+          <fieldset class="m-group"><legend>How soon?</legend><label class="m-choice" for="m-urgency-0"><input type="radio" id="m-urgency-0" name="urgency" value="As soon as possible"> As soon as possible</label><label class="m-choice" for="m-urgency-1"><input type="radio" id="m-urgency-1" name="urgency" value="This week"> This week</label><label class="m-choice" for="m-urgency-2"><input type="radio" id="m-urgency-2" name="urgency" value="Flexible"> Flexible</label></fieldset>
+          <label for="m-details">Details</label><textarea id="m-details" name="details" rows="3"></textarea>
+          <button class="btn btn-primary m-submit" type="submit">Send request</button>
+          <p class="lib-note m-status" role="status" aria-live="polite" hidden></p>
+        </form><p class="lib-note">Photos help. <a href="sms:+15550100199?&amp;body=Photo%20for%20Sample%20Heating%20%26%20Air">Text a photo to (555) 010-0199</a>.</p>
         </div>
       </div>
     </section>
@@ -100,24 +121,17 @@
       </div>
     </section>
 
-    <section id="quote" aria-labelledby="quote-title">
+    <section id="zip" aria-labelledby="zip-title">
       <div class="container">
-        <div class="section-head">
-          <h2 id="quote-title">Request a Quote</h2>
-          <p>Send a few details, or call (555) 010-0199.</p>
+        <div class="section-head"><h2 id="zip-title">Do You Serve My Area?</h2><p>Type your ZIP code or town.</p></div>
+        <div class="panel" style="max-width:640px;margin:0 auto">
+          <form class="zip-check" data-areas="[&quot;80010&quot;,&quot;80011&quot;,&quot;Aurora&quot;]" novalidate>
+            <div style="flex:1 1 180px"><label for="zip-in">ZIP code or town</label><input id="zip-in" inputmode="text" autocomplete="postal-code"></div>
+            <button class="btn btn-accent" type="submit">Check</button>
+          </form>
+          <p class="zip-result" role="status" aria-live="polite"></p>
+          <p class="lib-note">Listed: 80010, 80011, Aurora.</p>
         </div>
-        <div class="feature-grid"><div class="panel">
-        <form class="lib-form" data-kind="quote" novalidate>
-          <label for="quote-name">Name</label>
-          <input id="quote-name" name="name" type="text" autocomplete="name">
-          <label for="quote-phone">Phone</label>
-          <input id="quote-phone" name="phone" type="tel" autocomplete="tel">
-          <label for="quote-details">What do you need?</label>
-          <textarea id="quote-details" name="details"></textarea>
-          <button class="btn btn-accent" type="submit">Request a quote</button>
-          <p class="lib-note" role="status" hidden></p>
-        </form>
-        </div></div>
       </div>
     </section>
 
@@ -231,32 +245,51 @@
   <script src="script.js"></script>
   <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 
-  <script>
-  /* Library forms: no backend. With an email on the page, open a pre-filled email; otherwise ask to call. */
-  document.querySelectorAll('.lib-form').forEach(function (f) {
-    f.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var lines = [];
-      f.querySelectorAll('input, textarea, select').forEach(function (el) {
-        var l = f.querySelector('label[for="' + el.id + '"]');
-        if (el.value) lines.push((l ? l.textContent : el.name) + ': ' + el.value);
-      });
-      var note = f.querySelector('.lib-note');
-      var to = f.getAttribute('data-mailto');
-      if (to) {
-        location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(f.getAttribute('data-kind') === 'booking' ? 'Booking request' : 'Quote request') + '&body=' + encodeURIComponent(lines.join('\n'));
-        note.textContent = 'Your email app should open with these details filled in.';
-      } else {
-        note.textContent = "This mockup form does not send messages yet. Please call Sample Heating & Air at (555) 010-0199." || 'This mockup form does not send messages yet. Please call.';
-      }
-      note.hidden = false;
-    });
-  });
-  </script>
   <div class="call-bar" role="region" aria-label="Contact shortcuts">
-    <a class="cb-call" href="tel:+15550100199">Call (555) 010-0199</a>
-    <a class="cb-alt" href="#quote">Request a Quote</a>
+    <a class="cb-call" href="tel:+15550100199">Call</a>
+    <a class="cb-alt cb-text" href="sms:+15550100199">Text</a>
+    <a class="cb-alt cb-money" href="#money">Get help</a>
   </div>
+  <script>
+  /* Money form + ZIP check + listing filters. No backend; nothing is charged. */
+  (function () {
+    document.querySelectorAll('.money-form').forEach(function (f) {
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var st = f.querySelector('.m-status'); st.hidden = false;
+        var nm = f.querySelector('[name=name]'), ph = f.querySelector('[name=phone]');
+        if ((nm && !nm.value.trim()) || (ph && !ph.value.trim())) { st.textContent = 'Please add your name and phone.'; return; }
+        var data = {}, lines = [];
+        new FormData(f).forEach(function (v, k) { if (!v) return; data[k] = data[k] ? data[k] + ', ' + v : v; });
+        Object.keys(data).forEach(function (k) { var el = f.querySelector('[name="' + k + '"]'); var lab = el && (el.closest('fieldset') ? el.closest('fieldset').querySelector('legend') : f.querySelector('label[for="' + el.id + '"]')); lines.push((lab ? lab.textContent.trim() : k) + ': ' + data[k]); });
+        var ep = f.getAttribute('data-endpoint'), to = f.getAttribute('data-mailto');
+        if (ep) {
+          st.textContent = 'Sending…';
+          fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(Object.assign({ _subject: f.getAttribute('data-kind') }, data)) })
+            .then(function (r) { if (!r.ok) throw 0; st.textContent = 'Sent. Thank you.'; f.reset(); })
+            .catch(function () { st.textContent = "This mockup does not send messages yet. Please call Sample Heating & Air at (555) 010-0199."; });
+        } else if (to) {
+          location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(f.getAttribute('data-kind')) + '&body=' + encodeURIComponent(lines.join('\n'));
+          st.textContent = 'Your email app should open with these details filled in.';
+        } else { st.textContent = "This mockup does not send messages yet. Please call Sample Heating & Air at (555) 010-0199."; }
+      });
+    });
+    var zf = document.querySelector('.zip-check');
+    if (zf) zf.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = zf.querySelector('input').value.trim().toLowerCase(), out = document.querySelector('.zip-result');
+      var list = JSON.parse(zf.getAttribute('data-areas'));
+      if (!v) { out.textContent = 'Enter a ZIP code or town.'; return; }
+      var hit = list.filter(function (a) { return a.toLowerCase() === v || (v.length > 2 && isNaN(v) && a.toLowerCase().indexOf(v) === 0); })[0];
+      out.textContent = hit ? 'Yes, ' + hit + ' is in the service area.' : v + ' is not on the list. Call to ask.';
+    });
+    var sels = document.querySelectorAll('[data-filter]');
+    sels.forEach(function (s) { s.addEventListener('change', function () {
+      var area = document.querySelector('[data-filter=area]').value, beds = +document.querySelector('[data-filter=beds]').value || 0;
+      document.querySelectorAll('.m-listing').forEach(function (c) { c.hidden = (area && c.getAttribute('data-area') !== area) || +c.getAttribute('data-beds') < beds; });
+    }); });
+  })();
+  </script>
 <div data-claim-bar style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;background:rgba(17,24,39,.92);color:#fff;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:500 15px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;width:max-content;max-width:calc(100% - 24px);box-sizing:border-box;">
   <span>Love it? Make it yours for $200</span>
   <a href="https://buy.stripe.com/9B6fZhcgd9xYaxK35O7ss00" rel="noopener noreferrer" style="background:#22c55e;color:#06210f;text-decoration:none;font-weight:700;padding:8px 16px;border-radius:999px;white-space:nowrap;">Get this site</a>

@@ -44,6 +44,29 @@
       </div>
     </section>
 
+    <section id="booking" aria-labelledby="booking-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="booking-title">Book a Visit</h2>
+          <p>Send a booking request, or call (555) 010-0199.</p>
+        </div>
+        <div class="feature-grid"><div class="panel">
+        <form class="lib-form" data-kind="booking" novalidate>
+          <label for="booking-name">Name</label>
+          <input id="booking-name" name="name" type="text" autocomplete="name">
+          <label for="booking-phone">Phone</label>
+          <input id="booking-phone" name="phone" type="tel" autocomplete="tel">
+          <label for="booking-service">Service</label>
+          <select id="booking-service" name="service"><option value="">Choose one</option><option>Haircuts</option><option>Color</option><option>Beard &amp; Shave</option><option>Styling</option><option>Other / not sure</option></select>
+          <label for="booking-when">Preferred day and time</label>
+          <input id="booking-when" name="when" type="text" placeholder="e.g. a weekday morning">
+          <button class="btn btn-accent" type="submit">Request a booking</button>
+          <p class="lib-note" role="status" hidden></p>
+        </form>
+        </div></div>
+      </div>
+    </section>
+
     <section id="services" aria-labelledby="services-title">
       <div class="container">
         <div class="section-head">
@@ -72,29 +95,6 @@
             <p>Blowouts and event styling.</p>
           </article>
         </div>
-      </div>
-    </section>
-
-    <section id="booking" aria-labelledby="booking-title">
-      <div class="container">
-        <div class="section-head">
-          <h2 id="booking-title">Book a Visit</h2>
-          <p>Send a booking request, or call (555) 010-0199.</p>
-        </div>
-        <div class="feature-grid"><div class="panel">
-        <form class="lib-form" data-kind="booking" novalidate>
-          <label for="booking-name">Name</label>
-          <input id="booking-name" name="name" type="text" autocomplete="name">
-          <label for="booking-phone">Phone</label>
-          <input id="booking-phone" name="phone" type="tel" autocomplete="tel">
-          <label for="booking-service">Service</label>
-          <select id="booking-service" name="service"><option value="">Choose one</option><option>Haircuts</option><option>Color</option><option>Beard &amp; Shave</option><option>Styling</option><option>Other / not sure</option></select>
-          <label for="booking-when">Preferred day and time</label>
-          <input id="booking-when" name="when" type="text" placeholder="e.g. a weekday morning">
-          <button class="btn btn-accent" type="submit">Request a booking</button>
-          <p class="lib-note" role="status" hidden></p>
-        </form>
-        </div></div>
       </div>
     </section>
 
@@ -267,7 +267,7 @@
   </script>
   <div class="call-bar" role="region" aria-label="Contact shortcuts">
     <a class="cb-call" href="tel:+15550100199">Call (555) 010-0199</a>
-    <a class="cb-alt" href="#booking">Book a Visit</a>
+    <a class="cb-alt cb-money" href="#booking">Book a Visit</a>
   </div>
 <div data-claim-bar style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;background:rgba(17,24,39,.92);color:#fff;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:500 15px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;width:max-content;max-width:calc(100% - 24px);box-sizing:border-box;">
   <span>Love it? Make it yours for $200</span>
