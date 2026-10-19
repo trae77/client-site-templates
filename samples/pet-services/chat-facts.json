@@ -33,16 +33,36 @@
   ],
   "faq": [
     {
-      "q": "What services do you offer?",
-      "a": "Grooming, Dog Walking, Pet Sitting, Training. Call (555) 010-0199 to ask about anything else."
+      "q": "What vaccinations do you require?",
+      "a": "Sample answer: the owner’s own answer goes here."
     },
     {
-      "q": "Which areas do you serve?",
-      "a": "Aurora."
+      "q": "How long does grooming take?",
+      "a": "Sample answer: the owner’s own answer goes here."
     },
     {
-      "q": "How do I get a quote?",
-      "a": "Call (555) 010-0199."
+      "q": "Do you take anxious or senior pets?",
+      "a": "Sample answer: the owner’s own answer goes here."
+    },
+    {
+      "q": "What areas do you serve?",
+      "a": "Sample answer: the owner’s own answer goes here."
+    },
+    {
+      "q": "How do I get a price?",
+      "a": "Sample answer: the owner’s own answer goes here."
+    },
+    {
+      "q": "What's your availability?",
+      "a": "Sample answer: the owner’s own answer goes here."
+    },
+    {
+      "q": "How do I pay?",
+      "a": "Sample answer: the owner’s own answer goes here."
+    },
+    {
+      "q": "What happens after I send a request?",
+      "a": "Sample answer: the owner’s own answer goes here."
     }
   ]
 }

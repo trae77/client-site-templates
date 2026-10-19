@@ -8,20 +8,21 @@
   <!-- CUSTOMIZE: Replace COMPANY_NAME "Sample Tree Service", phone, email, colors in styles.css -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"HomeAndConstructionBusiness","name":"Sample Tree Service","telephone":"+15550100199","address":{"@type":"PostalAddress","addressLocality":"Aurora","addressRegion":"CO","addressCountry":"US"},"areaServed":[{"@type":"City","name":"Aurora"}],"geo":{"@type":"GeoCoordinates","latitude":39.7294,"longitude":-104.8319},"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Tree Trimming","description":"Pruning and shaping."}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Tree Removal","description":"Removing trees of any size."}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Stump Grinding","description":"Grinding stumps below grade."}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Storm Cleanup","description":"Fallen limbs and debris."}}]}</script>
 </head>
-<body>
+<body class="has-call-bar">
   <header class="site-header">
     <div class="container header-inner">
       <a class="logo" href="#top">Sample Tree Service</a>
-      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
-        <span></span><span></span><span></span>
-      </button>
+      <nav class="nav-priority" aria-label="Main links"><a href="#money">Get a quote</a><a href="#services">Services</a><a href="#contact">Contact</a></nav>
+      <button class="nav-toggle" type="button" aria-label="Open full menu" aria-expanded="false" aria-controls="site-nav"><span class="nav-toggle-label">Menu</span></button>
       <nav id="site-nav" class="nav" aria-label="Primary">
         <a href="#services">Services</a>
         <a href="#about">About</a>
         <a href="#gallery">Gallery</a>
+        <a href="#faq">FAQ</a>
         <a href="#contact">Contact</a>
         <a class="nav-cta" href="tel:+15550100199">Call Now</a>
       </nav>
@@ -35,8 +36,27 @@
         <h1 id="hero-title">Tree service in Aurora, CO</h1>
         <p class="lead">Sample Tree Service — tree service in Aurora, CO. Call (555) 010-0199 or send a message to ask about your job.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#contact">Send a Message</a>
+          <a class="btn btn-primary" href="#money">Request a Quote</a>
           <a class="btn btn-ghost" href="tel:+15550100199">(555) 010-0199</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="money" class="money" aria-labelledby="money-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="money-title">Request a Quote</h2>
+          <p>Send the details, or call <a href="tel:+15550100199">(555) 010-0199</a>.</p>
+        </div>
+        
+        <div class="panel money-panel">
+        <form class="lib-form money-form" data-kind="quote-form"  novalidate>
+          <label for="m-name">Name</label><input id="m-name" name="name" type="text" autocomplete="name" required>
+          <label for="m-phone">Phone</label><input id="m-phone" name="phone" type="tel" autocomplete="tel" required>
+          <label for="m-details">What do you need?</label><textarea id="m-details" name="details" rows="3"></textarea>
+          <button class="btn btn-primary m-submit" type="submit">Request a quote</button>
+          <p class="lib-note m-status" role="status" aria-live="polite" hidden></p>
+        </form>
         </div>
       </div>
     </section>
@@ -50,23 +70,23 @@
         <div class="cards">
           <article class="card">
             <div class="card-icon" aria-hidden="true">01</div>
-            <h3>Lawn Mowing</h3>
-            <p>Mowing, edging, and cleanup.</p>
+            <h3>Tree Trimming</h3>
+            <p>Pruning and shaping.</p>
           </article>
           <article class="card">
             <div class="card-icon" aria-hidden="true">02</div>
-            <h3>Mulch &amp; Beds</h3>
-            <p>Mulch, bed edging, and planting.</p>
+            <h3>Tree Removal</h3>
+            <p>Removing trees of any size.</p>
           </article>
           <article class="card">
             <div class="card-icon" aria-hidden="true">03</div>
-            <h3>Tree &amp; Shrub Care</h3>
-            <p>Pruning and shaping for trees and shrubs.</p>
+            <h3>Stump Grinding</h3>
+            <p>Grinding stumps below grade.</p>
           </article>
           <article class="card">
             <div class="card-icon" aria-hidden="true">04</div>
-            <h3>Yard Cleanup</h3>
-            <p>Leaves, branches, and seasonal cleanup.</p>
+            <h3>Storm Cleanup</h3>
+            <p>Fallen limbs and debris.</p>
           </article>
         </div>
       </div>
@@ -92,9 +112,28 @@
           <p>Sample photos for this mockup. Sample Tree Service's own photos go here.</p>
         </div>
         <div class="gallery">
-        <figure><img src="https://images.unsplash.com/photo-1558904541-efa843a96f01?w=800&q=80" alt="Sample photo" width="800" height="600"></figure>
-        <figure><img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80" alt="Sample photo 1" width="800" height="600"></figure>
-        <figure><img src="https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800&q=80" alt="Sample photo 2" width="800" height="600"></figure>
+        <div class="ph-tile" role="img" aria-label="Photo placeholder 1"><span>Photo placeholder</span></div>
+        <div class="ph-tile" role="img" aria-label="Photo placeholder 2"><span>Photo placeholder</span></div>
+        <div class="ph-tile" role="img" aria-label="Photo placeholder 3"><span>Photo placeholder</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="before-after" aria-labelledby="before-after-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="before-after-title">Before &amp; After</h2>
+          <p>Placeholders. Sample Tree Service's own before and after photos go here.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="ba-pair">
+            <div class="ph-tile" style="filter:saturate(.35)" role="img" aria-label="Before photo placeholder 1"><span>Before</span></div>
+            <div class="ph-tile" role="img" aria-label="After photo placeholder 1"><span>After</span></div>
+          </div>
+          <div class="ba-pair">
+            <div class="ph-tile" style="filter:saturate(.35)" role="img" aria-label="Before photo placeholder 2"><span>Before</span></div>
+            <div class="ph-tile" role="img" aria-label="After photo placeholder 2"><span>After</span></div>
+          </div>
         </div>
       </div>
     </section>
@@ -107,6 +146,25 @@
         </div>
         <iframe class="map-frame" title="Map of Aurora, CO" src="https://www.openstreetmap.org/export/embed.html?bbox=-104.9999%2C39.6094%2C-104.6639%2C39.8494&amp;layer=mapnik&amp;marker=39.7294%2C-104.8319" loading="lazy" referrerpolicy="no-referrer"></iframe>
         <p class="lib-note">Map data © <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors.</p>
+      </div>
+    </section>
+
+    <section id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="faq-title">Questions</h2>
+        </div>
+        <div class="faq">
+          <details><summary>Do you offer recurring service?</summary><p>Sample answer: the owner’s own answer goes here.</p></details>
+          <details><summary>What happens if it rains?</summary><p>Sample answer: the owner’s own answer goes here.</p></details>
+          <details><summary>Is pressure washing safe for my siding or roof?</summary><p>Sample answer: the owner’s own answer goes here.</p></details>
+          <details><summary>Do I need to be home?</summary><p>Sample answer: the owner’s own answer goes here.</p></details>
+          <details><summary>What areas do you serve?</summary><p>Sample answer: the owner’s own answer goes here.</p></details>
+          <details><summary>How do I get a price?</summary><p>Sample answer: the owner’s own answer goes here.</p></details>
+          <details><summary>What's your availability?</summary><p>Sample answer: the owner’s own answer goes here.</p></details>
+          <details><summary>How do I pay?</summary><p>Sample answer: the owner’s own answer goes here.</p></details>
+          <details><summary>What happens after I send a request?</summary><p>Sample answer: the owner’s own answer goes here.</p></details>
+        </div>
       </div>
     </section>
 
@@ -145,7 +203,7 @@
               <label for="service">Interested in</label>
               <select id="service" name="service">
                 <option value="">Select a service…</option>
-                <option>Lawn Mowing</option><option>Mulch &amp; Beds</option><option>Tree &amp; Shrub Care</option><option>Yard Cleanup</option>
+                <option>Tree Trimming</option><option>Tree Removal</option><option>Stump Grinding</option><option>Storm Cleanup</option>
                 <option>Other / Not sure</option>
               </select>
               <label for="message">Message</label>
@@ -180,6 +238,51 @@
   </footer>
   <script src="script.js"></script>
   <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+
+  <div class="call-bar" role="region" aria-label="Contact shortcuts">
+    <a class="cb-call" href="tel:+15550100199">Call (555) 010-0199</a>
+    <a class="cb-alt cb-money" href="#money">Get a quote</a>
+  </div>
+  <script>
+  /* Money form + ZIP check + listing filters. No backend; nothing is charged. */
+  (function () {
+    document.querySelectorAll('.money-form').forEach(function (f) {
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var st = f.querySelector('.m-status'); st.hidden = false;
+        var nm = f.querySelector('[name=name]'), ph = f.querySelector('[name=phone]');
+        if ((nm && !nm.value.trim()) || (ph && !ph.value.trim())) { st.textContent = 'Please add your name and phone.'; return; }
+        var data = {}, lines = [];
+        new FormData(f).forEach(function (v, k) { if (!v) return; data[k] = data[k] ? data[k] + ', ' + v : v; });
+        Object.keys(data).forEach(function (k) { var el = f.querySelector('[name="' + k + '"]'); var lab = el && (el.closest('fieldset') ? el.closest('fieldset').querySelector('legend') : f.querySelector('label[for="' + el.id + '"]')); lines.push((lab ? lab.textContent.trim() : k) + ': ' + data[k]); });
+        var ep = f.getAttribute('data-endpoint'), to = f.getAttribute('data-mailto');
+        if (ep) {
+          st.textContent = 'Sending…';
+          fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(Object.assign({ _subject: f.getAttribute('data-kind') }, data)) })
+            .then(function (r) { if (!r.ok) throw 0; st.textContent = 'Sent. Thank you.'; f.reset(); })
+            .catch(function () { st.textContent = "This mockup does not send messages yet. Please call Sample Tree Service at (555) 010-0199."; });
+        } else if (to) {
+          location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(f.getAttribute('data-kind')) + '&body=' + encodeURIComponent(lines.join('\n'));
+          st.textContent = 'Your email app should open with these details filled in.';
+        } else { st.textContent = "This mockup does not send messages yet. Please call Sample Tree Service at (555) 010-0199."; }
+      });
+    });
+    var zf = document.querySelector('.zip-check');
+    if (zf) zf.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = zf.querySelector('input').value.trim().toLowerCase(), out = document.querySelector('.zip-result');
+      var list = JSON.parse(zf.getAttribute('data-areas'));
+      if (!v) { out.textContent = 'Enter a ZIP code or town.'; return; }
+      var hit = list.filter(function (a) { return a.toLowerCase() === v || (v.length > 2 && isNaN(v) && a.toLowerCase().indexOf(v) === 0); })[0];
+      out.textContent = hit ? 'Yes, ' + hit + ' is in the service area.' : v + ' is not on the list. Call to ask.';
+    });
+    var sels = document.querySelectorAll('[data-filter]');
+    sels.forEach(function (s) { s.addEventListener('change', function () {
+      var area = document.querySelector('[data-filter=area]').value, beds = +document.querySelector('[data-filter=beds]').value || 0;
+      document.querySelectorAll('.m-listing').forEach(function (c) { c.hidden = (area && c.getAttribute('data-area') !== area) || +c.getAttribute('data-beds') < beds; });
+    }); });
+  })();
+  </script>
 <div data-claim-bar style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;background:rgba(17,24,39,.92);color:#fff;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:500 15px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;width:max-content;max-width:calc(100% - 24px);box-sizing:border-box;">
   <span>Love it? Make it yours for $200</span>
   <a href="https://buy.stripe.com/9B6fZhcgd9xYaxK35O7ss00" rel="noopener noreferrer" style="background:#22c55e;color:#06210f;text-decoration:none;font-weight:700;padding:8px 16px;border-radius:999px;white-space:nowrap;">Get this site</a>

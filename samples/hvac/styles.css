@@ -367,6 +367,14 @@ section { padding: 4rem 0; }
 .menu-item p { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.92rem; }
 .menu-price { font-weight: 700; white-space: nowrap; }
 .review-card { margin: 0; }
+.nav-priority { display: none; }
+.nav-toggle-label { font-weight: 700; font-size: 0.95rem; }
+@media (max-width: 800px) {
+  .nav-priority { display: flex; gap: 0.9rem; margin-left: auto; margin-right: 0.5rem; }
+  .nav-priority a { font-weight: 600; font-size: 0.92rem; text-decoration: none; color: inherit; padding: 0.6rem 0; }
+  .nav-toggle { width: auto !important; padding: 0 0.85rem !important; border: 1px solid var(--border) !important; display: inline-flex !important; align-items: center; min-height: 44px; color: inherit; }
+}
+@media (max-width: 420px) { .nav-priority a:nth-child(2) { display: none; } .logo { font-size: 1rem; } }
 .call-bar { display: none; }
 @media (max-width: 700px) {
   body.has-call-bar { padding-bottom: 72px; }
