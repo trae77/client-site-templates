@@ -49,7 +49,7 @@ export const CATEGORIES = {
   },
   fitness: {
     label: 'fitness', theme: 'bold-industrial', defaults: { primary: '#111827', accent: '#15803d' },
-    features: ['call-bar', 'booking', 'map', 'faq'], ask: 'to ask about classes or training',
+    features: ['call-bar', 'map', 'faq'], ask: 'to ask about classes or training',
     services: [['Personal Training', 'One-on-one sessions.'], ['Group Classes', 'Classes in a group setting.'], ['Open Gym', 'Access to the gym floor.'], ['Intro Session', 'A first visit to get started.']],
     aliases: ['fitness', 'gym', 'personal-trainer', 'personal-training', 'crossfit', 'yoga', 'pilates', 'studio'],
   },

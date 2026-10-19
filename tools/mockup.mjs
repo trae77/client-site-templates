@@ -38,6 +38,7 @@ import { COPY, jsonLd, parseHoursJson, faqBank } from './v3.mjs';
 import { MONEY, MONEY_DEFAULTS, MONEY_CSS, MONEY_SCRIPT, buildMoney, buildZip, trustItems } from './money.mjs';
 import { PALETTES, FONT_PAIRS, LAYOUTS, HEROES, resolveDesign, layoutHero, applyLayout, applyHero, heroCss, fontLinks, fontCss, paletteCss } from './design.mjs';
 import { validateBooking, bookingEmbedHtml, BOOKING_CSS, BOOKING_HOSTS, validateNotify, HONEYPOT, payLabel, PAY_DEMO_HTML } from './addons.mjs';
+import { tradeRules, parseOverride, checkTrade, failMessage } from './industry.mjs';
 import { CATEGORIES, REUSED, REUSED_DEFAULTS, EXTRA_ALIASES, FEATURES, THEMES, FEATURE_CSS, themeCss, buildFeatures, buildFaq, parseCenter, geocode } from './library.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -171,6 +172,9 @@ const TEMPLATES = {
 const GENERIC_PLACEHOLDERS = (({ name, phone, email, homeCity, address }) => ({ name, phone, email, homeCity, address }))(TEMPLATES['generic-business']);
 for (const [key, c] of Object.entries(CATEGORIES)) {
   TEMPLATES[key] = { ...GENERIC_PLACEHOLDERS, base: 'generic-business', placeholderPhotos: true, library: true, ...c };
+  // Free-licensed stock photos (stock/<key>/, credited in CREDITS.md) replace the grey tiles when present.
+  const stockDir = path.join(REPO_ROOT, 'stock', key);
+  if (fs.existsSync(stockDir)) TEMPLATES[key].stock = { key, files: fs.readdirSync(stockDir).filter((f) => /\.(jpe?g|webp|png)$/i.test(f)).sort() };
 }
 
 // Friendly trade names -> template folder. Unknown trades fall back to generic-business.
@@ -330,13 +334,15 @@ function insertPayBlock(html, block) {
   return html.replace(re, `$1\n          ${block}$2`);
 }
 
+// Short words that must not pull a trade into another industry on a loose match (e.g. "tiki-bar-repair").
+const LOOSE_SKIP = new Set(['bar', 'food', 'repair', 'repairs', 'detail', 'pressure', 'yard', 'cafe', 'coffee', 'drain', 'maid', 'lawn']);
 function resolveTrade(trade) {
   const key = slugify(trade || '');
   for (const [folder, aliases] of Object.entries(TRADE_ALIASES)) if (aliases.includes(key)) return { folder, fallback: false };
   // loose match: "mobile-car-detailing" -> detailing, "lawn-mowing-co" -> lawn, etc.
   for (const [folder, aliases] of Object.entries(TRADE_ALIASES)) {
     if (folder === 'generic-business') continue;
-    if (aliases.some((a) => key.split('-').includes(a) || (a.includes('-') && key.includes(a)))) return { folder, fallback: false };
+    if (aliases.some((a) => (!LOOSE_SKIP.has(a) && key.split('-').includes(a)) || (a.includes('-') && key.includes(a)))) return { folder, fallback: false };
   }
   return { folder: 'generic-business', fallback: true };
 }
@@ -697,11 +703,15 @@ function rebuildCopy(cfg, html, ctx, tok) {
   // Gallery: stock photos are labeled as samples, not "Recent Work".
   sub(/(?<=<section id="gallery"[^>]*>\s*<div class="container">\s*)<div class="section-head">[\s\S]*?<\/div>/, `<div class="section-head">
           <h2 id="gallery-title">Photos</h2>
-          <p>Sample photos for this mockup. ${nameHtml}'s own photos go here.</p>
+          <p>${cfg.placeholderPhotos && cfg.stock?.files.length ? `Stock photos from Unsplash, not ${nameHtml}’s work.` : 'Sample photos for this mockup.'} ${nameHtml}'s own photos go here.</p>
         </div>`, 'gallery heading');
   html = html.replace(/alt="[^"]*project photo (\d+)"/g, 'alt="Sample photo $1"');
 
-  if (cfg.placeholderPhotos) {
+  if (cfg.placeholderPhotos && cfg.stock?.files.length) {
+    sub(/<div class="gallery">[\s\S]*?\n[ \t]*<\/div>/, `<div class="gallery">${cfg.stock.files.slice(0, 3).map((f, i) => `
+        <figure><img src="img/stock-${f}" alt="Stock photo ${i + 1} (not ${nameHtml}'s work)" loading="lazy" width="1000" height="750"><figcaption class="stock-cap">Stock photo</figcaption></figure>`).join('')}
+        </div>`, 'gallery grid');
+  } else if (cfg.placeholderPhotos) {
     sub(/<div class="gallery">[\s\S]*?\n[ \t]*<\/div>/, `<div class="gallery">${[1, 2, 3].map((i) => `
         <div class="ph-tile" role="img" aria-label="Photo placeholder ${i}"><span>Photo placeholder</span></div>`).join('')}
         </div>`, 'gallery grid');
@@ -1075,7 +1085,7 @@ function libraryOptions(values, folder, tradeKey) {
   if (money && !MONEY[money]) throw new Error(`--money "${values.money}" is not a money feature. Use one of: ${Object.keys(MONEY).join(', ')}, none.`);
   if (money === 'pickup-order' && !values['menu-file']) {
     if (values.money != null) throw new Error('--money pickup-order needs --menu-file.');
-    money = 'quote-form'; skipped.push('pickup-order money feature (no --menu-file; using quote-form)');
+    money = null; skipped.push('pickup-order money feature (no --menu-file; menu + call instead, spec v5)');
   }
   if (money === 'listing-search' && values['listings-file'] && !values.brokerage) throw new Error('--listings-file needs --brokerage (the brokerage name is shown on every listing card).');
   if (MONEY[money]?.reuse && !features.includes(MONEY[money].reuse)) features.push(MONEY[money].reuse);
@@ -1086,6 +1096,8 @@ function libraryOptions(values, folder, tradeKey) {
     if (explicit && values.features.includes('faq')) throw new Error('--features faq needs --faq-file with the owner\'s answers (see --faq-bank). Answers are never written for them.');
     features = features.filter((f) => f !== 'faq'); skipped.push('faq (no --faq-file; run --faq-bank for the question list)');
   }
+  // No prices on pages: pricing only when the owner supplies --pricing-file.
+  if (!values['pricing-file']) features = features.filter((f) => f !== 'pricing');
   // Order sections the same way every time.
   features = FEATURES.filter((f) => features.includes(f));
   return { theme, features, skipped, money };
@@ -1311,6 +1323,7 @@ async function main() {
       'schedule-file': { type: 'string' }, 'listings-file': { type: 'string' }, brokerage: { type: 'string' },
       emergency: { type: 'string' }, badges: { type: 'string' }, checklist: { type: 'string' }, 'steps-file': { type: 'string' },
       'pricing-file': { type: 'string' }, 'team-file': { type: 'string' }, 'order-endpoint': { type: 'string' }, 'order-url': { type: 'string' },
+      'allow-feature': { type: 'string' }, 'allow-reason': { type: 'string' }, reason: { type: 'string' },
       notify: { type: 'string' }, 'notify-endpoint': { type: 'string' }, 'booking-provider': { type: 'string' },
       'pay-label': { type: 'string' }, 'pay-context': { type: 'string' }, 'pay-demo': { type: 'boolean', default: false },
       palette: { type: 'string' }, fonts: { type: 'string' }, layout: { type: 'string' }, hero: { type: 'string' }, 'hero-img': { type: 'string' },
@@ -1343,6 +1356,16 @@ async function main() {
 
   const { folder, fallback } = resolveTrade(values.trade);
   const tradeKey = slugify(values.trade);
+  { // Early spec v5 check on the raw flags, so a forbidden implicit add fails before its data checks do.
+    const t0 = tradeRules(fallback ? null : tradeKey, fallback ? null : folder); if (fallback) t0.id = tradeKey;
+    let ov0; try { ov0 = parseOverride(values['allow-feature'], values['allow-reason'] || values.reason); } catch (e) { console.error(`✗ ${e.message}`); process.exit(5); }
+    const raw = [values.money != null && ['money', slugify(values.money), '--money'], ...(values.features ? String(values.features).split(',').map((f) => ['feature', slugify(f), '--features']) : []),
+      values['menu-file'] && ['feature', 'menu', '--menu-file implied menu'], values['booking-url'] && ['feature', 'booking', '--booking-url implied booking'],
+      values['order-endpoint'] && ['feature', 'pickup-order', '--order-endpoint implied pickup-order'], values['order-url'] && ['feature', 'pickup-order', '--order-url implied pickup-order'],
+      values.emergency && ['feature', 'emergency', '--emergency implied emergency'], values['pricing-file'] && ['feature', 'pricing', '--pricing-file implied pricing']].filter(Boolean);
+    const c0 = checkTrade(t0, raw, ov0);
+    if (c0.fails.length) { console.error(`✗ ${failMessage(t0, c0.fails)}`); process.exit(5); }
+  }
   const lib = libraryOptions(values, folder, tradeKey);
   const cfg = TEMPLATES[folder];
   // Spec v1 P2 / v4 A: design flags. All opt-in; without them the build is unchanged.
@@ -1352,6 +1375,17 @@ async function main() {
     layout: resolveDesign('layout', values.layout, tradeKey, folder, (w) => console.warn(`! ${w}`)),
   };
   design.hero = resolveDesign('hero', values.hero, tradeKey, folder) || (design.layout ? layoutHero(design.layout) : null) || (values['hero-img'] ? 'media' : null);
+  // Spec v5 trade x feature check (tools/industry-features.json). Runs before anything is written.
+  const trade = tradeRules(fallback ? null : tradeKey, fallback ? null : folder);
+  if (fallback) trade.id = tradeKey;
+  const override = parseOverride(values['allow-feature'], values['allow-reason'] || values.reason); // validated above
+  const src = (f) => (values.features && String(values.features).split(',').map(slugify).includes(f) ? '--features' : f === 'menu' && values['menu-file'] ? '--menu-file' : f === 'booking' && values['booking-url'] ? '--booking-url' : f === 'pickup-order' && (values['order-endpoint'] || values['order-url']) ? `--order-${values['order-endpoint'] ? 'endpoint' : 'url'} implied pickup-order` : values[{ emergency: 'emergency', badges: 'badges', checklist: 'checklist', pricing: 'pricing-file', team: 'team-file', process: 'steps-file' }[f]] ? `--${{ pricing: 'pricing-file', team: 'team-file', process: 'steps-file' }[f] || f}` : MONEY[lib.money]?.reuse === f ? `--money ${lib.money} implied ${f}` : 'trade default');
+  const requested = new Set([...lib.features, ...(values.features ? String(values.features).split(',').map((f) => slugify(f)) : []), values['menu-file'] && 'menu', values['booking-url'] && 'booking', (values['order-endpoint'] || values['order-url']) && 'pickup-order'].filter((f) => f && f !== 'none'));
+  const chk = checkTrade(trade, [['money', lib.money, values.money != null ? '--money' : 'trade default'], ...[...requested].map((f) => ['feature', f, src(f)]),
+    ['layout', design.layout, values.layout ? '--layout' : null], ['hero', design.hero, values.hero ? '--hero' : '--layout default hero']], override);
+  if (lib.money && values.money != null && trade.rules.money?.default && lib.money !== trade.rules.money.default && !chk.fails.length) chk.warns.push(`money "${lib.money}" overrides the trade default "${trade.rules.money.default}"`);
+  chk.warns.forEach((w) => console.warn(`! ${w}`));
+  if (chk.fails.length) { console.error(`✗ ${failMessage(trade, chk.fails)}`); process.exit(5); }
   const pal = design.palette ? PALETTES[design.palette] : null;
   const primary = toHex(parseHex(values.primary || pal?.primary || cfg.defaults.primary));
   const accent = toHex(parseHex(values.accent || pal?.accent || cfg.defaults.accent));
@@ -1400,7 +1434,10 @@ async function main() {
     if (ctx.zips) feat.beforeContact = buildZip(ctx) + (feat.beforeContact || '');
     if ((lib.money && !MONEY[lib.money].reuse) || ctx.zips) {
       const callNote = `This mockup does not send messages yet. Please call ${ctx.name} at ${ctx.phoneDisplay}.`;
-      feat.bodyEnd = (feat.bodyEnd || '') + MONEY_SCRIPT.split('__CALL__').join(JSON.stringify(callNote));
+      let script = MONEY_SCRIPT.split('__CALL__').join(JSON.stringify(callNote));
+      // Listing filters only ship on listing pages (industry audit: no real-estate code on other trades).
+      if (lib.money !== 'listing-search') script = script.replace(' + listing filters', '').replace(/\n    var sels = document\.querySelectorAll\('\[data-filter\]'\);[\s\S]*?\}\); \}\);/, '');
+      feat.bodyEnd = (feat.bodyEnd || '') + script;
     }
     const trust = trustItems(ctx);
     if (trust.length) outHtml = outHtml.replace(/(<div class="hero-actions">[\s\S]*?\n[ \t]*<\/div>)/, (m) => `${m}\n        <ul class="trust-row" aria-label="Facts">${trust.map((t) => `<li>${t}</li>`).join('')}</ul>`);
@@ -1448,6 +1485,10 @@ async function main() {
     for (const f of ['chat-widget.js', 'chat-widget.css']) fs.copyFileSync(path.join(CHAT_SRC, f), path.join(outDir, 'chat', f));
     fs.writeFileSync(path.join(outDir, 'chat-facts.json'), JSON.stringify(chatFacts, null, 2) + '\n');
   }
+  if (cfg.placeholderPhotos && cfg.stock?.files.length) {
+    fs.mkdirSync(path.join(outDir, 'img'), { recursive: true });
+    for (const f of cfg.stock.files.slice(0, 3)) fs.copyFileSync(path.join(REPO_ROOT, 'stock', cfg.stock.key, f), path.join(outDir, 'img', `stock-${f}`));
+  }
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
   fs.writeFileSync(htmlPath, values['no-claim'] ? outHtml : addClaimBar(outHtml));
   const ctaPairs = [];
@@ -1456,7 +1497,7 @@ async function main() {
   if (palOut) themeCfg = { ...themeCfg, dark: palOut.dark };
   css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(themeCfg, primary, accent, galleryCount, { cta: ctaPairs, pay: Boolean(payUrl || values['pay-demo']), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
   if (lib.theme || lib.features.length || cfg.placeholderPhotos || lib.money || ctx.zips || ctx.textOk || ctx.licenseNo || ctx.insured || ctx.certs) {
-    css += MONEY_CSS + `\n:root { --on-accent: ${pickText(accent)}; }\n${cfg.placeholderPhotos ? '.hero::before { background-image: none; }\n' : ''}${FEATURE_CSS}`;
+    css += MONEY_CSS + `\n:root { --on-accent: ${pickText(accent)}; }\n${cfg.placeholderPhotos ? '.hero::before { background-image: none; }\n' : ''}${cfg.stock?.files.length ? '.gallery figure { position: relative; margin: 0; }\n.stock-cap { position: absolute; left: .5rem; bottom: .5rem; background: rgba(15,23,42,.8); color: #fff; font-size: .8rem; padding: .15rem .5rem; border-radius: 6px; }\n' : ''}${FEATURE_CSS}`;
     if (lib.theme) css += themeCss(lib.theme, primary, accent, { mix, shade });
   }
   if (palOut) {

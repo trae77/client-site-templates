@@ -229,7 +229,7 @@
     <a class="cb-alt cb-money" href="#money">Book</a>
   </div>
   <script>
-  /* Money form + ZIP check + listing filters. No backend; nothing is charged. */
+  /* Money form + ZIP check. No backend; nothing is charged. */
   (function () {
     document.querySelectorAll('.money-form').forEach(function (f) {
       f.addEventListener('submit', function (e) {
@@ -261,11 +261,6 @@
       var hit = list.filter(function (a) { return a.toLowerCase() === v || (v.length > 2 && isNaN(v) && a.toLowerCase().indexOf(v) === 0); })[0];
       out.textContent = hit ? 'Yes, ' + hit + ' is in the service area.' : v + ' is not on the list. Call to ask.';
     });
-    var sels = document.querySelectorAll('[data-filter]');
-    sels.forEach(function (s) { s.addEventListener('change', function () {
-      var area = document.querySelector('[data-filter=area]').value, beds = +document.querySelector('[data-filter=beds]').value || 0;
-      document.querySelectorAll('.m-listing').forEach(function (c) { c.hidden = (area && c.getAttribute('data-area') !== area) || +c.getAttribute('data-beds') < beds; });
-    }); });
   })();
   </script>
   <script src="chat/chat-widget.js" data-facts="chat-facts.json" defer></script>

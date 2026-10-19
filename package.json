@@ -9,7 +9,10 @@
     "upgrade:init": "node upgrade/init.cjs",
     "upgrade": "node upgrade/server.cjs",
     "upgrade:smoke": "node upgrade/smoke.cjs",
-    "export-client": "node tools/export-client.mjs"
+    "export-client": "node tools/export-client.mjs",
+    "audit:industry": "node tools/audit-industry.mjs",
+    "check": "bash tools/build-samples.sh && npm run audit:industry",
+    "prepush": "npm run check && git diff --exit-code --stat -- samples"
   },
   "engines": {
     "node": ">=18"

@@ -46,3 +46,16 @@ Every `images.unsplash.com` photo used anywhere in this repo, all under the [Uns
 | https://images.unsplash.com/photo-1607472586893-edb57bdc0e39 | `plumbing/`, `widgets/` | plumbing | 0 |
 | https://images.unsplash.com/photo-1621905251189-08b45d6a269e | `plumbing/`, `widgets/` | plumbing | 0 |
 | https://images.unsplash.com/photo-1621905252507-b35492cc74b4 | `handyman/` | handyman | 181 |
+
+## Local stock photos (`stock/`)
+Downloaded once and committed so builds don't hotlink. Used only in the gallery of library categories that would otherwise show grey "Photo placeholder" tiles. Each one is captioned **"Stock photo"** on the page, with alt text "Stock photo N (not <Business>'s work)", and the gallery note says they are stock photos, not the business's work. They are never presented as the client's projects. Swap them for the client's own photos before launch.
+
+All are free to use under the [Unsplash License](https://unsplash.com/license) (commercial use allowed, no attribution required; credited here anyway).
+
+| File | Photo | Photographer | Source |
+|---|---|---|---|
+| `stock/roofing/roofing-1.jpg` | Roofer in a safety harness sealing an asphalt-shingle roof | Raze Solar (@razesolar) | https://unsplash.com/photos/ACnFSTBlnts |
+| `stock/roofing/roofing-2.jpg` | Two workers on a roof | Raze Solar (@razesolar) | https://unsplash.com/photos/umJz4M-iCOw |
+| `stock/roofing/roofing-3.jpg` | Close-up of weathered asphalt shingles | Bernd Dittrich (@hdbernd) | https://unsplash.com/photos/MpPjEIy7Rno |
+
+Used by: `samples/roofing/`, `samples/design-*` builds with `--trade roofing`, and any new `--trade roofing` mockup. Not used on any `prospects/` page.

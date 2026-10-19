@@ -327,6 +327,8 @@ section { padding: 4rem 0; }
 
 :root { --on-accent: #0f172a; }
 .hero::before { background-image: none; }
+.gallery figure { position: relative; margin: 0; }
+.stock-cap { position: absolute; left: .5rem; bottom: .5rem; background: rgba(15,23,42,.8); color: #fff; font-size: .8rem; padding: .15rem .5rem; border-radius: 6px; }
 
 .emergency-banner { background: #b91c1c; color: #fff; text-align: center; padding: 0.7rem 1rem; font-weight: 700; }
 .emergency-banner a { color: #fff; text-decoration: underline; margin-left: 0.5rem; white-space: nowrap; }

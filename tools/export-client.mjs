@@ -13,9 +13,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { CLAIM_MARK } from './claim-bar.mjs';
+import { tradeOfFile, scanHtml, parseOverride } from './industry.mjs';
 
-const { values } = parseArgs({ options: { site: { type: 'string' }, out: { type: 'string' }, 'site-url': { type: 'string' }, force: { type: 'boolean', default: false }, help: { type: 'boolean', short: 'h' } } });
-if (values.help || !values.site) { console.log('Usage: npm run export-client -- --site <folder> [--out <dir>] [--site-url https://client.com] [--force]'); process.exit(values.help ? 0 : 1); }
+const { values } = parseArgs({ options: { site: { type: 'string' }, out: { type: 'string' }, 'site-url': { type: 'string' }, trade: { type: 'string' }, 'allow-feature': { type: 'string' }, 'allow-reason': { type: 'string' }, force: { type: 'boolean', default: false }, help: { type: 'boolean', short: 'h' } } });
+if (values.help || !values.site) { console.log('Usage: npm run export-client -- --site <folder> [--trade <trade>] [--out <dir>] [--site-url https://client.com] [--allow-feature <id> --allow-reason TEXT] [--force]'); process.exit(values.help ? 0 : 1); }
 const src = path.resolve(values.site);
 if (!fs.existsSync(path.join(src, 'index.html'))) { console.error(`✗ ${src} has no index.html`); process.exit(1); }
 let siteUrl = '';
@@ -23,6 +24,18 @@ if (values['site-url']) {
   const u = new URL(values['site-url']);
   if (u.protocol !== 'https:') { console.error('✗ --site-url must be https://'); process.exit(1); }
   siteUrl = u.origin + (u.pathname.replace(/\/+$/, '') || '') + '/';
+}
+// Industry matrix check (tools/industry-features.json) before anything is written. --force does not skip it.
+{
+  let ov; try { ov = parseOverride(values['allow-feature'], values['allow-reason']); } catch (e) { console.error(`✗ ${e.message}`); process.exit(5); }
+  const allow = ov ? [ov.id] : [];
+  const leaks = [];
+  for (const f of fs.readdirSync(src, { recursive: true }).filter((x) => x.endsWith('.html'))) {
+    const [t, why, a] = tradeOfFile(path.join(src, f), values.trade);
+    const hits = scanHtml(fs.readFileSync(path.join(src, f), 'utf8'), t, [...allow, ...a]);
+    if (hits.length) leaks.push(`${f} [${t.id} via ${why}]: ${hits.join('; ')}`);
+  }
+  if (leaks.length) { console.error(`✗ Industry check failed; nothing was exported:\n  - ${leaks.join('\n  - ')}\nRemove the wrong-industry section, or pass --allow-feature <id> --allow-reason "TEXT" if the business really offers it.`); process.exit(5); }
 }
 const out = path.resolve(values.out || path.join('dist-client', path.basename(src)));
 if (out === src || src.startsWith(out + path.sep)) { console.error('✗ --out must be a different folder from --site'); process.exit(1); }

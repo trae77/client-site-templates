@@ -24,6 +24,31 @@ All opt-in: without these flags, builds are byte-identical to before. `auto` = t
 - **B3 pay button:** `--pay-url` (Stripe hosts only) with `--pay-label` / `--pay-context deposit|invoice|package`. No `--pay-url` means no button at all. Labels with numbers or currency are rejected (never an amount). `--pay-demo` (samples only) shows a disabled "Payment button (demo, not active)".
 - **B4 polish audit for existing Wix/Squarespace sites:** [docs/WIX-SQUARESPACE-POLISH.md](docs/WIX-SQUARESPACE-POLISH.md).
 
+## Industry feature matrix (spec v5) — checks before every push
+
+`tools/industry-features.json` is the single source of truth for which features each trade may use (spec v5 matrix, plus `auditMarkers` regexes used by the audit). The same file is vendored into `multipage-template/tools/`; keep both copies identical.
+
+- Food menus, ordering and carts are for food businesses only. Booking is for appointment trades only. Listings are for real estate only. Class schedules are for fitness only (church service times go in hours). Emergency is for urgent trades only. Unknown trades get the `fallback` (deny by default).
+- `tools/mockup.mjs` checks `--money`, `--features`, the implied flags (`--order-endpoint` / `--order-url` imply pickup ordering), `--layout` and `--hero` against the matrix **before writing anything**. A forbidden item exits with code 5 and nothing is written. Unclassified ids print a warning.
+- `tools/export-client.mjs` scans every HTML file for leaked markup before it copies. `--force` does not skip this. It exits 5 on a mismatch.
+- One-off override (one id per build, reason required):
+  `node tools/mockup.mjs --trade roofing ... --allow-feature booking --allow-reason "client asked for inspection booking, William approved 2026-10-19"`
+- `npm run audit:industry` scans `samples/`, `prospects/` and the template folders. It exits 1 on any leak.
+- `npm run check` rebuilds every sample (fails if any build is refused), then runs the audit.
+- CI: `.github/workflows/check.yml` runs `npm ci`, `bash tools/build-samples.sh` and `npm run audit:industry` on every push and PR (free GitHub-hosted runner).
+
+**Exact pre-push command (routines run this before every mockup push):**
+
+```bash
+npm ci && npm run check && git status --short
+```
+
+Push only if it exits 0 and the audit prints `✓ no cross-industry features found`. For a new prospect, also run `node tools/audit-industry.mjs prospects/<slug>`.
+
+Playwright setup (one time, works in this repo): `npm ci && npx playwright install chromium`.
+
+Roofing mockups use the local Unsplash stock photos in `stock/roofing/` (see CREDITS.md). Each one is captioned "Stock photo" and its alt text says it isn't the business's work.
+
 ## Product ladder
 
 A prospect starts with a static one-pager and can step up. These are the only two steps. **Pricing is not set** — this repo and Big Foot (`trae77/bigfootConstruction`) do not list a dollar price for either tier, so none is shown here.
