@@ -35,7 +35,7 @@ All opt-in: without these flags, builds are byte-identical to before. `auto` = t
   `node tools/mockup.mjs --trade roofing ... --allow-feature booking --allow-reason "client asked for inspection booking, William approved 2026-10-19"`
 - `npm run audit:industry` scans `samples/`, `prospects/` and the template folders. It exits 1 on any leak.
 - `npm run check` rebuilds every sample (fails if any build is refused), then runs the audit.
-- CI: `.github/workflows/check.yml` runs `npm ci`, `bash tools/build-samples.sh` and `npm run audit:industry` on every push and PR (free GitHub-hosted runner).
+- CI: `ci/check.yml` (copy it to `.github/workflows/check.yml`; the push token has no `workflow` scope, so it is not active yet) runs `npm ci`, `bash tools/build-samples.sh` and `npm run audit:industry` on every push and PR (free GitHub-hosted runner).
 
 **Exact pre-push command (routines run this before every mockup push):**
 
