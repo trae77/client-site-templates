@@ -8,7 +8,8 @@
     "mockup": "node tools/mockup.mjs",
     "upgrade:init": "node upgrade/init.cjs",
     "upgrade": "node upgrade/server.cjs",
-    "upgrade:smoke": "node upgrade/smoke.cjs"
+    "upgrade:smoke": "node upgrade/smoke.cjs",
+    "export-client": "node tools/export-client.mjs"
   },
   "engines": {
     "node": ">=18"

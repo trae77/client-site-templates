@@ -36,6 +36,7 @@ import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { COPY, jsonLd, parseHoursJson, faqBank } from './v3.mjs';
 import { MONEY, MONEY_DEFAULTS, MONEY_CSS, MONEY_SCRIPT, buildMoney, buildZip, trustItems } from './money.mjs';
+import { PALETTES, FONT_PAIRS, LAYOUTS, HEROES, resolveDesign, layoutHero, applyLayout, applyHero, heroCss, fontLinks, fontCss, paletteCss } from './design.mjs';
 import { CATEGORIES, REUSED, REUSED_DEFAULTS, EXTRA_ALIASES, FEATURES, THEMES, FEATURE_CSS, themeCss, buildFeatures, buildFaq, parseCenter, geocode } from './library.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -417,6 +418,12 @@ Library (tools/library.mjs, see README "Template library"):
   --money-link https://...      link-out to a booking/ordering page (not a payment link)
   --text         the phone takes texts: adds Text to the mobile bar and "text a photo" links
   --zips "80011,80012"  "Do you serve my area?" checker (also matches --areas names)
+  --palette ID|auto  exact per-industry colors (spec v4 A1); --primary/--accent still override.
+                     ${Object.keys(PALETTES).join(", ")}
+  --fonts ID|auto    Google Font pairing, display=swap + preconnect: ${Object.keys(FONT_PAIRS).join(", ")}
+  --layout ID|auto   section order (spec v4 A4); sets the default --hero. Unknown -> industry default.
+  --hero ID          ${HEROES.join(" | ")}
+  --hero-img FILE    client-supplied hero photo (local file is copied to img/, or an https URL)
   --license-no TEXT  --insured  --certs "A,B"   trust row under the hero CTA (facts only)
   --schedule-file F.json [{class,day,time}]   --listings-file F.json + --brokerage NAME
 Spec v3:
@@ -1294,6 +1301,7 @@ async function main() {
       'schedule-file': { type: 'string' }, 'listings-file': { type: 'string' }, brokerage: { type: 'string' },
       emergency: { type: 'string' }, badges: { type: 'string' }, checklist: { type: 'string' }, 'steps-file': { type: 'string' },
       'pricing-file': { type: 'string' }, 'team-file': { type: 'string' }, 'order-endpoint': { type: 'string' }, 'order-url': { type: 'string' },
+      palette: { type: 'string' }, fonts: { type: 'string' }, layout: { type: 'string' }, hero: { type: 'string' }, 'hero-img': { type: 'string' },
       tagline: { type: 'string' }, 'sample-reviews': { type: 'boolean', default: false },
       out: { type: 'string' }, 'png-dir': { type: 'string' },
       mobile: { type: 'boolean', default: false }, 'no-png': { type: 'boolean', default: false },
@@ -1324,8 +1332,16 @@ async function main() {
   const tradeKey = slugify(values.trade);
   const lib = libraryOptions(values, folder, tradeKey);
   const cfg = TEMPLATES[folder];
-  const primary = toHex(parseHex(values.primary || cfg.defaults.primary));
-  const accent = toHex(parseHex(values.accent || cfg.defaults.accent));
+  // Spec v1 P2 / v4 A: design flags. All opt-in; without them the build is unchanged.
+  const design = {
+    palette: resolveDesign('palette', values.palette, tradeKey, folder),
+    fonts: resolveDesign('fonts', values.fonts, tradeKey, folder),
+    layout: resolveDesign('layout', values.layout, tradeKey, folder, (w) => console.warn(`! ${w}`)),
+  };
+  design.hero = resolveDesign('hero', values.hero, tradeKey, folder) || (design.layout ? layoutHero(design.layout) : null) || (values['hero-img'] ? 'media' : null);
+  const pal = design.palette ? PALETTES[design.palette] : null;
+  const primary = toHex(parseHex(values.primary || pal?.primary || cfg.defaults.primary));
+  const accent = toHex(parseHex(values.accent || pal?.accent || cfg.defaults.accent));
   const { cityName, cityFull, state } = parseCity(values.city);
   const slug = slugify(values.name) || 'mockup';
   const email = values.email ? values.email.trim() : null;
@@ -1381,6 +1397,26 @@ async function main() {
     }
   }
   outHtml = applyV3(outHtml, cfg, ctx, { folder, tradeKey, lib, libOn: Boolean(lib.theme || lib.features.length || lib.money || ctx.zips || values.text) });
+  let heroImg = null;
+  if (values['hero-img']) {
+    const src = values['hero-img'].trim();
+    if (/^https:\/\//.test(src)) heroImg = src;
+    else {
+      const abs = path.resolve(src);
+      if (!fs.existsSync(abs) || !/\.(jpe?g|png|webp|avif)$/i.test(abs)) throw new Error(`--hero-img must be a client-supplied .jpg/.png/.webp/.avif file or https URL (got "${src}")`);
+      fs.mkdirSync(path.join(outDir, 'img'), { recursive: true });
+      heroImg = `img/hero${path.extname(abs).toLowerCase()}`;
+      fs.copyFileSync(abs, path.join(outDir, heroImg));
+    }
+  }
+  if (design.layout) outHtml = applyLayout(outHtml, design.layout);
+  if (design.hero) outHtml = applyHero(outHtml, design.hero, { ctx, schedule: ctx.schedule || null });
+  if (heroImg) outHtml = outHtml.replace(/<section class="hero/, `<link rel="preload" as="image" href="${escapeHtml(heroImg)}">\n    $&`);
+  if (design.fonts) {
+    const links = fontLinks(design.fonts);
+    const stripped = outHtml.replace(/[ \t]*<link rel="preconnect" href="https:\/\/fonts\.(googleapis|gstatic)\.com"[^>]*>\n?/g, '').replace(/[ \t]*<link href="https:\/\/fonts\.googleapis\.com\/css2[^>]*>\n?/g, '');
+    outHtml = stripped.replace(/([ \t]*)<link rel="stylesheet" href="styles\.css">/, `$1${links}\n$1<link rel="stylesheet" href="styles.css">`);
+  }
   let chatFacts = null;
   if (values.chat) {
     chatFacts = buildChatFacts(cfg, ctx);
@@ -1393,12 +1429,22 @@ async function main() {
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
   fs.writeFileSync(htmlPath, values['no-claim'] ? outHtml : addClaimBar(outHtml));
   const ctaPairs = [];
-  const themeCfg = lib.theme ? { ...cfg, dark: THEMES[lib.theme].dark } : cfg;
+  let themeCfg = lib.theme ? { ...cfg, dark: THEMES[lib.theme].dark } : cfg;
+  const palOut = design.palette ? paletteCss(design.palette, { mix, rgba, ensureContrast }) : null;
+  if (palOut) themeCfg = { ...themeCfg, dark: palOut.dark };
   css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(themeCfg, primary, accent, galleryCount, { cta: ctaPairs, pay: Boolean(payUrl), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
   if (lib.theme || lib.features.length || cfg.placeholderPhotos || lib.money || ctx.zips || ctx.textOk || ctx.licenseNo || ctx.insured || ctx.certs) {
     css += MONEY_CSS + `\n:root { --on-accent: ${pickText(accent)}; }\n${cfg.placeholderPhotos ? '.hero::before { background-image: none; }\n' : ''}${FEATURE_CSS}`;
     if (lib.theme) css += themeCss(lib.theme, primary, accent, { mix, shade });
   }
+  if (palOut) {
+    css += palOut.css;
+    // CTA label: palette text unless --accent changed the button color; fail below 4.5:1 either way.
+    if (values.accent) css += `.btn-primary, .call-bar .cb-call { color: ${pickText(accent)}; }\n:root { --on-accent: ${pickText(accent)}; }\n`;
+    for (const pr of palOut.pairs) if (!(values.accent && pr[0] === 'palette CTA label')) ctaPairs.push(pr);
+  }
+  if (design.fonts) css += fontCss(design.fonts);
+  if (design.hero) css += heroCss(design.hero, heroImg);
   fs.writeFileSync(cssPath, css);
 
   const lowCta = ctaPairs.filter(([, fg, bg]) => contrast(fg, bg) < 4.5);
@@ -1423,6 +1469,7 @@ async function main() {
   if (zelle) console.log(`Zelle:    plain text next to the call to action${zelle.amount ? ' (amount shown)' : ''}`);
   if (!payUrl && !zelle) console.log('Payments: off (no pay button, no Zelle block)');
   console.log(`Theme:    ${lib.theme || 'template default'}${lib.features.length ? ` · features ${lib.features.join(', ')}` : ''}${lib.skipped.length ? ` (skipped: ${lib.skipped.join('; ')})` : ''}`);
+  if (design.palette || design.fonts || design.layout || design.hero) console.log(`Design:   palette ${design.palette || '-'} · fonts ${design.fonts || '-'} · layout ${design.layout || '-'} · hero ${design.hero || '-'}${heroImg ? ` (${heroImg})` : ''}`);
   console.log(`Chat:     ${chatFacts ? `on (chat/ + chat-facts.json: ${chatFacts.services.length} services, ${chatFacts.areas.length} area(s)${chatFacts.hours ? ', hours' : ', no hours'})` : 'off'}`);
   const optIn = [values.licensed && '--licensed', years && '--years', hours && '--hours', tagline && '--tagline', values['sample-reviews'] && '--sample-reviews'].filter(Boolean);
   console.log(`Claims:   ${optIn.length ? `opt-in ${optIn.join(', ')}` : 'facts only (name, trade, city, phone' + (email ? ', email' : '') + ')'}`);

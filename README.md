@@ -6,6 +6,18 @@ Built for quick customization and shipping on sold one-pager jobs.
 
 > **Hosting: GitHub Pages is for demos and mockups only.** GitHub's terms say Pages is not meant to host an online business, e-commerce, or any site mainly for commercial transactions ([GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)). Client production sites go on a host that allows commercial use, e.g. **Cloudflare Pages** for static one-pagers. Sites with **pickup ordering, a customer portal, or an owner login/dashboard go on Render** (Node), like `upgrade/` and `trae77/multipage-template`. Never take card data on these pages; use the payment provider's own hosted pages.
 
+### Deploying a client site
+Step-by-step guide: [docs/DEPLOY-CLOUDFLARE-PAGES.md](docs/DEPLOY-CLOUDFLARE-PAGES.md) (Direct Upload / `wrangler pages deploy`, Git, custom domain + DNS, HTTPS, form endpoints, go-live checklist). Make the clean folder first with `npm run export-client -- --site <folder> --site-url https://client.com`: it drops the claim bar and demo labels, turns indexing on, sets the schema/canonical URL, and refuses to export while sample text is left.
+
+### Design system (spec v1 P2 / spec v4 A)
+All opt-in: without these flags, builds are byte-identical to before. `auto` = the industry default.
+- `--palette ID|auto`: exact palettes for 19 industries (roofing, hvac, plumbing, electrician, landscaping, painting, cleaning, pressure-washing, handyman, auto-repair, auto-detailing, salon-barber, restaurant-foodtruck, fitness, pet-services, dental-medical, real-estate, pest-control, photography). `--primary`/`--accent` still override. Text, muted, CTA label and link pairs go through the build's contrast check (fails below 4.5:1, exit 4).
+- `--fonts ID|auto`: Google Fonts pairs, one request with `display=swap` + preconnect, ≤ 2 weights per family: `industrial` (Oswald/Inter), `utility` (Barlow Semi Condensed/Source Sans 3), `craft` (Fraunces/Nunito Sans), `bistro` (Playfair Display/Lato), `street` (Bebas Neue/Work Sans), `atelier` (Cormorant Garamond/Montserrat), `power` (Anton/Inter), `care` (Nunito/Inter), `estate` (Libre Baskerville/Inter), `gallery` (DM Serif Display/DM Sans).
+- `--layout ID|auto`: section order from `LAYOUTS` in `tools/design.mjs` (26 layouts, e.g. `trade-lead`, `trade-emergency`, `salon-book`, `rest-order`, `fit-schedule`, `care-visit`, `re-search`, `photo-portfolio`). Sections a layout doesn't name are kept (never dropped); contact stays last. An unknown id falls back to the industry default with a warning. The layout sets the default hero.
+- `--hero ID`: `split`, `centered`, `media`, `search`, `schedule` (strip from `--schedule-file`), `menu-first`, `portfolio` (mosaic from the page's gallery), `proof` (trust row before the buttons; facts only), `emergency` ("Need help now?" band with a big call button).
+- `--hero-img FILE|URL`: the client's own photo (copied to `img/`, preloaded). Implies `--hero media` if no hero is given. Never stock.
+- Samples: `samples/design-*` (10 builds; see `tools/build-samples.sh`).
+
 ## Product ladder
 
 A prospect starts with a static one-pager and can step up. These are the only two steps. **Pricing is not set** — this repo and Big Foot (`trae77/bigfootConstruction`) do not list a dollar price for either tier, so none is shown here.

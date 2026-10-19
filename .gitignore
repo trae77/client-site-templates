@@ -12,3 +12,4 @@ upgrade/data.db
 upgrade/data.db-*
 *.sqlite
 *.sqlite3
+dist-client/

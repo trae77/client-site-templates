@@ -1,0 +1,5 @@
+[
+  { "class": "Sample class A", "day": "Mon", "time": "6:00 pm" },
+  { "class": "Sample class B", "day": "Wed", "time": "6:00 pm" },
+  { "class": "Sample class C", "day": "Sat", "time": "9:00 am" }
+]

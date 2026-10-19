@@ -33,3 +33,15 @@ run daycare --name "Sample Child Care" $C --team-file $D/team-sample.json
 run law-accounting --name "Sample Law & Accounting" $C --features quote-form,process,pricing,team,map,faq --pricing-file $D/pricing-sample.json --team-file $D/team-sample.json
 run church --name "Sample Community Church" $C --hours "Gathering times go here" --features hours,map,faq
 run restaurant-ordering --name "Sample Kitchen" $C --menu-file $D/menu-sample.json --email orders@example.com
+# --- design system (spec v1 P2 / v4 A): palettes, fonts, layouts, heroes ---
+dz(){ id=$1; shift; node tools/mockup.mjs --city "Aurora, CO" --phone "(555) 010-0199" --out samples/design-$id --no-png "$@" > "${TMPDIR:-/tmp}/sample-design-$id.log" 2>&1 || { echo "FAIL design-$id"; cat "${TMPDIR:-/tmp}/sample-design-$id.log"; }; }
+dz dental-care-visit --trade dental-medical --name "Sample Family Dental" $C --faq-file $D/faq/dental-medical.json --palette auto --fonts auto --layout care-visit
+dz dental-care-proof --trade dental-medical --name "Sample Family Dental" $C --palette auto --fonts estate --layout care-proof --license-no "# goes here (sample)"
+dz fitness-fit-schedule --trade fitness --name "Sample Fitness Studio" $C --palette auto --fonts auto --layout fit-schedule --schedule-file $D/schedule-sample.json
+dz fitness-fit-community --trade fitness --name "Sample Fitness Studio" $C --palette auto --fonts street --layout fit-community
+dz photography-photo-portfolio --trade photography --name "Sample Photography" --palette auto --fonts auto --layout photo-portfolio
+dz real-estate-re-search --trade real-estate --name "Sample Realty" $C --listings-file $D/listings-sample.json --brokerage "Sample Brokerage (placeholder)" --palette auto --fonts auto --layout re-search
+dz restaurant-rest-order --trade restaurant-foodtruck --name "Sample Bistro" $C --hours "Fri-Sun 11am-8pm" --features call-bar,pickup-order,hours,map,faq --faq-file $D/faq/restaurant-foodtruck.json --menu-file $D/menu-sample.json --palette auto --fonts auto --layout rest-order
+dz salon-salon-book --trade salon-barber --name "Sample Salon & Barber" $C --sample-reviews --features call-bar,booking,reviews,map,faq --faq-file $D/faq/salon-barber.json --palette auto --fonts auto --layout salon-book
+dz plumbing-trade-emergency --trade plumbing --name "Sample Plumbing Co." $C --money emergency-request --text --palette auto --fonts auto --layout trade-emergency
+dz pest-control-trade-lead --trade pest-control --name "Sample Pest Control" $C --palette auto --fonts auto --layout trade-lead
