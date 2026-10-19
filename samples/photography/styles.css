@@ -307,6 +307,20 @@ section { padding: 4rem 0; }
 :root { --on-accent: #ffffff; }
 .hero::before { background-image: none; }
 
+.emergency-banner { background: #b91c1c; color: #fff; text-align: center; padding: 0.7rem 1rem; font-weight: 700; }
+.emergency-banner a { color: #fff; text-decoration: underline; margin-left: 0.5rem; white-space: nowrap; }
+.badge-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; padding: 1rem; margin: 0; list-style: none; background: var(--card); border-bottom: 1px solid var(--border); }
+.badge-strip li { border: 1px solid var(--border); border-radius: 999px; padding: 0.4rem 0.9rem; font-weight: 600; font-size: 0.92rem; }
+.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.steps li { counter-increment: step; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius, 12px); padding: 1.25rem; }
+.steps li::before { content: counter(step); display: inline-grid; place-items: center; width: 2rem; height: 2rem; border-radius: 999px; background: var(--brand-accent); color: var(--on-accent, #0f172a); font-weight: 800; margin-bottom: 0.5rem; }
+.checklist { columns: 2 240px; padding: 0; list-style: none; }
+.checklist li { padding: 0.35rem 0 0.35rem 1.6rem; position: relative; break-inside: avoid; }
+.checklist li::before { content: "✓"; position: absolute; left: 0; font-weight: 800; color: var(--accent); }
+.price-card .price { font-size: 1.6rem; font-weight: 800; margin: 0.25rem 0 0.5rem; }
+.price-card ul { padding-left: 1.1rem; margin: 0; }
+.team-card img, .team-card .ph-tile { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius, 12px); margin-bottom: 0.75rem; }
+.team-card p { margin: 0.25rem 0 0; }
 /* Feature sections (tools/library.mjs) */
 .ph-tile { display: grid; place-items: center; aspect-ratio: 4/3; border-radius: var(--radius, 12px); margin: 0; color: rgba(255,255,255,0.92); font-weight: 600; font-size: 0.95rem; text-align: center; padding: 1rem;
   background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent)); }

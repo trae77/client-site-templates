@@ -1,0 +1,31 @@
+/* Pickup ordering widget */
+.order-grid { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; }
+@media (max-width: 860px) { .order-grid { grid-template-columns: 1fr; } }
+.order-menu { display: grid; gap: 1rem; }
+.order-item { display: flex; justify-content: space-between; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px dashed var(--border); }
+.order-item p { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.92rem; }
+.order-item-act { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+.order-add { padding: 0.5rem 1rem; min-height: 44px; }
+.order-cart { position: sticky; top: 90px; }
+.order-lines { list-style: none; padding: 0; margin: 0 0 0.75rem; }
+.order-line { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.45rem 0; border-bottom: 1px solid var(--border); }
+.order-qty button { width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: inherit; font-size: 1.2rem; cursor: pointer; }
+.order-total { font-weight: 700; }
+.order-pre { white-space: pre-wrap; font: inherit; background: var(--bg); padding: 0.75rem; border-radius: 8px; }
+.order-msg, .order-error { font-weight: 600; }
+.order-dialog { border: 0; border-radius: 14px; padding: 1.25rem; width: min(92vw, 420px); background: var(--card); color: var(--text); }
+.order-dialog::backdrop { background: rgba(0,0,0,0.5); }
+.order-dialog fieldset { border: 1px solid var(--border); border-radius: 10px; margin: 0 0 0.75rem; }
+.order-choice { display: flex; align-items: center; gap: 0.4rem; min-height: 40px; }
+.order-dialog-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+.btn-ghost-dark { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.order-bar { display: none; }
+.order-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (max-width: 700px) {
+  .order-cart { position: static; }
+  .order-bar:not([hidden]) { display: block; position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 9100; text-align: center; padding: 0.9rem; border-radius: 12px; background: var(--brand-accent); color: var(--on-accent, #0f172a); font-weight: 700; text-decoration: none; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  body.has-order-bar { padding-bottom: 140px; }
+  body.has-order-bar [data-claim-bar] { bottom: 76px !important; }
+  body.has-order-bar.has-call-bar .order-bar { bottom: 80px; }
+  body.has-order-bar.has-call-bar [data-claim-bar] { bottom: 144px !important; }
+}
