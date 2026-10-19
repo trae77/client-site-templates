@@ -1,0 +1,42 @@
+[
+  {
+    "q": "Do you take reservations?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  },
+  {
+    "q": "How does pickup ordering work?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  },
+  {
+    "q": "Do you have vegetarian, vegan or gluten-free options?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  },
+  {
+    "q": "Do you cater?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  },
+  {
+    "q": "Where will the truck be this week?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  },
+  {
+    "q": "What areas do you serve?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  },
+  {
+    "q": "How do I get a price?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  },
+  {
+    "q": "What's your availability?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  },
+  {
+    "q": "How do I pay?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  },
+  {
+    "q": "What happens after I send a request?",
+    "a": "Sample answer: the owner’s own answer goes here."
+  }
+]

@@ -19,7 +19,7 @@ export const MONEY = {
     fields: (cfg) => [['jobs', 'Jobs', 'checks', [...svc(cfg), 'Something else']], ['when', 'Preferred day', 'date'], ['name', 'Name', 'text'], ['phone', 'Phone', 'tel'], ['details', 'Details', 'textarea']] },
   'service-request': { short: 'Service', title: 'Request Service', submit: 'Request service', static: true,
     fields: (cfg) => [['vehicle', 'Year, make and model', 'text'], ['mileage', 'Mileage', 'text'], ['services', 'Services', 'checks', [...svc(cfg), 'Not sure']], ['dropoff', 'Preferred drop-off date', 'date'], ['name', 'Name', 'text'], ['phone', 'Phone', 'tel']] },
-  'package-picker': { short: 'Packages', title: 'Choose a Package', intro: (c) => `Pick what fits and ${c.nameHtml} confirms the details and price with you.`, submit: 'Request this package', static: true, cards: true,
+  'package-picker': { short: 'Packages', title: 'Choose a Package', intro: (c) => `Pick what fits and ${c.nameHtml} confirms the details and price with you.`, submit: 'Request this package', static: true,
     fields: (cfg, ctx) => [['package', 'Package', 'radio', svc(cfg)], ...(ctx.tradeKey && /detail/.test(ctx.tradeKey) ? [['size', 'Vehicle size', 'select', ['Car', 'SUV / crossover', 'Truck / van']]] : [['date', 'Date you have in mind', 'date']]), ['name', 'Name', 'text'], ['phone', 'Phone', 'tel'], ['notes', 'Notes', 'textarea']] },
   'class-schedule': { short: 'Try a class', title: 'Try a Class', submit: 'Request a spot', static: true, schedule: true,
     fields: (cfg, ctx) => [['class', 'Class', 'select', ctx.schedule ? ctx.schedule.map((s) => `${s.class} · ${s.day} ${s.time}`) : svc(cfg)], ['name', 'Name', 'text'], ['phone', 'Phone', 'tel']] },
@@ -27,7 +27,7 @@ export const MONEY = {
     fields: (cfg) => [['pet', 'Pet name', 'text'], ['breed', 'Breed and size', 'text'], ['service', 'Service', 'select', svc(cfg)], ['date', 'Preferred date', 'date'], ['vacc', 'My pet is up to date on vaccinations', 'checkbox'], ['name', 'Your name', 'text'], ['phone', 'Phone', 'tel']] },
   'appointment-request': { short: 'Request visit', title: 'Request a Visit', intro: () => 'Please do not include medical details in this form.', submit: 'Request a visit', static: true,
     fields: (cfg) => [['patient', 'Patient', 'radio', ['New patient', 'Current patient']], ['visit', 'Visit type', 'select', svc(cfg)], ['when', 'Preferred days and times', 'text'], ['name', 'Name', 'text'], ['phone', 'Phone', 'tel']] },
-  'listing-search': { short: 'Listings', title: 'Listings', submit: 'Send request', static: true, listings: true,
+  'listing-search': { short: 'Homes', title: 'Listings', titleNoData: 'Tell Me What You’re Looking For', submit: 'Send request', static: true, listings: true,
     fields: () => [['want', 'I want to', 'radio', ['Request a showing', 'Ask what my home might sell for']], ['address', 'Address or listing', 'text'], ['name', 'Name', 'text'], ['phone', 'Phone', 'tel']] },
   // Existing sections reused as money features (built in library.mjs, moved after the hero):
   booking: { reuse: 'booking', static: true },
@@ -82,7 +82,7 @@ export function buildMoney(type, cfg, ctx) {
     const areas = [...new Set(ctx.listings.map((l) => l.area).filter(Boolean))];
     extra = `<div class="m-filters"><label for="m-f-area">Area</label><select id="m-f-area" data-filter="area"><option value="">All areas</option>${areas.map((a) => `<option>${esc(a)}</option>`).join('')}</select>
           <label for="m-f-beds">Bedrooms</label><select id="m-f-beds" data-filter="beds"><option value="">Any</option><option value="2">2 or more</option><option value="3">3 or more</option><option value="4">4 or more</option></select></div>
-        <div class="feature-grid m-listings">${ctx.listings.map((l) => `<div class="panel m-listing" data-area="${esc(l.area || '')}" data-beds="${Number(l.beds) || 0}"><h3>${esc(l.title)}</h3>${l.price ? `<p class="price">${esc(l.price)}</p>` : ''}<p>${[l.beds && `${esc(l.beds)} bd`, l.baths && `${esc(l.baths)} ba`, l.area && esc(l.area)].filter(Boolean).join(' · ')}</p><p class="lib-note">${esc(ctx.brokerage)}</p>${l.url ? `<a href="${esc(l.url)}" rel="noopener noreferrer">Details</a>` : ''}</div>`).join('')}
+        <div class="feature-grid m-listings">${ctx.listings.map((l) => `<div class="panel m-listing" data-area="${esc(l.area || '')}" data-beds="${Number(l.beds) || 0}">${l.photo ? `<img src="${esc(l.photo)}" alt="${esc(l.title)}" width="800" height="600" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px">` : `<div class="ph-tile" role="img" aria-label="Listing photo placeholder"><span>Listing photo</span></div>`}<h3>${esc(l.title)}</h3>${l.price ? `<p class="price">${esc(l.price)}</p>` : ''}<p>${[l.beds && `${esc(l.beds)} bd`, l.baths && `${esc(l.baths)} ba`, l.area && esc(l.area)].filter(Boolean).join(' · ')}</p><p class="lib-note">${esc(ctx.brokerage)}</p>${l.url ? `<a href="${esc(l.url)}" rel="noopener noreferrer">Details</a>` : ''}</div>`).join('')}
         </div>`;
   }
   if (m.cards) {
@@ -97,7 +97,7 @@ export function buildMoney(type, cfg, ctx) {
     <section id="money" class="money" aria-labelledby="money-title">
       <div class="container">
         <div class="section-head">
-          <h2 id="money-title">${m.title}</h2>
+          <h2 id="money-title">${m.listings && !ctx.listings ? m.titleNoData : m.title}</h2>
           <p>${intro}</p>
         </div>
         ${extra}${link}

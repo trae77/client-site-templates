@@ -148,6 +148,7 @@
     bar.hidden = !count;
     // One bottom bar on phones: reuse the call bar's main button instead of stacking a second bar.
     var cb = document.querySelector('.call-bar .cb-money');
+    if (cb && !cb.getAttribute('data-label')) cb.setAttribute('data-label', cb.textContent);
     if (cb) { bar.hidden = true; cb.textContent = count ? 'Order · ' + count + (t != null ? ' · ' + money(t) : '') : (cb.getAttribute('data-label') || cb.textContent); if (!cb.getAttribute('data-label')) cb.setAttribute('data-label', 'Order for Pickup'); cb.setAttribute('href', count ? '#order-cart' : '#order'); }
     document.body.classList.toggle('has-order-bar', count > 0);
     summary.hidden = true;
@@ -191,6 +192,7 @@
     }
   }
 
+  var stat = root.querySelector('.order-static'); if (stat) stat.remove(); // no-JS menu fallback
   var grid = el('div', { class: 'order-grid' }, [menuWrap, cartPanel]);
   root.appendChild(grid);
   root.appendChild(live);

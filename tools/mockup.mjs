@@ -34,6 +34,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { COPY, jsonLd, parseHoursJson, faqBank } from './v3.mjs';
 import { MONEY, MONEY_DEFAULTS, MONEY_CSS, MONEY_SCRIPT, buildMoney, buildZip, trustItems } from './money.mjs';
 import { CATEGORIES, REUSED, REUSED_DEFAULTS, EXTRA_ALIASES, FEATURES, THEMES, FEATURE_CSS, themeCss, buildFeatures, buildFaq, parseCenter, geocode } from './library.mjs';
 
@@ -109,6 +110,7 @@ const TEMPLATES = {
     address: '312 Main Street, Golden, CO 80401',
     addressLabel: 'Location',
     defaults: { primary: '#b91c1c', accent: '#f59e0b' },
+    servicesTitle: 'Menu',
     servicesNote: 'Sample menu sections for this mockup. The menu can be matched to exactly what {name} serves.',
     ask: 'with any questions',
     services: [
@@ -172,7 +174,7 @@ for (const [key, c] of Object.entries(CATEGORIES)) {
 // Friendly trade names -> template folder. Unknown trades fall back to generic-business.
 const TRADE_ALIASES = {
   'pressure-washing': ['pressure-washing', 'pressure-wash', 'pressure', 'power-washing', 'power-wash', 'powerwashing', 'pressurewashing', 'soft-wash', 'softwash', 'exterior-cleaning', 'window-washing'],
-  landscaping: ['landscaping', 'landscape', 'landscaper', 'lawn', 'lawn-care', 'lawncare', 'lawn-service', 'mowing', 'yard', 'yard-care', 'tree-service', 'snow-removal'],
+  landscaping: ['landscaping', 'landscape', 'landscaper', 'lawn', 'lawn-care', 'lawncare', 'lawn-service', 'mowing', 'yard', 'yard-care', 'snow-removal'],
   plumbing: ['plumbing', 'plumber', 'plumbers', 'drain', 'water-heater'],
   'cleaning-service': ['cleaning-service', 'cleaning', 'cleaner', 'cleaners', 'house-cleaning', 'maid', 'maids', 'janitorial', 'commercial-cleaning', 'carpet-cleaning'],
   restaurant: ['restaurant', 'pizza', 'pizzeria', 'cafe', 'coffee', 'bakery', 'food', 'food-truck', 'diner', 'bar', 'catering'],
@@ -417,6 +419,11 @@ Library (tools/library.mjs, see README "Template library"):
   --zips "80011,80012"  "Do you serve my area?" checker (also matches --areas names)
   --license-no TEXT  --insured  --certs "A,B"   trust row under the hero CTA (facts only)
   --schedule-file F.json [{class,day,time}]   --listings-file F.json + --brokerage NAME
+Spec v3:
+  --faq-bank     print the trade's FAQ question bank as JSON (empty answers) and exit
+  --faq-file F   owner answers; FAQ shows only answered questions   --faq-schema  add FAQPage JSON-LD
+  --hours-json '{"Mon-Fri":"08:00-17:00"}'  structured hours for JSON-LD   --address TEXT   --cuisine TEXT
+  --site-url https://...   --free-estimates (owner offers them; allows the word "free")
   --emergency "TEXT"   banner shown verbatim (e.g. what the business says about 24/7)
   --badges "A,B,C"     trust strip, verbatim (licenses, memberships the business gave you)
   --checklist "A,B"    "What's included" list    --steps-file F.json  process steps [{title,text?}]
@@ -646,7 +653,7 @@ function rebuildCopy(cfg, html, ctx, tok) {
   sub(/<section id="services"[\s\S]*?<\/section>/, `<section id="services" aria-labelledby="services-title">
       <div class="container">
         <div class="section-head">
-          <h2 id="services-title">Services</h2>
+          <h2 id="services-title">${cfg.servicesTitle || 'Services'}</h2>
           <p>${note}</p>
         </div>
         <div class="cards">${cards}
@@ -665,7 +672,7 @@ function rebuildCopy(cfg, html, ctx, tok) {
         <div class="about-panel">
           <h2 id="about-title">About ${nameHtml}</h2>
           <p>${nameHtml} serves customers in ${city}.${aboutFacts}${aboutAsk}</p>
-          <p><strong>Service areas:</strong></p>
+          <p><strong>${cfg.areasLabel || 'Service areas'}:</strong></p>
           <div class="pill-list">
             ${ctx.areas.map((x) => `<span class="pill">${escapeHtml(x)}</span>`).join('')}
           </div>
@@ -843,7 +850,7 @@ const CLAIM_RULES = [
   { what: 'business hours', flag: 'hours', re: /\bhours\b|\b\d{1,2}(:\d{2})?\s*(am|pm)\b|\b(mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun)(day)?\b|\bby appointment\b|\bappointments?\b/i },
   { what: '24/7 / emergency / same-day availability', re: /\b24\s*\/\s*7\b|\b24[- ]hour|\bemergenc(y|ies)\b|\bsame[- ]day\b|\bnext[- ]day\b|\bon[- ]call\b|\bweekends?\b|\bevenings?\b/i },
   { what: 'response-time promise', re: /\bwithin\s+(\d+|an?|one)\b|\b\d+\s*(minutes?|mins?|hours?|hrs?)\b|\bminutes\b|\b(fast|quick|quickly|prompt|promptly|rapid|shortly|on[- ]time|on schedule|one visit|first time|typically reply)\b/i },
-  { what: 'free estimate / pricing promise', re: /\bfree\b|\bno[- ]obligation\b|\bdiscounts?\b|\bvolume pricing\b|\bno (surprise|hidden|mystery)\b|\b(upfront|clear|honest|transparent|fair) (quotes?|pricing|prices|rates)\b/i },
+  { what: 'free estimate / pricing promise', flag: 'freeEstimates', re: /\bfree\b|\bno[- ]obligation\b|\bdiscounts?\b|\bvolume pricing\b|\bno (surprise|hidden|mystery)\b|\b(upfront|clear|honest|transparent|fair) (quotes?|pricing|prices|rates)\b/i },
   { what: 'quality / trust claim', re: /\b(trusted|reliable|honest|upfront|transparent|expert|experts|experienced|professional|pro-grade|eco[- ]?(friendly|conscious)|trained|craftsmanship|showroom)\b/i },
   { what: 'team size / crews', re: /\b(crews?|teams?|technicians?|staff|employees|trucks?|fleet of)\b/i },
   { what: 'street address', re: /\b\d{1,6}\s+(?:[A-Z][\w.]*\s+){1,4}(St|Street|Ave|Avenue|Blvd|Boulevard|Rd|Road|Dr|Drive|Ln|Lane|Way|Ct|Court|Pkwy|Parkway|Pl|Place|Hwy|Highway)\b|\bSuite\s+\d+|\b\d{5}(-\d{4})?\b/ },
@@ -1060,6 +1067,11 @@ function libraryOptions(values, folder, tradeKey) {
   if (MONEY[money]?.reuse && !features.includes(MONEY[money].reuse)) features.push(MONEY[money].reuse);
   if (money && money !== 'quote-form' && !MONEY[money].reuse) features = features.filter((f) => f !== 'quote-form'); // one form, not two
   if (money === 'quote-form') features = features.filter((f) => f !== 'quote-form');
+  if (money && money !== 'booking') features = features.filter((f) => f !== 'booking'); // spec v3 B2: one booking section
+  if (features.includes('faq') && !values['faq-file']) {
+    if (explicit && values.features.includes('faq')) throw new Error('--features faq needs --faq-file with the owner\'s answers (see --faq-bank). Answers are never written for them.');
+    features = features.filter((f) => f !== 'faq'); skipped.push('faq (no --faq-file; run --faq-bank for the question list)');
+  }
   // Order sections the same way every time.
   features = FEATURES.filter((f) => features.includes(f));
   return { theme, features, skipped, money };
@@ -1102,8 +1114,8 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
   }
   if (values['faq-file']) {
     const f = readJson('faq-file', values['faq-file']);
-    if (!Array.isArray(f) || f.some((x) => !x.q || !x.a)) throw new Error('--faq-file must be a JSON array of { "q", "a" } supplied by the business.');
-    out.faqExtra = f;
+    if (!Array.isArray(f) || f.some((x) => !x.q)) throw new Error('--faq-file must be a JSON array of { "q", "a" } supplied by the business.');
+    out.faqExtra = f.filter((x) => String(x.a || '').trim());
     out.suppliedText.push(...f.flatMap((x) => [x.q, x.a]));
   }
   if (has('before-after') && values['before-after']) {
@@ -1128,6 +1140,13 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
     if (values['order-url']) out.orderUrl = httpsOnly('order-url', values['order-url']);
   }
   out.money = lib.money;
+  out.freeEstimates = Boolean(values['free-estimates']);
+  if (values['hours-json']) out.hoursSpec = parseHoursJson(values['hours-json']);
+  if (values.address) out.address = validateText('address', values.address, 120);
+  if (values.cuisine) out.cuisine = validateText('cuisine', values.cuisine, 60);
+  if (values['site-url']) out.siteUrl = httpsOnly('site-url', values['site-url']);
+  out.faqSchema = Boolean(values['faq-schema']);
+  for (const v of [out.address, out.cuisine]) if (v) out.suppliedText.push(v);
   out.tradeKey = slugify(values.trade);
   out.textOk = Boolean(values.text);
   if (values['money-endpoint']) out.moneyEndpoint = httpsOnly('money-endpoint', values['money-endpoint']);
@@ -1138,6 +1157,7 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
     out.zips = values.zips.split(',').map((z) => z.trim()).filter(Boolean);
     if (out.zips.some((z) => !/^\d{5}$/.test(z))) throw new Error('--zips must be comma-separated 5-digit ZIP codes.');
   }
+  if (values.brokerage && !out.brokerage) out.brokerage = validateText('brokerage', values.brokerage, 80);
   if (values['license-no']) out.licenseNo = validateText('license-no', values['license-no'], 60);
   out.insured = Boolean(values.insured);
   if (values.certs) out.certs = values.certs.split(',').map((c) => c.trim()).filter(Boolean);
@@ -1149,7 +1169,16 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
   if (values['listings-file']) {
     const ls = readJson('listings-file', values['listings-file']);
     if (!Array.isArray(ls) || ls.some((x) => !x.title)) throw new Error('--listings-file must be a JSON array of the agent\'s own listings { "title", "price"?, "beds"?, "baths"?, "area"?, "url"? }.');
-    out.listings = ls; out.brokerage = validateText('brokerage', values.brokerage, 80);
+    fs.mkdirSync(path.join(outDir, 'img'), { recursive: true });
+    out.listings = ls.map((x, i) => {
+      if (!x.photo) return x;
+      const src = path.resolve(path.dirname(path.resolve(values['listings-file'])), x.photo);
+      if (!fs.existsSync(src)) throw new Error(`--listings-file: photo not found: ${x.photo}`);
+      const dest = `img/listing-${i + 1}${path.extname(src).toLowerCase()}`;
+      fs.copyFileSync(src, path.join(outDir, dest));
+      return { ...x, photo: dest };
+    });
+    out.brokerage = validateText('brokerage', values.brokerage, 80);
   }
   out.rated = (out.reviews || []).some((r) => Number(r.rating) > 0);
   for (const v of [...(out.zips || []), out.licenseNo, ...(out.certs || []), out.brokerage, ...(out.schedule || []).flatMap((x) => [x.class, x.day, x.time]),
@@ -1190,6 +1219,38 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
   return out;
 }
 
+/** Spec v3: per-trade copy blocks, JSON-LD, combo mobile nav, brokerage line. */
+function applyV3(html, cfg, ctx, { folder, tradeKey, lib, libOn }) {
+  const copy = COPY[folder];
+  const city = escapeHtml(ctx.cityFull);
+  if (copy) {
+    const c = { name: ctx.nameHtml, city, cityName: escapeHtml(ctx.cityName), areas: ctx.areas.map(escapeHtml).join(', '), cuisine: ctx.cuisine && escapeHtml(ctx.cuisine),
+      practice: /dent/.test(tradeKey) ? 'Dental care' : /medical|clinic|doctor|chiro|therapy/.test(tradeKey) ? 'Medical care' : 'Dental &amp; medical care' };
+    if (!ctx.tagline) html = html.replace(/<h1 id="hero-title">[\s\S]*?<\/h1>/, () => `<h1 id="hero-title">${copy.h1(c)}</h1>`);
+    html = html.replace(/<p class="lead">[\s\S]*?<\/p>/, () => `<p class="lead">${copy.sub(c)} Call <a href="${ctx.tel}">${escapeHtml(ctx.phoneDisplay)}</a>.</p>`);
+    let primary = lib.money ? ((ctx.listings && copy.listingsPrimary) || (ctx.freeEstimates && copy.free) || copy.primary) : (copy.noMoneyPrimary || null);
+    if (primary) {
+      html = html.replace(/(<a class="btn btn-primary" href=")([^"]*)(">)[^<]*(<\/a>)/, (m, a, href, b, d) => `${a}${!lib.money && copy.noMoneyPrimary ? '#services' : href}${b}${escapeHtml(primary)}${d}`);
+      html = html.replace(/(<a class="cb-alt cb-money" href="[^"]*">)[^<]*(<\/a>)/, (m, a, d) => `${a}${escapeHtml(copy.sticky)}${d}`);
+    }
+    const others = ctx.areas.filter((a) => a.toLowerCase() !== ctx.cityName.toLowerCase());
+    const service = /truck/.test(tradeKey) && ctx.label ? capFirst(ctx.label) : copy.service;
+    const t = `${service} in ${ctx.cityFull} | ${ctx.name}`;
+    let meta = `${service} in ${ctx.cityFull}${others.length ? `, ${others.join(', ')}` : ''}. ${primary ? `${primary.replace(/\?$/, '')} online or call` : 'Call'} ${ctx.phoneDisplay}.`;
+    if (meta.length > 155) meta = `${service} in ${ctx.cityFull}. Call ${ctx.phoneDisplay}.`;
+    html = html.replace(/<title>[^<]*<\/title>/, () => `<title>${escapeHtml(t)}</title>`).replace(/<meta name="description" content="[^"]*">/, () => `<meta name="description" content="${escapeHtml(meta)}">`);
+  }
+  html = html.replace('</head>', () => `${jsonLd(ctx, cfg, folder, tradeKey)}\n</head>`);
+  if (ctx.brokerage) html = html.replace(/(<div class="container footer-bottom">)/, (m) => `${m}\n      <span>Brokerage: ${escapeHtml(ctx.brokerage)}</span>`);
+  if (libOn) {
+    // Combo navigation (NN/g): 2-3 visible links on phones plus a labeled Menu button.
+    const pri = [lib.money ? ['#money', MONEY[lib.money].short || 'Request'] : null, ['#services', cfg.servicesTitle || 'Services'], ['#contact', 'Contact']].filter(Boolean)
+      .map(([h, t]) => [MONEY[lib.money]?.reuse === 'pickup-order' && h === '#money' ? '#order' : MONEY[lib.money]?.reuse === 'booking' && h === '#money' ? '#booking' : h, t]);
+    html = html.replace(/(<button class="nav-toggle"[^>]*>)[\s\S]*?(<\/button>)/, (m, a, b) => `<nav class="nav-priority" aria-label="Main links">${pri.map(([h, t]) => `<a href="${h}">${escapeHtml(t)}</a>`).join('')}</nav>\n      ${a.replace('aria-label="Open menu"', 'aria-label="Open full menu"')}<span class="nav-toggle-label">Menu</span>${b}`);
+  }
+  return html;
+}
+
 function applyFeatures(html, f) {
   const must = (re, what) => { if (!re.test(html)) throw new Error(`Feature placement: ${what} not found in template.`); };
   if (f.afterServices) {
@@ -1226,6 +1287,8 @@ async function main() {
       theme: { type: 'string' }, features: { type: 'string' }, 'map-center': { type: 'string' }, 'map-area': { type: 'string' },
       'booking-url': { type: 'string' }, 'menu-file': { type: 'string' }, 'reviews-file': { type: 'string' }, 'faq-file': { type: 'string' },
       'before-after': { type: 'string' },
+      'free-estimates': { type: 'boolean', default: false }, 'hours-json': { type: 'string' }, address: { type: 'string' }, cuisine: { type: 'string' },
+      'site-url': { type: 'string' }, 'faq-schema': { type: 'boolean', default: false }, 'faq-bank': { type: 'boolean', default: false },
       money: { type: 'string' }, 'money-endpoint': { type: 'string' }, 'money-link': { type: 'string' }, zips: { type: 'string' },
       text: { type: 'boolean', default: false }, 'license-no': { type: 'string' }, insured: { type: 'boolean', default: false }, certs: { type: 'string' },
       'schedule-file': { type: 'string' }, 'listings-file': { type: 'string' }, brokerage: { type: 'string' },
@@ -1239,6 +1302,13 @@ async function main() {
     allowPositionals: false,
   });
   if (values.help) { console.log(usage()); return; }
+  if (values['faq-bank']) {
+    if (!values.trade) { console.error('--faq-bank needs --trade'); process.exit(1); }
+    const { folder: f } = resolveTrade(values.trade);
+    console.log(JSON.stringify(faqBank(f, values.licensed).map((q) => ({ q, a: '' })), null, 2));
+    console.error('Fill in the answers the owner gives you; questions with an empty "a" are skipped. Then pass --faq-file.');
+    return;
+  }
   if (values.list) { console.log(usage().split('Trade aliases:')[1]); return; }
   const missing = ['name', 'trade', 'city', 'phone'].filter((k) => !values[k]);
   if (missing.length) { console.error(`Missing required flag(s): ${missing.map((m) => '--' + m).join(', ')}\n${usage()}`); process.exit(1); }
@@ -1256,7 +1326,7 @@ async function main() {
   const cfg = TEMPLATES[folder];
   const primary = toHex(parseHex(values.primary || cfg.defaults.primary));
   const accent = toHex(parseHex(values.accent || cfg.defaults.accent));
-  const { cityName, cityFull } = parseCity(values.city);
+  const { cityName, cityFull, state } = parseCity(values.city);
   const slug = slugify(values.name) || 'mockup';
   const email = values.email ? values.email.trim() : null;
   const phoneDisplay = formatPhone(values.phone);
@@ -1268,7 +1338,7 @@ async function main() {
   if (!areas.some((a) => a.toLowerCase() === cityName.toLowerCase())) areas.unshift(cityName);
 
   const ctx = {
-    name: values.name, nameHtml: escapeHtml(values.name), phoneDisplay, tel: telHref(values.phone), email, cityName, cityFull, areas,
+    name: values.name, nameHtml: escapeHtml(values.name), phoneDisplay, tel: telHref(values.phone), email, cityName, cityFull, areas, state,
     label: (tradeKey === folder && cfg.label) || REUSED_DEFAULTS[tradeKey]?.label || tradeLabel(values.trade), payBlock, zelle,
     licensed: values.licensed, years, hours, tagline, sampleReviews: values['sample-reviews'],
   };
@@ -1310,6 +1380,7 @@ async function main() {
       for (const f of ['order.js', 'order.css']) fs.copyFileSync(path.join(REPO_ROOT, 'widgets', 'order', f), path.join(outDir, 'order', f));
     }
   }
+  outHtml = applyV3(outHtml, cfg, ctx, { folder, tradeKey, lib, libOn: Boolean(lib.theme || lib.features.length || lib.money || ctx.zips || values.text) });
   let chatFacts = null;
   if (values.chat) {
     chatFacts = buildChatFacts(cfg, ctx);

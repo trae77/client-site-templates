@@ -31,7 +31,7 @@ export const CATEGORIES = {
   },
   painting: {
     label: 'painting', theme: 'warm-local', defaults: { primary: '#0f766e', accent: '#c2410c' },
-    features: ['call-bar', 'quote-form', 'before-after', 'faq'],
+    features: ['call-bar', 'quote-form', 'before-after', 'map', 'faq'],
     services: [['Interior Painting', 'Walls, ceilings, and rooms.'], ['Exterior Painting', 'Siding, trim, and doors.'], ['Cabinets & Trim', 'Cabinet refinishing and trim work.'], ['Drywall Repair', 'Patches and prep before paint.']],
     aliases: ['painting', 'painter', 'painters', 'house-painting', 'interior-painting', 'exterior-painting'],
   },
@@ -61,7 +61,7 @@ export const CATEGORIES = {
   },
   'dental-medical': {
     label: 'dental & medical care', theme: 'clean-minimal', defaults: { primary: '#0369a1', accent: '#0f766e' },
-    features: ['call-bar', 'booking', 'map', 'faq'], ask: 'to request a visit', addressLabel: 'Location',
+    features: ['call-bar', 'booking', 'map', 'faq'], ask: 'to request a visit', addressLabel: 'Location', areasLabel: 'Location',
     services: [['Checkups', 'Routine visits and exams.'], ['Cleanings', 'Routine dental cleanings.'], ['New Patients', 'Getting started with a first visit.'], ['Other Services', 'Ask about anything not listed here.']],
     aliases: ['dental-medical', 'dental', 'dentist', 'dental-office', 'medical', 'clinic', 'doctor', 'chiropractor', 'physical-therapy', 'orthodontist'],
   },
@@ -285,6 +285,14 @@ export const FEATURE_CSS = `
 .menu-item p { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.92rem; }
 .menu-price { font-weight: 700; white-space: nowrap; }
 .review-card { margin: 0; }
+.nav-priority { display: none; }
+.nav-toggle-label { font-weight: 700; font-size: 0.95rem; }
+@media (max-width: 800px) {
+  .nav-priority { display: flex; gap: 0.9rem; margin-left: auto; margin-right: 0.5rem; }
+  .nav-priority a { font-weight: 600; font-size: 0.92rem; text-decoration: none; color: inherit; padding: 0.6rem 0; }
+  .nav-toggle { width: auto !important; padding: 0 0.85rem !important; border: 1px solid var(--border) !important; display: inline-flex !important; align-items: center; min-height: 44px; color: inherit; }
+}
+@media (max-width: 420px) { .nav-priority a:nth-child(2) { display: none; } .logo { font-size: 1rem; } }
 .call-bar { display: none; }
 @media (max-width: 700px) {
   body.has-call-bar { padding-bottom: 72px; }
@@ -448,7 +456,12 @@ export function buildFeatures(features, cfg, ctx) {
     const data = { site: ctx.slug, name: ctx.name, phone: ctx.phoneDisplay, email: ctx.email || undefined, endpoint: ctx.orderEndpoint || undefined, menu: ctx.orderMenu };
     const sample = ctx.orderMenuSample ? `Sample menu: placeholder items and prices, not ${name}'s real menu. ` : '';
     const link = ctx.orderUrl ? `\n        <p><a class="btn btn-accent" href="${esc(ctx.orderUrl)}" rel="noopener noreferrer">Order on ${name}'s ordering page</a></p>` : '';
-    (ctx.money === 'pickup-order' ? moneyArr : after).push(section('order', ctx.orderMenuSample ? 'Order for Pickup (Sample Menu)' : 'Order for Pickup', `${sample}Pick your items and a pickup time. Pay at pickup. No payment is taken on this page.`, `<div id="order-app"><noscript><p>Ordering needs JavaScript. Please call ${phone}.</p></noscript></div>${link}
+    (ctx.money === 'pickup-order' ? moneyArr : after).push(section('order', ctx.orderMenuSample ? 'Order for Pickup (Sample Menu)' : 'Order for Pickup', `${sample}Pick your items and a pickup time. Pay at pickup. No payment is taken on this page.`, `<div id="order-app"><div class="order-static">${ctx.orderMenu.map((s) => `
+          <div class="panel menu-section"><h3>${esc(s.section)}</h3>${s.items.map((it) => `
+            <div class="menu-item"><div><strong>${esc(it.name)}</strong>${it.desc ? `<p>${esc(it.desc)}</p>` : ''}</div>${it.price ? `<span class="menu-price">${esc(it.price)}</span>` : ''}</div>`).join('')}
+          </div>`).join('')}
+          <p class="lib-note order-nojs">To order, call <a href="${ctx.tel}">${phone}</a>.</p>
+        </div></div>${link}
         <script type="application/json" id="order-data">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`));
     nav.push(['#order', 'Order']);
     heroCta = ['#order', 'Order for Pickup'];
@@ -483,7 +496,7 @@ export function buildFeatures(features, cfg, ctx) {
         </div>`));
   }
 
-  if (on('faq')) {
+  if (on('faq') && buildFaq(cfg, ctx).length) {
     const faq = buildFaq(cfg, ctx);
     before.push(section('faq', 'Questions', '', `<div class="faq">${faq.map((f) => `
           <details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('')}
@@ -510,6 +523,9 @@ function callBar(ctx, cta, phone) {
 
 /** FAQ built only from supplied facts (plus any --faq-file entries). */
 export function buildFaq(cfg, ctx) {
+  return (ctx.faqExtra || []).filter((f) => f.a);
+}
+export function buildFactFaq(cfg, ctx) {
   const out = [];
   const contact = `Call ${ctx.phoneDisplay}${ctx.email ? ` or email ${ctx.email}` : ''}.`;
   out.push({ q: 'What services do you offer?', a: `${cfg.services.map(([t]) => t).join(', ')}. ${contact.replace(/\.$/, '')} to ask about anything else.` });

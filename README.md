@@ -4,6 +4,8 @@ Polished, mostly-complete **HTML/CSS/JS one-pager templates** for small US busin
 
 Built for quick customization and shipping on sold one-pager jobs.
 
+> **Hosting: GitHub Pages is for demos and mockups only.** GitHub's terms say Pages is not meant to host an online business, e-commerce, or any site mainly for commercial transactions ([GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)). Client production sites go on a host that allows commercial use, e.g. **Cloudflare Pages** for static one-pagers. Sites with **pickup ordering, a customer portal, or an owner login/dashboard go on Render** (Node), like `upgrade/` and `trae77/multipage-template`. Never take card data on these pages; use the payment provider's own hosted pages.
+
 ## Product ladder
 
 A prospect starts with a static one-pager and can step up. These are the only two steps. **Pricing is not set** — this repo and Big Foot (`trae77/bigfootConstruction`) do not list a dollar price for either tier, so none is shown here.
@@ -185,6 +187,18 @@ Sample data for demos lives in `tools/sample-data/` (`menu-sample.json`, `pricin
 **ZIP checker:** `--zips "80011,80012"` adds "Do You Serve My Area?". It matches the ZIPs and `--areas` town names (prefixes work for towns) and answers "Yes…" or "…not on the list. Call to ask."
 
 **Contrast check (build time):** every CTA pair (hero/call-bar button text on the accent, and nav/accent button text on the link color) must reach 4.5:1, or the build stops with exit code 4. Text color is whichever of white or dark has more contrast. New default accents, chosen so white text passes: hvac `#dc2626` (4.83), dental-medical `#0f766e` (5.47), fitness `#15803d` (5.02), painting `#c2410c` (5.18), pet-services `#be185d` (6.04).
+
+### Spec v3: copy blocks, JSON-LD, FAQ banks, fixes
+
+- **Copy blocks** (`tools/v3.mjs` `COPY`): per-trade H1, subhead, hero button, sticky-bar label, `<title>` (`{service} in {city} | {name}`) and meta description (`{service} in {city}, {areas}. {CTA} online or call {phone}.`, max 155 chars). Applied to every build of those trades. `--tagline` still overrides the H1. `--free-estimates` (the owner offers them) unlocks the word "free" and the "Free" button variants.
+- **JSON-LD** in `<head>` on every build: the most specific schema.org type (each checked to exist at schema.org), plus name, telephone (+1), address (city/state/US; `--address` adds the street), areaServed, geo (from `--map-center`, 5 decimals), `openingHoursSpecification` from `--hours-json '{"Mon-Fri":"08:00-17:00"}'` (`--hours` stays display-only), `servesCuisine` (`--cuisine`), brokerage as `parentOrganization`, services as `makesOffer`, `url` (`--site-url`). **No `aggregateRating` or `review`, ever.** FAQPage markup is off unless `--faq-schema` is passed.
+  Types: RoofingContractor, HVACBusiness, Plumber, Electrician, HousePainter, HomeAndConstructionBusiness (handyman, landscaping, tree-service), GeneralContractor (concrete, fencing), MovingCompany, AutoRepair, AutoWash (detailing), HairSalon (NailSalon / DaySpa / BeautySalon by alias), TattooParlor, Restaurant (FoodEstablishment for food trucks; Bakery / CafeOrCoffeeShop by alias), ExerciseGym, Dentist (MedicalClinic / Physician by alias), RealEstateAgent, ProfessionalService (photography), ChildCare, LegalService (Attorney / AccountingService by alias), Church, LocalBusiness (cleaning, pressure-washing, pest-control, pet-services, generic).
+- **FAQ banks:** `npm run mockup -- --faq-bank --trade roofing > faq.json` prints that trade's question bank with empty answers. The owner fills in answers, then you pass `--faq-file faq.json`. Questions with empty answers are skipped. **The FAQ section only appears with `--faq-file`**; the old auto-generated questions are gone. "Are you licensed and insured?" is offered only with `--licensed`.
+- **One booking section:** with a money feature other than `booking`, the legacy "Book a Visit" section is dropped.
+- **Real estate:** `--listings-file` (agent's own listings, optional local `photo`) renders listing cards with area and bedroom filters, and requires `--brokerage`. The brokerage also appears in the footer and JSON-LD. Without a file, the section is "Tell Me What You're Looking For".
+- **Restaurant:** the services block is titled "Menu". The pickup-order menu is plain HTML that works without JavaScript (with a call line), and the script upgrades it to the cart.
+- **Mobile nav (combo):** library builds show 2–3 visible links (money feature, Services/Menu, Contact) plus a labeled **Menu** button, following NN/g. Desktop is unchanged (no hamburger).
+- **Images:** every Unsplash photo is listed in [`CREDITS.md`](./CREDITS.md). Library categories use CSS placeholders only.
 
 ### Samples
 
