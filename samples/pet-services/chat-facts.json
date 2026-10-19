@@ -1,0 +1,48 @@
+{
+  "name": "Sample Pet Care",
+  "trade": "pet care",
+  "phone": "(555) 010-0199",
+  "areas": [
+    "Aurora, CO"
+  ],
+  "services": [
+    {
+      "name": "Grooming",
+      "keywords": [
+        "Baths, trims, and nail care."
+      ]
+    },
+    {
+      "name": "Dog Walking",
+      "keywords": [
+        "Walks while you are away."
+      ]
+    },
+    {
+      "name": "Pet Sitting",
+      "keywords": [
+        "Visits and care at home."
+      ]
+    },
+    {
+      "name": "Training",
+      "keywords": [
+        "Basic manners and obedience."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "What services do you offer?",
+      "a": "Grooming, Dog Walking, Pet Sitting, Training. Call (555) 010-0199 to ask about anything else."
+    },
+    {
+      "q": "Which areas do you serve?",
+      "a": "Aurora."
+    },
+    {
+      "q": "How do I get a quote?",
+      "a": "Call (555) 010-0199."
+    }
+  ]
+}
