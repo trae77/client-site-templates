@@ -34,6 +34,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { MONEY, MONEY_DEFAULTS, MONEY_CSS, MONEY_SCRIPT, buildMoney, buildZip, trustItems } from './money.mjs';
 import { CATEGORIES, REUSED, REUSED_DEFAULTS, EXTRA_ALIASES, FEATURES, THEMES, FEATURE_CSS, themeCss, buildFeatures, buildFaq, parseCenter, geocode } from './library.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -406,6 +407,16 @@ Library (tools/library.mjs, see README "Template library"):
   --reviews-file F.json    real reviews [{name,text,source?}]  (else use --sample-reviews)
   --before-after "b.jpg:a.jpg,..."   client photos; placeholders otherwise
   --menu-file F.json   --faq-file F.json   --booking-url https://...
+  --money TYPE   money feature right after the hero (default per category): quote-form,
+                emergency-request, inspection-request, instant-quote, job-list, service-request,
+                package-picker, class-schedule, grooming-booking, appointment-request,
+                listing-search, booking, pickup-order, none
+  --money-endpoint https://...  form service URL (Formspree/Web3Forms, JSON POST)
+  --money-link https://...      link-out to a booking/ordering page (not a payment link)
+  --text         the phone takes texts: adds Text to the mobile bar and "text a photo" links
+  --zips "80011,80012"  "Do you serve my area?" checker (also matches --areas names)
+  --license-no TEXT  --insured  --certs "A,B"   trust row under the hero CTA (facts only)
+  --schedule-file F.json [{class,day,time}]   --listings-file F.json + --brokerage NAME
   --emergency "TEXT"   banner shown verbatim (e.g. what the business says about 24/7)
   --badges "A,B,C"     trust strip, verbatim (licenses, memberships the business gave you)
   --checklist "A,B"    "What's included" list    --steps-file F.json  process steps [{title,text?}]
@@ -472,6 +483,7 @@ function buildCss(cfg, primary, accent, galleryCount = 0, extras = {}) {
   }
   const heroSoft = heroText === '#ffffff' ? '255,255,255' : '15,23,42';
   const onAccent = pickText(accent);
+  if (extras.cta) extras.cta.push(['primary CTA button (.btn-primary, call bar)', onAccent, accent], ['nav / accent button (.nav-cta, .btn-accent)', onLink, v.link]);
   const accentOnDark = ensureContrast(accent, v.footerBg, 4.5);
   const accentOnBg = ensureContrast(accent, v.card, 3); // large/bold text only
 
@@ -894,6 +906,8 @@ function checkClaims(outHtml, ctx) {
   for (const rule of CLAIM_RULES) {
     if (rule.flag && ctx[rule.flag]) continue;
     if (rule.flag === 'sampleReviews' && ctx.reviews) continue; // --reviews-file: the business supplied them
+    if (rule.flag === 'licensed' && (ctx.insured || ctx.licenseNo)) continue; // --insured / --license-no
+    if (rule.what === 'star rating' && ctx.rated) continue; // average computed from --reviews-file ratings
     const m = text.match(rule.re);
     if (m) {
       const at = Math.max(0, m.index - 40);
@@ -1033,9 +1047,22 @@ function libraryOptions(values, folder, tradeKey) {
   if (features.includes('map') && !explicit && !values['map-center'] && !values['map-area']) {
     features = features.filter((f) => f !== 'map'); skipped.push('map (pass --map-center or --map-area)');
   }
+  // Money feature (spec v1 P1): default per library category / new category name only.
+  const libDefault = TEMPLATES[folder].library ? folder : (REUSED[tradeKey] === folder && REUSED_DEFAULTS[tradeKey] ? tradeKey : null);
+  let money = values.money != null ? slugify(values.money) : (libDefault ? (MONEY_DEFAULTS[libDefault] ?? null) : null);
+  if (money === 'none') money = null;
+  if (money && !MONEY[money]) throw new Error(`--money "${values.money}" is not a money feature. Use one of: ${Object.keys(MONEY).join(', ')}, none.`);
+  if (money === 'pickup-order' && !values['menu-file']) {
+    if (values.money != null) throw new Error('--money pickup-order needs --menu-file.');
+    money = 'quote-form'; skipped.push('pickup-order money feature (no --menu-file; using quote-form)');
+  }
+  if (money === 'listing-search' && values['listings-file'] && !values.brokerage) throw new Error('--listings-file needs --brokerage (the brokerage name is shown on every listing card).');
+  if (MONEY[money]?.reuse && !features.includes(MONEY[money].reuse)) features.push(MONEY[money].reuse);
+  if (money && money !== 'quote-form' && !MONEY[money].reuse) features = features.filter((f) => f !== 'quote-form'); // one form, not two
+  if (money === 'quote-form') features = features.filter((f) => f !== 'quote-form');
   // Order sections the same way every time.
   features = FEATURES.filter((f) => features.includes(f));
-  return { theme, features, skipped };
+  return { theme, features, skipped, money };
 }
 
 function readJson(flag, file) {
@@ -1100,6 +1127,33 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
     if (values['order-endpoint']) out.orderEndpoint = httpsOnly('order-endpoint', values['order-endpoint']);
     if (values['order-url']) out.orderUrl = httpsOnly('order-url', values['order-url']);
   }
+  out.money = lib.money;
+  out.tradeKey = slugify(values.trade);
+  out.textOk = Boolean(values.text);
+  if (values['money-endpoint']) out.moneyEndpoint = httpsOnly('money-endpoint', values['money-endpoint']);
+  if (values['money-link']) out.moneyLink = httpsOnly('money-link', values['money-link']);
+  if (lib.money === 'pickup-order') { out.orderEndpoint = out.orderEndpoint || out.moneyEndpoint; out.orderUrl = out.orderUrl || out.moneyLink; }
+  if (lib.money === 'booking' && out.moneyLink && !out.bookingUrl) out.bookingUrl = out.moneyLink;
+  if (values.zips) {
+    out.zips = values.zips.split(',').map((z) => z.trim()).filter(Boolean);
+    if (out.zips.some((z) => !/^\d{5}$/.test(z))) throw new Error('--zips must be comma-separated 5-digit ZIP codes.');
+  }
+  if (values['license-no']) out.licenseNo = validateText('license-no', values['license-no'], 60);
+  out.insured = Boolean(values.insured);
+  if (values.certs) out.certs = values.certs.split(',').map((c) => c.trim()).filter(Boolean);
+  if (values['schedule-file']) {
+    const sc = readJson('schedule-file', values['schedule-file']);
+    if (!Array.isArray(sc) || sc.some((x) => !x.class || !x.day || !x.time)) throw new Error('--schedule-file must be a JSON array of { "class", "day", "time" }.');
+    out.schedule = sc;
+  }
+  if (values['listings-file']) {
+    const ls = readJson('listings-file', values['listings-file']);
+    if (!Array.isArray(ls) || ls.some((x) => !x.title)) throw new Error('--listings-file must be a JSON array of the agent\'s own listings { "title", "price"?, "beds"?, "baths"?, "area"?, "url"? }.');
+    out.listings = ls; out.brokerage = validateText('brokerage', values.brokerage, 80);
+  }
+  out.rated = (out.reviews || []).some((r) => Number(r.rating) > 0);
+  for (const v of [...(out.zips || []), out.licenseNo, ...(out.certs || []), out.brokerage, ...(out.schedule || []).flatMap((x) => [x.class, x.day, x.time]),
+    ...(out.listings || []).flatMap((x) => [x.title, x.price, x.area, x.beds && `${x.beds} bd`, x.baths && `${x.baths} ba`])]) if (v) out.suppliedText.push(String(v));
   if (has('emergency')) out.emergency = validateText('emergency', values.emergency, 100);
   if (has('badges')) out.badges = values.badges.split(',').map((b) => b.trim()).filter(Boolean).slice(0, 8);
   if (has('checklist')) out.checklist = values.checklist.split(',').map((b) => b.trim()).filter(Boolean);
@@ -1172,6 +1226,9 @@ async function main() {
       theme: { type: 'string' }, features: { type: 'string' }, 'map-center': { type: 'string' }, 'map-area': { type: 'string' },
       'booking-url': { type: 'string' }, 'menu-file': { type: 'string' }, 'reviews-file': { type: 'string' }, 'faq-file': { type: 'string' },
       'before-after': { type: 'string' },
+      money: { type: 'string' }, 'money-endpoint': { type: 'string' }, 'money-link': { type: 'string' }, zips: { type: 'string' },
+      text: { type: 'boolean', default: false }, 'license-no': { type: 'string' }, insured: { type: 'boolean', default: false }, certs: { type: 'string' },
+      'schedule-file': { type: 'string' }, 'listings-file': { type: 'string' }, brokerage: { type: 'string' },
       emergency: { type: 'string' }, badges: { type: 'string' }, checklist: { type: 'string' }, 'steps-file': { type: 'string' },
       'pricing-file': { type: 'string' }, 'team-file': { type: 'string' }, 'order-endpoint': { type: 'string' }, 'order-url': { type: 'string' },
       tagline: { type: 'string' }, 'sample-reviews': { type: 'boolean', default: false },
@@ -1232,8 +1289,21 @@ async function main() {
   // Library features (tools/library.mjs). Nothing changes when no --theme/--features and the trade is an original one.
   Object.assign(ctx, await resolveFeatureData(values, lib, ctx, outDir));
   ctx.slug = slug;
-  if (lib.features.length) {
+  const trustOn = Boolean(values['license-no'] || values.insured || values.certs || ctx.rated);
+  const libOn = Boolean(lib.theme || lib.features.length || lib.money || ctx.zips || trustOn || values.text);
+  if (libOn) {
+    if (lib.money) ctx.moneyCta = MONEY[lib.money].reuse ? null : ['#money', MONEY[lib.money].title, MONEY[lib.money].short];
     const feat = buildFeatures(lib.features, cfg, ctx);
+    if (lib.money && !MONEY[lib.money].reuse) feat.moneyHtml = buildMoney(lib.money, cfg, ctx);
+    if (lib.money) feat.heroCta = ctx.moneyCta || feat.heroCta;
+    feat.afterHero = (feat.afterHero || '') + (feat.moneyHtml || '');
+    if (ctx.zips) feat.beforeContact = buildZip(ctx) + (feat.beforeContact || '');
+    if ((lib.money && !MONEY[lib.money].reuse) || ctx.zips) {
+      const callNote = `This mockup does not send messages yet. Please call ${ctx.name} at ${ctx.phoneDisplay}.`;
+      feat.bodyEnd = (feat.bodyEnd || '') + MONEY_SCRIPT.split('__CALL__').join(JSON.stringify(callNote));
+    }
+    const trust = trustItems(ctx);
+    if (trust.length) outHtml = outHtml.replace(/(<div class="hero-actions">[\s\S]*?\n[ \t]*<\/div>)/, (m) => `${m}\n        <ul class="trust-row" aria-label="Facts">${trust.map((t) => `<li>${t}</li>`).join('')}</ul>`);
     outHtml = applyFeatures(outHtml, feat);
     if (feat.orderAssets) {
       fs.mkdirSync(path.join(outDir, 'order'), { recursive: true });
@@ -1251,14 +1321,20 @@ async function main() {
   }
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
   fs.writeFileSync(htmlPath, values['no-claim'] ? outHtml : addClaimBar(outHtml));
+  const ctaPairs = [];
   const themeCfg = lib.theme ? { ...cfg, dark: THEMES[lib.theme].dark } : cfg;
-  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(themeCfg, primary, accent, galleryCount, { pay: Boolean(payUrl), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
-  if (lib.theme || lib.features.length || cfg.placeholderPhotos) {
-    css += `\n:root { --on-accent: ${pickText(accent)}; }\n${cfg.placeholderPhotos ? '.hero::before { background-image: none; }\n' : ''}${FEATURE_CSS}`;
+  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(themeCfg, primary, accent, galleryCount, { cta: ctaPairs, pay: Boolean(payUrl), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
+  if (lib.theme || lib.features.length || cfg.placeholderPhotos || lib.money || ctx.zips || ctx.textOk || ctx.licenseNo || ctx.insured || ctx.certs) {
+    css += MONEY_CSS + `\n:root { --on-accent: ${pickText(accent)}; }\n${cfg.placeholderPhotos ? '.hero::before { background-image: none; }\n' : ''}${FEATURE_CSS}`;
     if (lib.theme) css += themeCss(lib.theme, primary, accent, { mix, shade });
   }
   fs.writeFileSync(cssPath, css);
 
+  const lowCta = ctaPairs.filter(([, fg, bg]) => contrast(fg, bg) < 4.5);
+  if (lowCta.length) {
+    console.error(`✗ Contrast check failed (CTA text needs 4.5:1):\n  - ${lowCta.map(([w, fg, bg]) => `${w}: ${fg} on ${bg} = ${contrast(fg, bg).toFixed(2)}:1`).join('\n  - ')}\nPick a darker or lighter --accent / --primary.`);
+    process.exit(4);
+  }
   const { problems, warnings } = verify(outHtml, cfg, ctx);
   warnings.forEach((w) => console.warn(`! ${w}`));
   if (problems.length) { console.error(`✗ Verification failed:\n  - ${problems.join('\n  - ')}`); process.exit(2); }

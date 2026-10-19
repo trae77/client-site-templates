@@ -3,8 +3,8 @@
 cd "$(dirname "$0")/.."
 run(){ cat=$1; shift; node tools/mockup.mjs --trade $cat --city "Aurora, CO" --phone "(555) 010-0199" --out samples/$cat --no-png "$@" > "${TMPDIR:-/tmp}/sample-$cat.log" 2>&1 || { echo "FAIL $cat"; cat "${TMPDIR:-/tmp}/sample-$cat.log"; }; }
 C="--map-center 39.7294,-104.8319"
-run roofing --name "Sample Roofing Co." $C
-run hvac --name "Sample Heating & Air" $C --hours "Mon-Fri 8am-5pm" --features call-bar,quote-form,hours,map,faq
+run roofing --name "Sample Roofing Co." $C --text --zips 80010,80011,80012 --license-no "# goes here (sample)"
+run hvac --name "Sample Heating & Air" $C --hours "Mon-Fri 8am-5pm" --features call-bar,quote-form,hours,map,faq --text --zips 80010,80011
 run electrician --name "Sample Electric" $C --theme clean-minimal
 run landscaping --name "Sample Lawn & Landscape" $C --theme warm-local --features call-bar,quote-form,before-after,map,faq
 run painting --name "Sample Painting Co." --theme premium-dark

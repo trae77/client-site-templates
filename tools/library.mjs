@@ -18,7 +18,7 @@ export const CATEGORIES = {
     aliases: ['roofing', 'roofer', 'roofers', 'roof', 'roof-repair', 'gutters', 'metal-roofing'],
   },
   hvac: {
-    label: 'heating & cooling', theme: 'clean-minimal', defaults: { primary: '#1d4ed8', accent: '#ef4444' },
+    label: 'heating & cooling', theme: 'clean-minimal', defaults: { primary: '#1d4ed8', accent: '#dc2626' },
     features: ['call-bar', 'quote-form', 'map', 'faq'],
     services: [['Heating Repair', 'Furnaces, heat pumps, and boilers.'], ['AC Repair', 'Central air and mini-split systems.'], ['System Installs', 'New heating and cooling equipment.'], ['Maintenance Visits', 'Seasonal tune-ups and filter changes.']],
     aliases: ['hvac', 'heating', 'cooling', 'air-conditioning', 'ac-repair', 'furnace', 'heating-and-cooling'],
@@ -30,7 +30,7 @@ export const CATEGORIES = {
     aliases: ['electrician', 'electricians', 'electrical', 'electric', 'electrical-contractor'],
   },
   painting: {
-    label: 'painting', theme: 'warm-local', defaults: { primary: '#0f766e', accent: '#f97316' },
+    label: 'painting', theme: 'warm-local', defaults: { primary: '#0f766e', accent: '#c2410c' },
     features: ['call-bar', 'quote-form', 'before-after', 'faq'],
     services: [['Interior Painting', 'Walls, ceilings, and rooms.'], ['Exterior Painting', 'Siding, trim, and doors.'], ['Cabinets & Trim', 'Cabinet refinishing and trim work.'], ['Drywall Repair', 'Patches and prep before paint.']],
     aliases: ['painting', 'painter', 'painters', 'house-painting', 'interior-painting', 'exterior-painting'],
@@ -48,19 +48,19 @@ export const CATEGORIES = {
     aliases: ['salon-barber', 'salon', 'barber', 'barbershop', 'barber-shop', 'hair-salon', 'beauty-salon', 'nail-salon', 'spa'],
   },
   fitness: {
-    label: 'fitness', theme: 'bold-industrial', defaults: { primary: '#111827', accent: '#22c55e' },
+    label: 'fitness', theme: 'bold-industrial', defaults: { primary: '#111827', accent: '#15803d' },
     features: ['call-bar', 'booking', 'map', 'faq'], ask: 'to ask about classes or training',
     services: [['Personal Training', 'One-on-one sessions.'], ['Group Classes', 'Classes in a group setting.'], ['Open Gym', 'Access to the gym floor.'], ['Intro Session', 'A first visit to get started.']],
     aliases: ['fitness', 'gym', 'personal-trainer', 'personal-training', 'crossfit', 'yoga', 'pilates', 'studio'],
   },
   'pet-services': {
-    label: 'pet care', theme: 'warm-local', defaults: { primary: '#0e7490', accent: '#f472b6' },
+    label: 'pet care', theme: 'warm-local', defaults: { primary: '#0e7490', accent: '#be185d' },
     features: ['call-bar', 'booking', 'map', 'faq'], ask: 'to ask about your pet',
     services: [['Grooming', 'Baths, trims, and nail care.'], ['Dog Walking', 'Walks while you are away.'], ['Pet Sitting', 'Visits and care at home.'], ['Training', 'Basic manners and obedience.']],
     aliases: ['pet-services', 'pet', 'pets', 'pet-grooming', 'grooming', 'groomer', 'dog-walking', 'pet-sitting', 'dog-training', 'boarding'],
   },
   'dental-medical': {
-    label: 'dental & medical care', theme: 'clean-minimal', defaults: { primary: '#0369a1', accent: '#14b8a6' },
+    label: 'dental & medical care', theme: 'clean-minimal', defaults: { primary: '#0369a1', accent: '#0f766e' },
     features: ['call-bar', 'booking', 'map', 'faq'], ask: 'to request a visit', addressLabel: 'Location',
     services: [['Checkups', 'Routine visits and exams.'], ['Cleanings', 'Routine dental cleanings.'], ['New Patients', 'Getting started with a first visit.'], ['Other Services', 'Ask about anything not listed here.']],
     aliases: ['dental-medical', 'dental', 'dentist', 'dental-office', 'medical', 'clinic', 'doctor', 'chiropractor', 'physical-therapy', 'orthodontist'],
@@ -370,7 +370,7 @@ export function buildFeatures(features, cfg, ctx) {
   const phone = esc(ctx.phoneDisplay);
   const name = ctx.nameHtml;
   const callNote = `This mockup form does not send messages yet. Please call ${name} at ${phone}.`;
-  const after = []; const before = []; const nav = [];
+  const after = []; const before = []; const nav = []; const moneyArr = [];
   let heroCta = null;
   const serviceOpts = cfg.services.map(([t]) => `<option>${esc(t)}</option>`).join('');
 
@@ -394,7 +394,7 @@ export function buildFeatures(features, cfg, ctx) {
       : `<div class="feature-grid"><div class="panel">
         ${libForm('booking', [['name', 'Name', 'text', ' autocomplete="name"'], ['phone', 'Phone', 'tel', ' autocomplete="tel"'], ['service', 'Service', 'select', serviceOpts], ['when', 'Preferred day and time', 'text', ' placeholder="e.g. a weekday morning"']], ctx, 'Request a booking')}
         </div></div>`;
-    after.push(section('booking', 'Book a Visit', `Send a booking request, or call ${phone}.`, inner));
+    (ctx.money === 'booking' ? moneyArr : after).push(section('booking', 'Book a Visit', `Send a booking request, or call ${phone}.`, inner));
     nav.push(['#booking', 'Book']);
     heroCta = ['#booking', 'Book a Visit'];
   }
@@ -448,7 +448,7 @@ export function buildFeatures(features, cfg, ctx) {
     const data = { site: ctx.slug, name: ctx.name, phone: ctx.phoneDisplay, email: ctx.email || undefined, endpoint: ctx.orderEndpoint || undefined, menu: ctx.orderMenu };
     const sample = ctx.orderMenuSample ? `Sample menu: placeholder items and prices, not ${name}'s real menu. ` : '';
     const link = ctx.orderUrl ? `\n        <p><a class="btn btn-accent" href="${esc(ctx.orderUrl)}" rel="noopener noreferrer">Order on ${name}'s ordering page</a></p>` : '';
-    after.push(section('order', ctx.orderMenuSample ? 'Order for Pickup (Sample Menu)' : 'Order for Pickup', `${sample}Pick your items and a pickup time. Pay at pickup. No payment is taken on this page.`, `<div id="order-app"><noscript><p>Ordering needs JavaScript. Please call ${phone}.</p></noscript></div>${link}
+    (ctx.money === 'pickup-order' ? moneyArr : after).push(section('order', ctx.orderMenuSample ? 'Order for Pickup (Sample Menu)' : 'Order for Pickup', `${sample}Pick your items and a pickup time. Pay at pickup. No payment is taken on this page.`, `<div id="order-app"><noscript><p>Ordering needs JavaScript. Please call ${phone}.</p></noscript></div>${link}
         <script type="application/json" id="order-data">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`));
     nav.push(['#order', 'Order']);
     heroCta = ['#order', 'Order for Pickup'];
@@ -492,12 +492,20 @@ export function buildFeatures(features, cfg, ctx) {
   }
 
   const bodyEnd = (on('quote-form') || (on('booking') && !ctx.bookingUrl) ? FORM_SCRIPT.replace("note.getAttribute('data-call') || ", `${JSON.stringify(callNote.replace(/&amp;/g, '&'))} || `) : '')
-    + (on('call-bar') ? `\n  <div class="call-bar" role="region" aria-label="Contact shortcuts">\n    <a class="cb-call" href="${ctx.tel}">Call ${phone}</a>\n    <a class="cb-alt" href="${heroCta ? heroCta[0] : '#contact'}">${heroCta ? heroCta[1] : 'Message'}</a>\n  </div>` : '');
+    + (on('call-bar') ? callBar(ctx, ctx.moneyCta || heroCta, phone) : '');
   const topBanner = on('emergency') && ctx.emergency ? `\n    <div class="emergency-banner" role="note">${esc(ctx.emergency)} <a href="${ctx.tel}">Call ${phone}</a></div>` : '';
   const afterHero = on('badges') && ctx.badges ? `\n    <ul class="badge-strip" aria-label="Credentials">${ctx.badges.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>\n` : '';
   const orderAssets = on('pickup-order') && ctx.orderMenu;
-  return { afterServices: after.join(''), beforeContact: before.join(''), bodyEnd: bodyEnd + (orderAssets ? '\n  <script src="order/order.js" defer></script>' : ''), nav, heroCta, topBanner, afterHero, orderAssets,
+  return { moneyHtml: moneyArr.join(''), afterServices: after.join(''), beforeContact: before.join(''), bodyEnd: bodyEnd + (orderAssets ? '\n  <script src="order/order.js" defer></script>' : ''), nav, heroCta, topBanner, afterHero, orderAssets,
     bodyClass: on('call-bar') ? 'has-call-bar' : '' };
+}
+
+function callBar(ctx, cta, phone) {
+  const sms = ctx.tel.replace('tel:', 'sms:');
+  const links = [`<a class="cb-call" href="${ctx.tel}">${ctx.textOk ? 'Call' : `Call ${phone}`}</a>`];
+  if (ctx.textOk) links.push(`<a class="cb-alt cb-text" href="${sms}">Text</a>`);
+  links.push(`<a class="cb-alt cb-money" href="${cta ? cta[0] : '#contact'}">${cta ? (cta[2] || cta[1]) : 'Message'}</a>`);
+  return `\n  <div class="call-bar" role="region" aria-label="Contact shortcuts">\n    ${links.join('\n    ')}\n  </div>`;
 }
 
 /** FAQ built only from supplied facts (plus any --faq-file entries). */

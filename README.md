@@ -158,6 +158,34 @@ A static, client-side order flow (`widgets/order/order.js` + `order.css`, copied
 
 Sample data for demos lives in `tools/sample-data/` (`menu-sample.json`, `pricing-sample.json`, `team-sample.json`). Everything in it is labeled as a placeholder.
 
+### Spec v1 P1: money features, action bar, trust row, ZIP check, contrast
+
+**`--money TYPE`** adds one conversion section **directly after the hero**, and the hero's main button links to it. Library categories get a default (see `MONEY_DEFAULTS` in `tools/money.mjs`). Original trades get none unless you pass the flag, so their output is unchanged. `--money none` turns it off. Sending works the same for every type: `--money-endpoint https://…` posts JSON to a free form service (Formspree, Web3Forms); otherwise a pre-filled email goes to `--email`; otherwise the page asks the visitor to call. `--money-link https://…` adds a link-out button (Square, Calendly, Toast and similar; payment links are rejected). No prices are shown or computed.
+
+| `--money` | Default for | Static on Pages? | Needs backend for |
+|---|---|---|---|
+| `emergency-request` | hvac, electrician (plumbing with flag) | Static | Photo upload (free form tiers have none). Use `--text` for a "text a photo" link instead |
+| `inspection-request` | roofing | Static | Photo upload (same) |
+| `instant-quote` | painting, concrete, fencing (cleaning, pressure-washing, landscaping with flag) | Static, details only | A price-range calculator would need owner prices (`--price-file` not built: no prices) |
+| `job-list` | (handyman with flag) | Static | — |
+| `service-request` | auto-repair | Static | — |
+| `package-picker` | photography (auto-detailing with flag) | Static, request only | Deposits (only via existing `--pay-url`) |
+| `class-schedule` | fitness | Static (`--schedule-file` grid) | Live class capacity |
+| `grooming-booking` | pet-services | Static | Real-time availability |
+| `appointment-request` | dental-medical | Static, **no medical details** (form says so) | Anything with health info needs a HIPAA-eligible backend |
+| `listing-search` | real-estate | Static for the agent's own `--listings-file` (+ required `--brokerage` on every card), with area and bed filters | MLS/IDX feeds (vendor + broker authorization) |
+| `booking` | salon-barber, tattoo, daycare | Static request form, or `--money-link` / `--booking-url` | Real-time slots |
+| `pickup-order` | restaurant-foodtruck, restaurant-ordering (needs `--menu-file`, otherwise falls back to quote-form) | Static cart, pay at pickup | Payments or POS inventory |
+| `quote-form` | pest-control, moving, tree-service, law-accounting | Static | — |
+
+**Sticky mobile bar:** `call-bar` is now Call + Text + the money feature button, each at least 48px tall. **Text only appears with `--text`** (the business confirmed the number takes texts). When a pickup cart has items, the bar's money button turns into "Order · N · $X", the separate order bar is not shown, and the $200 bar is hidden until the cart is empty. That leaves one bottom bar instead of three.
+
+**Trust row** under the hero buttons, built only from flags: the average rating from `"rating"` fields in `--reviews-file`, `--licensed`, `--license-no TEXT`, `--insured`, `--years`, `--certs "A,B"`. The claim check allows each wording only when its flag is passed.
+
+**ZIP checker:** `--zips "80011,80012"` adds "Do You Serve My Area?". It matches the ZIPs and `--areas` town names (prefixes work for towns) and answers "Yes…" or "…not on the list. Call to ask."
+
+**Contrast check (build time):** every CTA pair (hero/call-bar button text on the accent, and nav/accent button text on the link color) must reach 4.5:1, or the build stops with exit code 4. Text color is whichever of white or dark has more contrast. New default accents, chosen so white text passes: hvac `#dc2626` (4.83), dental-medical `#0f766e` (5.47), fitness `#15803d` (5.02), painting `#c2410c` (5.18), pet-services `#be185d` (6.04).
+
 ### Samples
 
 One per category in [`samples/<category>/`](./samples/), regenerated with `bash tools/build-samples.sh`. Live (after push): `https://trae77.github.io/client-site-templates/samples/<category>/`.

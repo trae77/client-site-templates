@@ -146,6 +146,9 @@
     totalEl.textContent = cart.length ? (t != null ? 'Estimated total: ' + money(t) + ' (pay at pickup)' : 'Total confirmed at pickup') : '';
     bar.textContent = 'View order · ' + count + ' item' + (count === 1 ? '' : 's') + (t != null && count ? ' · ' + money(t) : '');
     bar.hidden = !count;
+    // One bottom bar on phones: reuse the call bar's main button instead of stacking a second bar.
+    var cb = document.querySelector('.call-bar .cb-money');
+    if (cb) { bar.hidden = true; cb.textContent = count ? 'Order · ' + count + (t != null ? ' · ' + money(t) : '') : (cb.getAttribute('data-label') || cb.textContent); if (!cb.getAttribute('data-label')) cb.setAttribute('data-label', 'Order for Pickup'); cb.setAttribute('href', count ? '#order-cart' : '#order'); }
     document.body.classList.toggle('has-order-bar', count > 0);
     summary.hidden = true;
   }
