@@ -4,3 +4,4 @@
 - **Library categories and samples** (`tools/library.mjs`, `samples/`) use **no stock photos**. Photo, before/after and gallery tiles are CSS gradient placeholders; theme patterns are inline SVG written for this repo.
 - **Maps** (`map` feature) embed [OpenStreetMap](https://www.openstreetmap.org/copyright) tiles, © OpenStreetMap contributors (ODbL); the attribution line is printed under each map. Geocoding (only when `--map-center` is not passed) uses the free Nominatim service at build time.
 - Client photos passed with `--before-after` are the client's own and are copied into the mockup's `img/` folder.
+- `widgets/order/` and `tools/sample-data/` are written for this repo; there are no images in them.

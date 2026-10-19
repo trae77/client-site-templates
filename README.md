@@ -115,6 +115,49 @@ Passing `--features` replaces the category defaults.
 
 Data flags (`--reviews-file`, `--map-center`, `--map-area`, `--before-after`, `--menu-file`, `--booking-url`, `--faq-file`) switch their feature on automatically. All supplied text is treated like other passed values in the claim check; everything else must still pass it. The $200 claim bar, `--chat`, `--pay-url` and Zelle flags work unchanged. No hosting language is added.
 
+### Batch 2: more categories, themes and features
+
+**Categories:** `concrete`, `fencing`, `pest-control`, `moving`, `tree-service`, `tattoo`, `daycare`, `law-accounting`, `church` (new, built on `generic-business/`), plus `restaurant-ordering` (reuses `restaurant/` with `pickup-order` on by default). `plumbing`, `handyman` and `pressure-washing` keep their original templates and exact default output; pass `--theme` / `--features` for the new look (see their samples). Alias move: `--trade tree-service` now builds the `tree-service` category instead of `landscaping`.
+
+| Category | Default theme | Default features |
+|---|---|---|
+| `concrete` | bold-industrial | call-bar, quote-form, process, before-after, map, faq |
+| `fencing` | earthy-organic | call-bar, quote-form, process, before-after, map, faq |
+| `pest-control` | modern-bold-color | call-bar, quote-form, process, map, faq |
+| `moving` | coastal-fresh | call-bar, quote-form, process, map, faq |
+| `tree-service` | earthy-organic | call-bar, quote-form, before-after, map, faq |
+| `tattoo` | premium-dark | call-bar, booking, map, faq |
+| `daycare` | coastal-fresh | call-bar, booking, process, map, faq |
+| `law-accounting` | clean-minimal | quote-form, process, faq |
+| `church` | warm-local | map, faq (service times only via `--hours`) |
+| `restaurant-ordering` | modern-bold-color | call-bar, pickup-order, map, faq |
+
+**Themes:** `coastal-fresh` (sea blue/teal, wave pattern), `earthy-organic` (sand/olive, serif, leaf pattern), `modern-bold-color` (white, big type, hard-shadow cards). Body text on the theme backgrounds checks at 12.8:1 or higher, and muted text at 6.5:1 or higher (WCAG AA).
+
+**Features** (all opt-in; every one that shows text needs data you pass, and that text is shown verbatim):
+
+| Feature | Flag | Notes |
+|---|---|---|
+| `emergency` | `--emergency "TEXT"` | Red banner above the hero with a call link. Only the business's own wording; 24/7 is never added. |
+| `badges` | `--badges "A,B,C"` | Trust strip under the hero (license numbers, memberships the business gave you). |
+| `process` | `--steps-file steps.json` (optional) | "How It Works" steps `[{title,text?}]`; without a file, generic steps labeled as typical. |
+| `checklist` | `--checklist "A,B,C"` | "What's Included" list. |
+| `pricing` | `--pricing-file pricing.json` | `[{name,price?,details?:[]}]`. No prices are ever invented. |
+| `team` | `--team-file team.json` | `[{name,role?,bio?,photo?}]`; `photo` is a local file (relative to the JSON) copied into `img/`. |
+| `pickup-order` | `--menu-file`, `--email` / `--order-endpoint` / `--order-url` | See below. |
+
+#### Pickup ordering (`pickup-order`)
+
+A static, client-side order flow (`widgets/order/order.js` + `order.css`, copied into `<out>/order/`). It works on GitHub Pages with no backend and takes **no payments**. The page says "Pay at pickup. No payment is taken on this page."
+
+- Menu from `--menu-file` (required). Items can carry options: `"options": [{ "name": "Size", "required": true, "multi": false, "choices": [{ "label": "Large", "price": "+$2.00" }] }]`. A file shaped `{ "sample": true, "menu": [...] }` labels the section "Sample Menu". See `tools/sample-data/menu-sample.json`.
+- Cart with + / − per line, saved in `localStorage` (per site), plus a sticky "View order" bar on phones.
+- Pickup date and time pickers (15-minute steps, no past times), name, phone and notes, then an order summary with the estimated total.
+- Sending: `--order-endpoint https://formspree.io/f/…` (JSON POST to a free form service, https only), otherwise a pre-filled email to `--email`, otherwise "please call". `--order-url https://…` adds a link-out button to Square, Toast and similar. Stripe and other payment links are rejected.
+- Accessibility: options appear in a native `<dialog>` (Escape closes it) with fieldset/legend, buttons have labels, there is an aria-live status, and tap targets are 44px.
+
+Sample data for demos lives in `tools/sample-data/` (`menu-sample.json`, `pricing-sample.json`, `team-sample.json`). Everything in it is labeled as a placeholder.
+
 ### Samples
 
 One per category in [`samples/<category>/`](./samples/), regenerated with `bash tools/build-samples.sh`. Live (after push): `https://trae77.github.io/client-site-templates/samples/<category>/`.

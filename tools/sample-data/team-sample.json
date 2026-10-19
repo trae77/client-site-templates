@@ -1,0 +1,4 @@
+[
+  { "name": "Sample Name", "role": "Owner", "bio": "Placeholder bio. A short real bio goes here." },
+  { "name": "Sample Name", "role": "Role goes here", "bio": "Placeholder bio." }
+]

@@ -399,12 +399,20 @@ Chat add-on (off unless passed):
 Output:
 Library (tools/library.mjs, see README "Template library"):
   --theme       bold-industrial | clean-minimal | warm-local | premium-dark | none
-  --features    Comma list replacing the category defaults: call-bar, quote-form, reviews,
-                map, before-after, hours, booking, menu, faq (or none)
+  --features    Comma list replacing the category defaults: call-bar, emergency, badges,
+                quote-form, reviews, map, before-after, hours, booking, menu, pickup-order,
+                process, checklist, pricing, team, faq (or none)
   --map-center "lat,lon"   --map-area "TEXT"   (map; --map-area is geocoded via OpenStreetMap)
   --reviews-file F.json    real reviews [{name,text,source?}]  (else use --sample-reviews)
   --before-after "b.jpg:a.jpg,..."   client photos; placeholders otherwise
   --menu-file F.json   --faq-file F.json   --booking-url https://...
+  --emergency "TEXT"   banner shown verbatim (e.g. what the business says about 24/7)
+  --badges "A,B,C"     trust strip, verbatim (licenses, memberships the business gave you)
+  --checklist "A,B"    "What's included" list    --steps-file F.json  process steps [{title,text?}]
+  --pricing-file F.json  [{name,price?,details?}]   --team-file F.json  [{name,role?,bio?,photo?}]
+  pickup-order (restaurants): needs --menu-file (items may have options); sends by
+    --order-endpoint https://formspree.io/f/... (JSON POST) or mailto --email;
+    --order-url https://... adds a link to Square/Toast. Pay at pickup; no payments.
 
   --out       Output HTML folder (default: mockups/<slug>/ in the repo)
   --png-dir   Where PNGs go (default: the parent of --out, e.g. mockups/)
@@ -992,6 +1000,7 @@ function libraryOptions(values, folder, tradeKey) {
   if (theme === 'none' || theme === 'default') theme = null;
   if (theme && !THEMES[theme]) throw new Error(`--theme "${values.theme}" is not a theme. Use one of: ${Object.keys(THEMES).join(', ')}, none.`);
   const explicit = values.features != null;
+  const skipped = [];
   let features = explicit ? String(values.features).split(',').map((f) => slugify(f)).filter(Boolean) : [...(cat?.features || [])];
   if (features.includes('none')) features = [];
   const bad = features.filter((f) => !FEATURES.includes(f));
@@ -1002,7 +1011,17 @@ function libraryOptions(values, folder, tradeKey) {
   if (values['menu-file'] && !features.includes('menu')) features.push('menu');
   if (values['booking-url'] && !features.includes('booking')) features.push('booking');
   if (values['faq-file'] && !features.includes('faq')) features.push('faq');
-  const skipped = [];
+  const dataFlag = { emergency: 'emergency', badges: 'badges', checklist: 'checklist', pricing: 'pricing-file', team: 'team-file', 'pickup-order': 'menu-file' };
+  for (const [f, flag] of [['emergency', 'emergency'], ['badges', 'badges'], ['checklist', 'checklist'], ['pricing', 'pricing-file'], ['team', 'team-file'], ['process', 'steps-file']]) {
+    if (values[flag] && !features.includes(f)) features.push(f);
+  }
+  if ((values['order-endpoint'] || values['order-url']) && !features.includes('pickup-order')) features.push('pickup-order');
+  for (const [f, flag] of Object.entries(dataFlag)) {
+    if (features.includes(f) && !values[flag]) {
+      if (explicit || f === 'pickup-order') throw new Error(`--features ${f} needs --${flag}. Nothing is invented for it.`);
+      features = features.filter((x) => x !== f); skipped.push(`${f} (no --${flag})`);
+    }
+  }
   if (features.includes('hours') && !values.hours) {
     if (explicit) throw new Error('--features hours needs --hours "TEXT". Hours are never invented.');
     features = features.filter((f) => f !== 'hours'); skipped.push('hours (no --hours)');
@@ -1040,10 +1059,18 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
     out.reviews = r.slice(0, 6);
     out.suppliedText.push(...out.reviews.flatMap((x) => [x.text, x.name, x.source]).filter(Boolean));
   }
-  if (has('menu') && values['menu-file']) {
-    const m = readJson('menu-file', values['menu-file']);
+  if ((has('menu') || has('pickup-order')) && values['menu-file']) {
+    let m = readJson('menu-file', values['menu-file']);
+    if (m && !Array.isArray(m) && Array.isArray(m.menu)) { out.orderMenuSample = Boolean(m.sample); m = m.menu; }
     if (!Array.isArray(m) || m.some((s) => !s.section || !Array.isArray(s.items))) throw new Error('--menu-file must be a JSON array of { "section", "items": [{ "name", "desc"?, "price"? }] }.');
     out.menu = m;
+    if (has('pickup-order')) {
+      m.forEach((sec) => sec.items.forEach((it) => (it.options || []).forEach((o) => {
+        if (!o.name || !Array.isArray(o.choices) || !o.choices.every((c) => c && c.label)) throw new Error(`--menu-file: options on "${it.name}" need { "name", "choices": [{ "label", "price"? }] }.`);
+        out.suppliedText.push(o.name, ...o.choices.flatMap((c) => [c.label, c.price]).filter(Boolean));
+      })));
+      out.orderMenu = m;
+    }
     out.suppliedText.push(...m.flatMap((s) => [s.section, ...s.items.flatMap((i) => [i.name, i.desc, i.price])]).filter(Boolean));
   }
   if (values['faq-file']) {
@@ -1062,6 +1089,45 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
       return dest;
     })).filter((p) => p.length === 2);
   }
+  const httpsOnly = (flag, raw) => {
+    let u;
+    try { u = new URL(raw); } catch { throw new Error(`--${flag} must be a full https URL.`); }
+    if (u.protocol !== 'https:' || u.username || u.password) throw new Error(`--${flag} must be https with no username or password.`);
+    if (u.hostname.toLowerCase().endsWith(STRIPE_HOST)) throw new Error(`--${flag} cannot be a payment link. Orders are paid at pickup.`);
+    return u.toString();
+  };
+  if (has('pickup-order')) {
+    if (values['order-endpoint']) out.orderEndpoint = httpsOnly('order-endpoint', values['order-endpoint']);
+    if (values['order-url']) out.orderUrl = httpsOnly('order-url', values['order-url']);
+  }
+  if (has('emergency')) out.emergency = validateText('emergency', values.emergency, 100);
+  if (has('badges')) out.badges = values.badges.split(',').map((b) => b.trim()).filter(Boolean).slice(0, 8);
+  if (has('checklist')) out.checklist = values.checklist.split(',').map((b) => b.trim()).filter(Boolean);
+  if (has('process') && values['steps-file']) {
+    const st = readJson('steps-file', values['steps-file']);
+    if (!Array.isArray(st) || st.some((x) => !x.title)) throw new Error('--steps-file must be a JSON array of { "title", "text"? }.');
+    out.steps = st.map((x) => [x.title, x.text || '']);
+  }
+  if (has('pricing')) {
+    const pr = readJson('pricing-file', values['pricing-file']);
+    if (!Array.isArray(pr) || pr.some((x) => !x.name)) throw new Error('--pricing-file must be a JSON array of { "name", "price"?, "details"?: [] } with the business\'s own prices.');
+    out.pricing = pr;
+  }
+  if (has('team')) {
+    const tm = readJson('team-file', values['team-file']);
+    if (!Array.isArray(tm) || tm.some((x) => !x.name)) throw new Error('--team-file must be a JSON array of { "name", "role"?, "bio"?, "photo"? (local file) }.');
+    fs.mkdirSync(path.join(outDir, 'img'), { recursive: true });
+    out.team = tm.map((x, i) => {
+      if (!x.photo) return x;
+      const src = path.resolve(path.dirname(path.resolve(values['team-file'])), x.photo);
+      if (!fs.existsSync(src)) throw new Error(`--team-file: photo not found: ${x.photo}`);
+      const dest = `img/team-${i + 1}${path.extname(src).toLowerCase()}`;
+      fs.copyFileSync(src, path.join(outDir, dest));
+      return { ...x, photo: dest };
+    });
+  }
+  for (const v of [out.emergency, ...(out.badges || []), ...(out.checklist || []), ...(out.steps || []).flat(),
+    ...(out.pricing || []).flatMap((x) => [x.name, x.price, ...(x.details || [])]), ...(out.team || []).flatMap((x) => [x.name, x.role, x.bio])]) if (v) out.suppliedText.push(v);
   if (has('map')) {
     out.mapArea = values['map-area'] ? values['map-area'].trim() : ctx.cityFull;
     out.mapCenter = values['map-center'] ? parseCenter(values['map-center']) : await geocode(out.mapArea);
@@ -1082,6 +1148,9 @@ function applyFeatures(html, f) {
   }
   if (f.nav.length) html = html.replace('<a href="#contact">Contact</a>', () => `${f.nav.map(([h, t]) => `<a href="${h}">${t}</a>`).join('\n        ')}\n        <a href="#contact">Contact</a>`);
   if (f.heroCta) html = html.replace('<a class="btn btn-primary" href="#contact">Send a Message</a>', () => `<a class="btn btn-primary" href="${f.heroCta[0]}">${f.heroCta[1]}</a>`);
+  if (f.topBanner) html = html.replace('<main id="top">', () => `<main id="top">${f.topBanner}`);
+  if (f.afterHero) html = html.replace(/(<section class="hero"[\s\S]*?<\/section>\n)/, (m) => m + f.afterHero);
+  if (f.orderAssets) html = html.replace('</head>', '  <link rel="stylesheet" href="order/order.css">\n</head>');
   if (f.bodyClass) html = html.replace(/<body>/, `<body class="${f.bodyClass}">`);
   if (f.bodyEnd) html = html.replace(/<\/body>(?![\s\S]*<\/body>)/, () => `${f.bodyEnd}\n</body>`);
   return html;
@@ -1103,6 +1172,8 @@ async function main() {
       theme: { type: 'string' }, features: { type: 'string' }, 'map-center': { type: 'string' }, 'map-area': { type: 'string' },
       'booking-url': { type: 'string' }, 'menu-file': { type: 'string' }, 'reviews-file': { type: 'string' }, 'faq-file': { type: 'string' },
       'before-after': { type: 'string' },
+      emergency: { type: 'string' }, badges: { type: 'string' }, checklist: { type: 'string' }, 'steps-file': { type: 'string' },
+      'pricing-file': { type: 'string' }, 'team-file': { type: 'string' }, 'order-endpoint': { type: 'string' }, 'order-url': { type: 'string' },
       tagline: { type: 'string' }, 'sample-reviews': { type: 'boolean', default: false },
       out: { type: 'string' }, 'png-dir': { type: 'string' },
       mobile: { type: 'boolean', default: false }, 'no-png': { type: 'boolean', default: false },
@@ -1160,7 +1231,15 @@ async function main() {
   let { html: outHtml, count: galleryCount, removed } = cfg.placeholderPhotos ? { html: built, count: 3, removed: [] } : await pruneGallery(built, css);
   // Library features (tools/library.mjs). Nothing changes when no --theme/--features and the trade is an original one.
   Object.assign(ctx, await resolveFeatureData(values, lib, ctx, outDir));
-  if (lib.features.length) outHtml = applyFeatures(outHtml, buildFeatures(lib.features, cfg, ctx));
+  ctx.slug = slug;
+  if (lib.features.length) {
+    const feat = buildFeatures(lib.features, cfg, ctx);
+    outHtml = applyFeatures(outHtml, feat);
+    if (feat.orderAssets) {
+      fs.mkdirSync(path.join(outDir, 'order'), { recursive: true });
+      for (const f of ['order.js', 'order.css']) fs.copyFileSync(path.join(REPO_ROOT, 'widgets', 'order', f), path.join(outDir, 'order', f));
+    }
+  }
   let chatFacts = null;
   if (values.chat) {
     chatFacts = buildChatFacts(cfg, ctx);

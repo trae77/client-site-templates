@@ -1,0 +1,5 @@
+[
+  { "name": "Sample package 1", "price": "$ (business's price)", "details": ["Placeholder detail", "Placeholder detail"] },
+  { "name": "Sample package 2", "price": "$ (business's price)", "details": ["Placeholder detail", "Placeholder detail"] },
+  { "name": "Sample package 3", "price": "$ (business's price)", "details": ["Placeholder detail"] }
+]

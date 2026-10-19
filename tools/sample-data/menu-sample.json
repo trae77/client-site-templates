@@ -1,0 +1,19 @@
+{
+  "sample": true,
+  "menu": [
+    { "section": "Sample Mains", "items": [
+      { "name": "Sample item A", "desc": "Placeholder description.", "price": "$10.00",
+        "options": [
+          { "name": "Size", "required": true, "choices": [{ "label": "Regular" }, { "label": "Large", "price": "+$2.00" }] },
+          { "name": "Extras", "multi": true, "choices": [{ "label": "Extra topping", "price": "+$1.00" }, { "label": "Side sauce", "price": "+$0.50" }] }
+        ] },
+      { "name": "Sample item B", "desc": "Placeholder description.", "price": "$12.00",
+        "options": [ { "name": "Choice", "required": true, "choices": [{ "label": "Option 1" }, { "label": "Option 2" }] } ] },
+      { "name": "Sample item C", "desc": "Placeholder description.", "price": "$9.00" }
+    ] },
+    { "section": "Sample Sides & Drinks", "items": [
+      { "name": "Sample side", "price": "$4.00" },
+      { "name": "Sample drink", "price": "$3.00", "options": [ { "name": "Size", "required": true, "choices": [{ "label": "Small" }, { "label": "Large", "price": "+$1.00" }] } ] }
+    ] }
+  ]
+}

@@ -71,6 +71,62 @@ export const CATEGORIES = {
     services: [['Buying a Home', 'Help finding and buying a home.'], ['Selling a Home', 'Listing and selling your home.'], ['Home Value', 'Ask what your home might sell for.'], ['Relocation', 'Moving into or out of the area.']],
     aliases: ['real-estate', 'realtor', 'realty', 'real-estate-agent', 'realestate', 'broker', 'property-management'],
   },
+  concrete: {
+    label: 'concrete work', theme: 'bold-industrial', defaults: { primary: '#44403c', accent: '#f59e0b' },
+    features: ['call-bar', 'quote-form', 'process', 'before-after', 'map', 'faq'],
+    services: [['Driveways', 'New driveways and replacements.'], ['Patios & Walkways', 'Patios, sidewalks, and steps.'], ['Foundations & Slabs', 'Slabs for garages, sheds, and additions.'], ['Repairs', 'Cracked or uneven concrete.']],
+    aliases: ['concrete', 'concrete-contractor', 'concrete-work', 'flatwork', 'masonry', 'mason', 'stamped-concrete'],
+  },
+  fencing: {
+    label: 'fencing', theme: 'earthy-organic', defaults: { primary: '#3f6212', accent: '#d97706' },
+    features: ['call-bar', 'quote-form', 'process', 'before-after', 'map', 'faq'],
+    services: [['Wood Fences', 'Privacy and picket fences.'], ['Vinyl & Composite', 'Low-upkeep fence styles.'], ['Chain Link & Metal', 'Chain link, aluminum, and steel.'], ['Gates & Repairs', 'Gates, posts, and fence repairs.']],
+    aliases: ['fencing', 'fence', 'fences', 'fence-company', 'fence-contractor', 'fence-installation'],
+  },
+  'pest-control': {
+    label: 'pest control', theme: 'modern-bold-color', defaults: { primary: '#15803d', accent: '#facc15' },
+    features: ['call-bar', 'quote-form', 'process', 'map', 'faq'],
+    services: [['General Pests', 'Ants, spiders, and other insects.'], ['Rodents', 'Mice and rats.'], ['Termites', 'Termite inspections and treatment.'], ['Wasps & Bees', 'Nests around the home.']],
+    aliases: ['pest-control', 'pest', 'pests', 'exterminator', 'exterminating', 'termite', 'bed-bugs', 'wildlife-removal'],
+  },
+  moving: {
+    label: 'moving', theme: 'coastal-fresh', defaults: { primary: '#0e7490', accent: '#f97316' },
+    features: ['call-bar', 'quote-form', 'process', 'map', 'faq'],
+    services: [['Local Moves', 'Moves within the area.'], ['Long-Distance Moves', 'Moves to another city or state.'], ['Packing', 'Packing and unpacking help.'], ['Loading & Unloading', 'Help loading or unloading.']],
+    aliases: ['moving', 'movers', 'mover', 'moving-company', 'moving-services', 'relocation-services'],
+  },
+  'tree-service': {
+    label: 'tree service', theme: 'earthy-organic', defaults: { primary: '#166534', accent: '#a16207' },
+    features: ['call-bar', 'quote-form', 'before-after', 'map', 'faq'],
+    services: [['Tree Trimming', 'Pruning and shaping.'], ['Tree Removal', 'Removing trees of any size.'], ['Stump Grinding', 'Grinding stumps below grade.'], ['Storm Cleanup', 'Fallen limbs and debris.']],
+    aliases: ['tree-service', 'tree-services', 'tree-care', 'arborist', 'tree-removal', 'tree-trimming', 'stump-grinding'],
+  },
+  tattoo: {
+    label: 'tattoo studio', theme: 'premium-dark', defaults: { primary: '#7f1d1d', accent: '#f87171' },
+    features: ['call-bar', 'booking', 'map', 'faq'], ask: 'to ask about a design', servicesNote: 'Sample service list for this mockup. The list can be matched to exactly what {name} offers.',
+    services: [['Custom Designs', 'Pieces drawn for you.'], ['Flash', 'Ready-made designs.'], ['Cover-Ups', 'Covering or reworking older tattoos.'], ['Piercing', 'Ask what is offered.']],
+    aliases: ['tattoo', 'tattoos', 'tattoo-studio', 'tattoo-shop', 'tattoo-parlor', 'piercing'],
+  },
+  daycare: {
+    label: 'child care', theme: 'coastal-fresh', defaults: { primary: '#2563eb', accent: '#f472b6' },
+    features: ['call-bar', 'booking', 'process', 'map', 'faq'], ask: 'to ask about enrollment', addressLabel: 'Location',
+    services: [['Infants', 'Care for the youngest children.'], ['Toddlers', 'Care for toddlers.'], ['Preschool', 'Preschool-age programs.'], ['Before & After School', 'Care around the school day.']],
+    aliases: ['daycare', 'day-care', 'childcare', 'child-care', 'preschool', 'nanny', 'babysitting'],
+  },
+  'law-accounting': {
+    label: 'legal & accounting services', theme: 'clean-minimal', defaults: { primary: '#1e3a5f', accent: '#b8860b' },
+    features: ['quote-form', 'process', 'faq'], ask: 'to set up a consultation', addressLabel: 'Office',
+    servicesNote: 'Typical services shown for this mockup. The list can be matched to exactly what {name} offers.',
+    services: [['Consultations', 'A first conversation about your situation.'], ['Tax & Bookkeeping', 'Tax returns, bookkeeping, and payroll.'], ['Business Matters', 'Help with business setup and paperwork.'], ['Personal Matters', 'Wills, estates, and family paperwork.']],
+    aliases: ['law-accounting', 'law', 'lawyer', 'attorney', 'law-firm', 'legal', 'accounting', 'accountant', 'cpa', 'bookkeeping', 'tax-preparation', 'financial-advisor'],
+  },
+  church: {
+    label: 'church', theme: 'warm-local', defaults: { primary: '#4338ca', accent: '#f59e0b' },
+    features: ['map', 'faq'], ask: 'to ask about visiting', addressLabel: 'Location',
+    servicesNote: 'Sample ministries for this mockup. The list can be matched to exactly what {name} offers.',
+    services: [['Gatherings', 'Worship gatherings.'], ['Kids & Youth', 'Programs for children and students.'], ['Groups', 'Small groups and classes.'], ['Care & Prayer', 'Reach out for prayer or support.']],
+    aliases: ['church', 'churches', 'ministry', 'parish', 'congregation', 'worship', 'chapel'],
+  },
   photography: {
     label: 'photography', theme: 'clean-minimal', defaults: { primary: '#18181b', accent: '#e11d48' },
     features: ['booking', 'faq'], ask: 'to check a date',
@@ -84,16 +140,18 @@ export const REUSED = {
   landscaping: 'landscaping',
   cleaning: 'cleaning-service',
   'restaurant-foodtruck': 'restaurant',
+  'restaurant-ordering': 'restaurant',
 };
-export const EXTRA_ALIASES = { restaurant: ['restaurant-foodtruck', 'foodtruck', 'food-trucks'] };
+export const EXTRA_ALIASES = { restaurant: ['restaurant-foodtruck', 'foodtruck', 'food-trucks', 'restaurant-ordering'] };
 
 /** Defaults for new category names that reuse an existing folder. Original trade names (landscaping,
  * cleaning, restaurant, ...) keep their exact old output unless --theme / --features are passed. */
 export const REUSED_DEFAULTS = {
   'restaurant-foodtruck': { label: 'restaurant & food truck', theme: 'warm-local', features: ['call-bar', 'menu', 'map', 'faq'] },
+  'restaurant-ordering': { label: 'restaurant & food truck', theme: 'modern-bold-color', features: ['call-bar', 'pickup-order', 'map', 'faq'] },
 };
 
-export const FEATURES = ['call-bar', 'quote-form', 'reviews', 'map', 'before-after', 'hours', 'booking', 'menu', 'faq'];
+export const FEATURES = ['call-bar', 'emergency', 'badges', 'quote-form', 'reviews', 'map', 'before-after', 'hours', 'booking', 'menu', 'pickup-order', 'process', 'checklist', 'pricing', 'team', 'faq'];
 
 // ---------------------------------------------------------------------------
 // Themes (CSS variables + a few component overrides). Appended after the brand CSS.
@@ -136,6 +194,32 @@ h1, h2, h3, .logo { font-family: Georgia, 'Times New Roman', serif; font-weight:
 .card { border: 1px solid rgba(120, 72, 32, 0.12); }
 .section-head h2::after { border-radius: 999px; }
 ` },
+  'coastal-fresh': { dark: false, css: `
+:root { --radius: 16px; --bg: #f2f9fb; --card: #ffffff; --text: #0b2530; --muted: #3d5a66; }
+.site-header { background: rgba(242, 249, 251, 0.95); border-top-color: #0e7490; }
+.hero::before { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='24'%3E%3Cpath d='M0 12c20-12 40 12 60 0s40 12 60 0' fill='none' stroke='%23ffffff' stroke-opacity='.16' stroke-width='2'/%3E%3C/svg%3E") !important; opacity: 1 !important; }
+.btn { border-radius: 12px; }
+.card { border-top: 4px solid #0e7490; }
+section:nth-of-type(even) { background: #e6f3f6; }
+` },
+  'earthy-organic': { dark: false, css: `
+:root { --radius: 14px; --bg: #f4f1e8; --card: #fbfaf5; --text: #2a2a22; --muted: #575548; }
+h1, h2, h3, .logo { font-family: Georgia, 'Times New Roman', serif; letter-spacing: 0; }
+.site-header { background: rgba(244, 241, 232, 0.96); border-top-color: #6b7c3a; }
+.hero::before { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M30 8c10 8 10 22 0 30-10-8-10-22 0-30z' fill='%23ffffff' fill-opacity='.08'/%3E%3C/svg%3E") !important; opacity: 1 !important; }
+.card { border: 1px solid rgba(90, 80, 50, 0.16); box-shadow: none; }
+.btn { border-radius: 10px; }
+` },
+  'modern-bold-color': { dark: false, css: `
+:root { --radius: 18px; --bg: #ffffff; --card: #ffffff; --text: #111827; --muted: #4b5563; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.8rem); letter-spacing: -0.03em; font-weight: 800; }
+h2 { letter-spacing: -0.02em; font-weight: 800; }
+.site-header { border-top-width: 6px; }
+.card { border: 2px solid #111827; box-shadow: 6px 6px 0 var(--brand-accent); }
+.btn { border-radius: 999px; font-weight: 800; }
+.section-head h2::after { width: 72px; height: 8px; }
+section:nth-of-type(even) { background: var(--hero-tint); }
+` },
   'premium-dark': { dark: true, css: `
 :root { --radius: 6px; --font: 'Plus Jakarta Sans', system-ui, sans-serif; }
 h1, h2 { font-family: Georgia, 'Times New Roman', serif; font-weight: 500; letter-spacing: 0.01em; }
@@ -161,6 +245,20 @@ export function themeCss(name, primary, accent, helpers) {
 // Feature sections
 // ---------------------------------------------------------------------------
 export const FEATURE_CSS = `
+.emergency-banner { background: #b91c1c; color: #fff; text-align: center; padding: 0.7rem 1rem; font-weight: 700; }
+.emergency-banner a { color: #fff; text-decoration: underline; margin-left: 0.5rem; white-space: nowrap; }
+.badge-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; padding: 1rem; margin: 0; list-style: none; background: var(--card); border-bottom: 1px solid var(--border); }
+.badge-strip li { border: 1px solid var(--border); border-radius: 999px; padding: 0.4rem 0.9rem; font-weight: 600; font-size: 0.92rem; }
+.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.steps li { counter-increment: step; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius, 12px); padding: 1.25rem; }
+.steps li::before { content: counter(step); display: inline-grid; place-items: center; width: 2rem; height: 2rem; border-radius: 999px; background: var(--brand-accent); color: var(--on-accent, #0f172a); font-weight: 800; margin-bottom: 0.5rem; }
+.checklist { columns: 2 240px; padding: 0; list-style: none; }
+.checklist li { padding: 0.35rem 0 0.35rem 1.6rem; position: relative; break-inside: avoid; }
+.checklist li::before { content: "✓"; position: absolute; left: 0; font-weight: 800; color: var(--accent); }
+.price-card .price { font-size: 1.6rem; font-weight: 800; margin: 0.25rem 0 0.5rem; }
+.price-card ul { padding-left: 1.1rem; margin: 0; }
+.team-card img, .team-card .ph-tile { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius, 12px); margin-bottom: 0.75rem; }
+.team-card p { margin: 0.25rem 0 0; }
 /* Feature sections (tools/library.mjs) */
 .ph-tile { display: grid; place-items: center; aspect-ratio: 4/3; border-radius: var(--radius, 12px); margin: 0; color: rgba(255,255,255,0.92); font-weight: 600; font-size: 0.95rem; text-align: center; padding: 1rem;
   background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent)); }
@@ -346,6 +444,45 @@ export function buildFeatures(features, cfg, ctx) {
         <p class="lib-note">Map data © <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors.</p>`));
   }
 
+  if (on('pickup-order') && ctx.orderMenu) {
+    const data = { site: ctx.slug, name: ctx.name, phone: ctx.phoneDisplay, email: ctx.email || undefined, endpoint: ctx.orderEndpoint || undefined, menu: ctx.orderMenu };
+    const sample = ctx.orderMenuSample ? `Sample menu: placeholder items and prices, not ${name}'s real menu. ` : '';
+    const link = ctx.orderUrl ? `\n        <p><a class="btn btn-accent" href="${esc(ctx.orderUrl)}" rel="noopener noreferrer">Order on ${name}'s ordering page</a></p>` : '';
+    after.push(section('order', ctx.orderMenuSample ? 'Order for Pickup (Sample Menu)' : 'Order for Pickup', `${sample}Pick your items and a pickup time. Pay at pickup. No payment is taken on this page.`, `<div id="order-app"><noscript><p>Ordering needs JavaScript. Please call ${phone}.</p></noscript></div>${link}
+        <script type="application/json" id="order-data">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`));
+    nav.push(['#order', 'Order']);
+    heroCta = ['#order', 'Order for Pickup'];
+  }
+
+  if (on('pricing') && ctx.pricing) {
+    after.push(section('pricing', 'Pricing', '', `<div class="feature-grid">${ctx.pricing.map((p) => `
+          <div class="panel price-card"><h3>${esc(p.name)}</h3>${p.price ? `<p class="price">${esc(p.price)}</p>` : ''}${p.details && p.details.length ? `<ul>${p.details.map((d) => `<li>${esc(d)}</li>`).join('')}</ul>` : ''}</div>`).join('')}
+        </div>`));
+    nav.push(['#pricing', 'Pricing']);
+  }
+
+  if (on('checklist') && ctx.checklist) {
+    after.push(section('included', 'What’s Included', '', `<ul class="checklist">${ctx.checklist.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>`));
+  }
+
+  if (on('process')) {
+    const steps = ctx.steps || [
+      ['Get in touch', `Call ${ctx.phoneDisplay} or send a message.`],
+      ['Share the details', 'Describe what you need.'],
+      ['Get a quote', `${ctx.name} replies with next steps.`],
+      ['Pick a time', 'Agree on a date that works.'],
+    ];
+    after.push(section('process', 'How It Works', ctx.steps ? '' : `Typical steps for this mockup. They can be matched to how ${name} works.`, `<ol class="steps">${steps.map(([t, d]) => `
+          <li><h3>${esc(t)}</h3>${d ? `<p>${esc(d)}</p>` : ''}</li>`).join('')}
+        </ol>`));
+  }
+
+  if (on('team') && ctx.team) {
+    before.push(section('team', 'Who You’ll Work With', '', `<div class="feature-grid">${ctx.team.map((m) => `
+          <div class="panel team-card">${m.photo ? `<img src="${esc(m.photo)}" alt="${esc(m.name)}" width="400" height="400">` : ''}<h3>${esc(m.name)}</h3>${m.role ? `<p><strong>${esc(m.role)}</strong></p>` : ''}${m.bio ? `<p>${esc(m.bio)}</p>` : ''}</div>`).join('')}
+        </div>`));
+  }
+
   if (on('faq')) {
     const faq = buildFaq(cfg, ctx);
     before.push(section('faq', 'Questions', '', `<div class="faq">${faq.map((f) => `
@@ -356,7 +493,11 @@ export function buildFeatures(features, cfg, ctx) {
 
   const bodyEnd = (on('quote-form') || (on('booking') && !ctx.bookingUrl) ? FORM_SCRIPT.replace("note.getAttribute('data-call') || ", `${JSON.stringify(callNote.replace(/&amp;/g, '&'))} || `) : '')
     + (on('call-bar') ? `\n  <div class="call-bar" role="region" aria-label="Contact shortcuts">\n    <a class="cb-call" href="${ctx.tel}">Call ${phone}</a>\n    <a class="cb-alt" href="${heroCta ? heroCta[0] : '#contact'}">${heroCta ? heroCta[1] : 'Message'}</a>\n  </div>` : '');
-  return { afterServices: after.join(''), beforeContact: before.join(''), bodyEnd, nav, heroCta, bodyClass: on('call-bar') ? 'has-call-bar' : '' };
+  const topBanner = on('emergency') && ctx.emergency ? `\n    <div class="emergency-banner" role="note">${esc(ctx.emergency)} <a href="${ctx.tel}">Call ${phone}</a></div>` : '';
+  const afterHero = on('badges') && ctx.badges ? `\n    <ul class="badge-strip" aria-label="Credentials">${ctx.badges.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>\n` : '';
+  const orderAssets = on('pickup-order') && ctx.orderMenu;
+  return { afterServices: after.join(''), beforeContact: before.join(''), bodyEnd: bodyEnd + (orderAssets ? '\n  <script src="order/order.js" defer></script>' : ''), nav, heroCta, topBanner, afterHero, orderAssets,
+    bodyClass: on('call-bar') ? 'has-call-bar' : '' };
 }
 
 /** FAQ built only from supplied facts (plus any --faq-file entries). */
