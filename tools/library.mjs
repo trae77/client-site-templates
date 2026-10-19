@@ -397,7 +397,7 @@ export function buildFeatures(features, cfg, ctx) {
   }
 
   if (on('booking')) {
-    const inner = ctx.bookingUrl
+    const inner = ctx.bookingEmbed ? ctx.bookingEmbedHtml(ctx.bookingEmbed, phone, esc) : ctx.bookingUrl
       ? `<div class="panel"><p>Pick a time online, or call ${phone}.</p><p><a class="btn btn-accent" href="${esc(ctx.bookingUrl)}" rel="noopener noreferrer">Book online</a></p></div>`
       : `<div class="feature-grid"><div class="panel">
         ${libForm('booking', [['name', 'Name', 'text', ' autocomplete="name"'], ['phone', 'Phone', 'tel', ' autocomplete="tel"'], ['service', 'Service', 'select', serviceOpts], ['when', 'Preferred day and time', 'text', ' placeholder="e.g. a weekday morning"']], ctx, 'Request a booking')}

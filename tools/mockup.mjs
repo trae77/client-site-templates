@@ -37,6 +37,7 @@ import { execFileSync } from 'node:child_process';
 import { COPY, jsonLd, parseHoursJson, faqBank } from './v3.mjs';
 import { MONEY, MONEY_DEFAULTS, MONEY_CSS, MONEY_SCRIPT, buildMoney, buildZip, trustItems } from './money.mjs';
 import { PALETTES, FONT_PAIRS, LAYOUTS, HEROES, resolveDesign, layoutHero, applyLayout, applyHero, heroCss, fontLinks, fontCss, paletteCss } from './design.mjs';
+import { validateBooking, bookingEmbedHtml, BOOKING_CSS, BOOKING_HOSTS, validateNotify, HONEYPOT, payLabel, PAY_DEMO_HTML } from './addons.mjs';
 import { CATEGORIES, REUSED, REUSED_DEFAULTS, EXTRA_ALIASES, FEATURES, THEMES, FEATURE_CSS, themeCss, buildFeatures, buildFaq, parseCenter, geocode } from './library.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -306,10 +307,10 @@ function validateZelle(values) {
   };
 }
 
-function buildPayBlock(payUrl, zelle) {
+function buildPayBlock(payUrl, zelle, label = 'Pay') {
   const parts = [];
   if (payUrl) {
-    parts.push(`<a class="btn btn-pay" href="${escapeHtml(payUrl)}" rel="noopener noreferrer">Pay</a>`);
+    parts.push(`<a class="btn btn-pay" href="${escapeHtml(payUrl)}" rel="noopener noreferrer">${escapeHtml(label)}</a>`);
   }
   if (zelle) {
     const contacts = [zelle.phone, zelle.email].filter(Boolean).map((v) => escapeHtml(v));
@@ -418,6 +419,12 @@ Library (tools/library.mjs, see README "Template library"):
   --money-link https://...      link-out to a booking/ordering page (not a payment link)
   --text         the phone takes texts: adds Text to the mobile bar and "text a photo" links
   --zips "80011,80012"  "Do you serve my area?" checker (also matches --areas names)
+  --notify email|sms|both  --notify-endpoint https://...  lead alerts (sms/both REQUIRE the endpoint:
+                     the client's Cloudflare Worker, see docs/NOTIFY-WORKER.md); adds a honeypot field
+  --booking-provider calendly|square|tidycal|fresha|link   embed --booking-url (host allow-list) with a
+                     click-to-load iframe and an always-visible "Open booking in a new tab" link
+  --pay-label TEXT  --pay-context deposit|invoice|package   pay button text (no amounts, ever)
+  --pay-demo         sample builds only: disabled "Payment button (demo, not active)" when there is no --pay-url
   --palette ID|auto  exact per-industry colors (spec v4 A1); --primary/--accent still override.
                      ${Object.keys(PALETTES).join(", ")}
   --fonts ID|auto    Google Font pairing, display=swap + preconnect: ${Object.keys(FONT_PAIRS).join(", ")}
@@ -1098,7 +1105,8 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
     if (u.protocol !== 'https:' || u.username || u.password) throw new Error('--booking-url must be https with no username or password.');
     if (u.hostname.toLowerCase().endsWith(STRIPE_HOST)) throw new Error('--booking-url cannot be a payment link. Use --pay-url for Stripe.');
     out.bookingUrl = u.toString();
-  }
+    if (values['booking-provider']) out.bookingEmbed = validateBooking(values['booking-provider'], out.bookingUrl);
+  } else if (values['booking-provider']) throw new Error('--booking-provider needs --booking-url and the booking feature (or --money booking).');
   if (has('reviews') && values['reviews-file']) {
     const r = readJson('reviews-file', values['reviews-file']);
     if (!Array.isArray(r) || !r.length || r.some((x) => !x || !x.text || !x.name)) throw new Error('--reviews-file must be a JSON array of { "name", "text", "source"? } copied from real reviews.');
@@ -1157,6 +1165,8 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
   out.tradeKey = slugify(values.trade);
   out.textOk = Boolean(values.text);
   if (values['money-endpoint']) out.moneyEndpoint = httpsOnly('money-endpoint', values['money-endpoint']);
+  out.notify = validateNotify(values.notify, values['notify-endpoint'], httpsOnly);
+  if (out.notify?.endpoint && !out.moneyEndpoint) out.moneyEndpoint = out.notify.endpoint;
   if (values['money-link']) out.moneyLink = httpsOnly('money-link', values['money-link']);
   if (lib.money === 'pickup-order') { out.orderEndpoint = out.orderEndpoint || out.moneyEndpoint; out.orderUrl = out.orderUrl || out.moneyLink; }
   if (lib.money === 'booking' && out.moneyLink && !out.bookingUrl) out.bookingUrl = out.moneyLink;
@@ -1301,6 +1311,8 @@ async function main() {
       'schedule-file': { type: 'string' }, 'listings-file': { type: 'string' }, brokerage: { type: 'string' },
       emergency: { type: 'string' }, badges: { type: 'string' }, checklist: { type: 'string' }, 'steps-file': { type: 'string' },
       'pricing-file': { type: 'string' }, 'team-file': { type: 'string' }, 'order-endpoint': { type: 'string' }, 'order-url': { type: 'string' },
+      notify: { type: 'string' }, 'notify-endpoint': { type: 'string' }, 'booking-provider': { type: 'string' },
+      'pay-label': { type: 'string' }, 'pay-context': { type: 'string' }, 'pay-demo': { type: 'boolean', default: false },
       palette: { type: 'string' }, fonts: { type: 'string' }, layout: { type: 'string' }, hero: { type: 'string' }, 'hero-img': { type: 'string' },
       tagline: { type: 'string' }, 'sample-reviews': { type: 'boolean', default: false },
       out: { type: 'string' }, 'png-dir': { type: 'string' },
@@ -1323,7 +1335,8 @@ async function main() {
 
   const payUrl = validatePayUrl(values['pay-url']);
   const zelle = validateZelle(values);
-  const payBlock = buildPayBlock(payUrl, zelle);
+  const payBlock = (!payUrl && values['pay-demo'] && !zelle) ? PAY_DEMO_HTML : buildPayBlock(payUrl, zelle, payLabel(values['pay-label'], values['pay-context']));
+  if ((values['pay-label'] || values['pay-context']) && !payUrl) console.warn('! --pay-label/--pay-context ignored: no --pay-url, so no pay button is rendered.');
   const years = validateYears(values.years);
   const hours = validateText('hours', values.hours, 120);
   const tagline = validateText('tagline', values.tagline, 90);
@@ -1375,6 +1388,7 @@ async function main() {
   // Library features (tools/library.mjs). Nothing changes when no --theme/--features and the trade is an original one.
   Object.assign(ctx, await resolveFeatureData(values, lib, ctx, outDir));
   ctx.slug = slug;
+  if (ctx.bookingEmbed) ctx.bookingEmbedHtml = bookingEmbedHtml;
   const trustOn = Boolean(values['license-no'] || values.insured || values.certs || ctx.rated);
   const libOn = Boolean(lib.theme || lib.features.length || lib.money || ctx.zips || trustOn || values.text);
   if (libOn) {
@@ -1397,6 +1411,14 @@ async function main() {
     }
   }
   outHtml = applyV3(outHtml, cfg, ctx, { folder, tradeKey, lib, libOn: Boolean(lib.theme || lib.features.length || lib.money || ctx.zips || values.text) });
+  if (ctx.notify) {
+    // B1: forms post to the client's endpoint (Worker for sms/both); honeypot for spam; no response-time promise.
+    const thanks = `We got it. ${ctx.name} will reply by phone${ctx.notify.mode === 'email' ? ' or email' : ' or text'}.`;
+    let n = 0;
+    outHtml = outHtml.replace(/<form\b([^>]*\bdata-endpoint="[^"]*"[^>]*)>/g, (m, attrs) => (n++, `<form${attrs} data-notify="${ctx.notify.mode}" data-thanks="${escapeHtml(thanks)}">\n          ${HONEYPOT}`));
+    outHtml = outHtml.split("st.textContent = 'Sent. Thank you.';").join("st.textContent = f.getAttribute('data-thanks') || 'Sent. Thank you.';");
+    if (!n) console.warn('! --notify: this build has no money form that posts to an endpoint (add --money <type>); the flag had no effect.');
+  }
   let heroImg = null;
   if (values['hero-img']) {
     const src = values['hero-img'].trim();
@@ -1432,7 +1454,7 @@ async function main() {
   let themeCfg = lib.theme ? { ...cfg, dark: THEMES[lib.theme].dark } : cfg;
   const palOut = design.palette ? paletteCss(design.palette, { mix, rgba, ensureContrast }) : null;
   if (palOut) themeCfg = { ...themeCfg, dark: palOut.dark };
-  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(themeCfg, primary, accent, galleryCount, { cta: ctaPairs, pay: Boolean(payUrl), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
+  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(themeCfg, primary, accent, galleryCount, { cta: ctaPairs, pay: Boolean(payUrl || values['pay-demo']), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
   if (lib.theme || lib.features.length || cfg.placeholderPhotos || lib.money || ctx.zips || ctx.textOk || ctx.licenseNo || ctx.insured || ctx.certs) {
     css += MONEY_CSS + `\n:root { --on-accent: ${pickText(accent)}; }\n${cfg.placeholderPhotos ? '.hero::before { background-image: none; }\n' : ''}${FEATURE_CSS}`;
     if (lib.theme) css += themeCss(lib.theme, primary, accent, { mix, shade });
@@ -1443,6 +1465,7 @@ async function main() {
     if (values.accent) css += `.btn-primary, .call-bar .cb-call { color: ${pickText(accent)}; }\n:root { --on-accent: ${pickText(accent)}; }\n`;
     for (const pr of palOut.pairs) if (!(values.accent && pr[0] === 'palette CTA label')) ctaPairs.push(pr);
   }
+  if (ctx.bookingEmbed?.embed) css += BOOKING_CSS;
   if (design.fonts) css += fontCss(design.fonts);
   if (design.hero) css += heroCss(design.hero, heroImg);
   fs.writeFileSync(cssPath, css);

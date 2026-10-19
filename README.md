@@ -18,6 +18,12 @@ All opt-in: without these flags, builds are byte-identical to before. `auto` = t
 - `--hero-img FILE|URL`: the client's own photo (copied to `img/`, preloaded). Implies `--hero media` if no hero is given. Never stock.
 - Samples: `samples/design-*` (10 builds; see `tools/build-samples.sh`).
 
+### Paid add-ons (spec v4 B)
+- **B1 lead alerts:** `--notify email|sms|both --notify-endpoint <Worker URL>`. `sms`/`both` without an endpoint fails the build. Honeypot field; thank-you line without a time promise. Worker reference code (not deployed): [docs/NOTIFY-WORKER.md](docs/NOTIFY-WORKER.md).
+- **B2 booking embed:** `--booking-url <client page> --booking-provider calendly|square|tidycal|fresha|link`. Host allow-list per provider; the iframe only loads on click; an "Open booking in a new tab" link is always visible.
+- **B3 pay button:** `--pay-url` (Stripe hosts only) with `--pay-label` / `--pay-context deposit|invoice|package`. No `--pay-url` means no button at all. Labels with numbers or currency are rejected (never an amount). `--pay-demo` (samples only) shows a disabled "Payment button (demo, not active)".
+- **B4 polish audit for existing Wix/Squarespace sites:** [docs/WIX-SQUARESPACE-POLISH.md](docs/WIX-SQUARESPACE-POLISH.md).
+
 ## Product ladder
 
 A prospect starts with a static one-pager and can step up. These are the only two steps. **Pricing is not set** — this repo and Big Foot (`trae77/bigfootConstruction`) do not list a dollar price for either tier, so none is shown here.
