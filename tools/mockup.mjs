@@ -34,6 +34,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { CATEGORIES, REUSED, REUSED_DEFAULTS, EXTRA_ALIASES, FEATURES, THEMES, FEATURE_CSS, themeCss, buildFeatures, buildFaq, parseCenter, geocode } from './library.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
@@ -161,6 +162,12 @@ const TEMPLATES = {
   },
 };
 
+// Library categories (tools/library.mjs) reuse the generic-business HTML.
+const GENERIC_PLACEHOLDERS = (({ name, phone, email, homeCity, address }) => ({ name, phone, email, homeCity, address }))(TEMPLATES['generic-business']);
+for (const [key, c] of Object.entries(CATEGORIES)) {
+  TEMPLATES[key] = { ...GENERIC_PLACEHOLDERS, base: 'generic-business', placeholderPhotos: true, library: true, ...c };
+}
+
 // Friendly trade names -> template folder. Unknown trades fall back to generic-business.
 const TRADE_ALIASES = {
   'pressure-washing': ['pressure-washing', 'pressure-wash', 'pressure', 'power-washing', 'power-wash', 'powerwashing', 'pressurewashing', 'soft-wash', 'softwash', 'exterior-cleaning', 'window-washing'],
@@ -169,9 +176,11 @@ const TRADE_ALIASES = {
   'cleaning-service': ['cleaning-service', 'cleaning', 'cleaner', 'cleaners', 'house-cleaning', 'maid', 'maids', 'janitorial', 'commercial-cleaning', 'carpet-cleaning'],
   restaurant: ['restaurant', 'pizza', 'pizzeria', 'cafe', 'coffee', 'bakery', 'food', 'food-truck', 'diner', 'bar', 'catering'],
   'auto-detailing': ['auto-detailing', 'detailing', 'detail', 'detailer', 'car-detailing', 'mobile-detailing', 'auto-detail', 'car-wash', 'ceramic-coating'],
-  handyman: ['handyman', 'handy-man', 'home-repair', 'home-repairs', 'repair', 'repairs', 'home-improvement', 'remodeling', 'painting', 'painter', 'carpentry', 'drywall'],
+  handyman: ['handyman', 'handy-man', 'home-repair', 'home-repairs', 'repair', 'repairs', 'home-improvement', 'remodeling', 'carpentry', 'drywall'],
+  ...Object.fromEntries(Object.entries(CATEGORIES).map(([k, c]) => [k, c.aliases])),
   'generic-business': ['generic', 'generic-business', 'business', 'other', 'default'],
 };
+for (const [k, extra] of Object.entries(EXTRA_ALIASES)) TRADE_ALIASES[k].push(...extra);
 
 // ---------------------------------------------------------------------------
 // Color helpers (WCAG contrast)
@@ -388,6 +397,15 @@ Chat add-on (off unless passed):
               Add FAQ entries by editing chat-facts.json (see README).
 
 Output:
+Library (tools/library.mjs, see README "Template library"):
+  --theme       bold-industrial | clean-minimal | warm-local | premium-dark | none
+  --features    Comma list replacing the category defaults: call-bar, quote-form, reviews,
+                map, before-after, hours, booking, menu, faq (or none)
+  --map-center "lat,lon"   --map-area "TEXT"   (map; --map-area is geocoded via OpenStreetMap)
+  --reviews-file F.json    real reviews [{name,text,source?}]  (else use --sample-reviews)
+  --before-after "b.jpg:a.jpg,..."   client photos; placeholders otherwise
+  --menu-file F.json   --faq-file F.json   --booking-url https://...
+
   --out       Output HTML folder (default: mockups/<slug>/ in the repo)
   --png-dir   Where PNGs go (default: the parent of --out, e.g. mockups/)
   --mobile    Also render a 390px-wide mobile screenshot
@@ -642,6 +660,12 @@ function rebuildCopy(cfg, html, ctx, tok) {
         </div>`, 'gallery heading');
   html = html.replace(/alt="[^"]*project photo (\d+)"/g, 'alt="Sample photo $1"');
 
+  if (cfg.placeholderPhotos) {
+    sub(/<div class="gallery">[\s\S]*?\n[ \t]*<\/div>/, `<div class="gallery">${[1, 2, 3].map((i) => `
+        <div class="ph-tile" role="img" aria-label="Photo placeholder ${i}"><span>Photo placeholder</span></div>`).join('')}
+        </div>`, 'gallery grid');
+  }
+
   // Reviews: removed unless --sample-reviews, and then clearly labeled samples.
   const reviewsRe = /\n\n[ \t]*<section id="testimonials"[\s\S]*?<\/section>/;
   if (!reviewsRe.test(html)) throw new Error('Template reviews section not found; update rebuildCopy() in tools/mockup.mjs.');
@@ -854,13 +878,14 @@ function claimText(html) {
 function checkClaims(outHtml, ctx) {
   let text = claimText(outHtml);
   const supplied = [ctx.name, ctx.cityFull, ctx.cityName, ctx.label, ctx.tagline, ctx.hours, ctx.email, ctx.phoneDisplay,
-    ...ctx.areas, ...(ctx.zelle ? [ctx.zelle.phone, ctx.zelle.email, ctx.zelle.amount] : [])]
+    ...ctx.areas, ...(ctx.zelle ? [ctx.zelle.phone, ctx.zelle.email, ctx.zelle.amount] : []), ...(ctx.suppliedText || [])]
     .filter(Boolean).map((v) => String(v).replace(/\s+/g, ' ').trim()).sort((a, b) => b.length - a.length);
   for (const v of supplied) text = text.replace(new RegExp(escapeRe(v), 'gi'), ' ');
 
   const problems = [];
   for (const rule of CLAIM_RULES) {
     if (rule.flag && ctx[rule.flag]) continue;
+    if (rule.flag === 'sampleReviews' && ctx.reviews) continue; // --reviews-file: the business supplied them
     const m = text.match(rule.re);
     if (m) {
       const at = Math.max(0, m.index - 40);
@@ -959,6 +984,110 @@ async function screenshot(htmlFile, pngPath, { mobile, primary, accent }) {
 }
 
 // ---------------------------------------------------------------------------
+// Library options: --theme / --features and their data flags
+// ---------------------------------------------------------------------------
+function libraryOptions(values, folder, tradeKey) {
+  const cat = TEMPLATES[folder].library ? TEMPLATES[folder] : (tradeKey === folder || REUSED[tradeKey] === folder ? REUSED_DEFAULTS[tradeKey] : null);
+  let theme = values.theme != null ? slugify(values.theme) : (cat?.theme || null);
+  if (theme === 'none' || theme === 'default') theme = null;
+  if (theme && !THEMES[theme]) throw new Error(`--theme "${values.theme}" is not a theme. Use one of: ${Object.keys(THEMES).join(', ')}, none.`);
+  const explicit = values.features != null;
+  let features = explicit ? String(values.features).split(',').map((f) => slugify(f)).filter(Boolean) : [...(cat?.features || [])];
+  if (features.includes('none')) features = [];
+  const bad = features.filter((f) => !FEATURES.includes(f));
+  if (bad.length) throw new Error(`--features: unknown "${bad.join(', ')}". Use any of: ${FEATURES.join(', ')} (or none).`);
+  if (values['reviews-file'] && !features.includes('reviews')) features.push('reviews');
+  if (values['before-after'] && !features.includes('before-after')) features.push('before-after');
+  if ((values['map-center'] || values['map-area']) && !features.includes('map')) features.push('map');
+  if (values['menu-file'] && !features.includes('menu')) features.push('menu');
+  if (values['booking-url'] && !features.includes('booking')) features.push('booking');
+  if (values['faq-file'] && !features.includes('faq')) features.push('faq');
+  const skipped = [];
+  if (features.includes('hours') && !values.hours) {
+    if (explicit) throw new Error('--features hours needs --hours "TEXT". Hours are never invented.');
+    features = features.filter((f) => f !== 'hours'); skipped.push('hours (no --hours)');
+  }
+  if (features.includes('reviews') && !values['reviews-file']) {
+    if (!values['sample-reviews'] && explicit) throw new Error('--features reviews needs --reviews-file (real reviews) or --sample-reviews (labeled samples).');
+    features = features.filter((f) => f !== 'reviews'); // --sample-reviews keeps the template's labeled sample section
+  }
+  if (features.includes('map') && !explicit && !values['map-center'] && !values['map-area']) {
+    features = features.filter((f) => f !== 'map'); skipped.push('map (pass --map-center or --map-area)');
+  }
+  // Order sections the same way every time.
+  features = FEATURES.filter((f) => features.includes(f));
+  return { theme, features, skipped };
+}
+
+function readJson(flag, file) {
+  try { return JSON.parse(fs.readFileSync(path.resolve(file), 'utf8')); }
+  catch (e) { throw new Error(`--${flag}: could not read JSON from ${file} (${e.message})`); }
+}
+
+async function resolveFeatureData(values, lib, ctx, outDir) {
+  const out = { suppliedText: [] };
+  const has = (f) => lib.features.includes(f);
+  if (has('booking') && values['booking-url']) {
+    let u;
+    try { u = new URL(values['booking-url']); } catch { throw new Error('--booking-url must be a full https URL (e.g. a Calendly or Square booking page).'); }
+    if (u.protocol !== 'https:' || u.username || u.password) throw new Error('--booking-url must be https with no username or password.');
+    if (u.hostname.toLowerCase().endsWith(STRIPE_HOST)) throw new Error('--booking-url cannot be a payment link. Use --pay-url for Stripe.');
+    out.bookingUrl = u.toString();
+  }
+  if (has('reviews') && values['reviews-file']) {
+    const r = readJson('reviews-file', values['reviews-file']);
+    if (!Array.isArray(r) || !r.length || r.some((x) => !x || !x.text || !x.name)) throw new Error('--reviews-file must be a JSON array of { "name", "text", "source"? } copied from real reviews.');
+    out.reviews = r.slice(0, 6);
+    out.suppliedText.push(...out.reviews.flatMap((x) => [x.text, x.name, x.source]).filter(Boolean));
+  }
+  if (has('menu') && values['menu-file']) {
+    const m = readJson('menu-file', values['menu-file']);
+    if (!Array.isArray(m) || m.some((s) => !s.section || !Array.isArray(s.items))) throw new Error('--menu-file must be a JSON array of { "section", "items": [{ "name", "desc"?, "price"? }] }.');
+    out.menu = m;
+    out.suppliedText.push(...m.flatMap((s) => [s.section, ...s.items.flatMap((i) => [i.name, i.desc, i.price])]).filter(Boolean));
+  }
+  if (values['faq-file']) {
+    const f = readJson('faq-file', values['faq-file']);
+    if (!Array.isArray(f) || f.some((x) => !x.q || !x.a)) throw new Error('--faq-file must be a JSON array of { "q", "a" } supplied by the business.');
+    out.faqExtra = f;
+    out.suppliedText.push(...f.flatMap((x) => [x.q, x.a]));
+  }
+  if (has('before-after') && values['before-after']) {
+    fs.mkdirSync(path.join(outDir, 'img'), { recursive: true });
+    out.baPairs = values['before-after'].split(',').map((pair, i) => pair.split(':').map((file, j) => {
+      const src = path.resolve(file.trim());
+      if (!fs.existsSync(src)) throw new Error(`--before-after: file not found: ${file}`);
+      const dest = `img/ba-${i + 1}-${j ? 'after' : 'before'}${path.extname(src).toLowerCase()}`;
+      fs.copyFileSync(src, path.join(outDir, dest));
+      return dest;
+    })).filter((p) => p.length === 2);
+  }
+  if (has('map')) {
+    out.mapArea = values['map-area'] ? values['map-area'].trim() : ctx.cityFull;
+    out.mapCenter = values['map-center'] ? parseCenter(values['map-center']) : await geocode(out.mapArea);
+    out.suppliedText.push(out.mapArea);
+  }
+  return out;
+}
+
+function applyFeatures(html, f) {
+  const must = (re, what) => { if (!re.test(html)) throw new Error(`Feature placement: ${what} not found in template.`); };
+  if (f.afterServices) {
+    must(/(<section id="services"[\s\S]*?<\/section>\n)/, 'services section');
+    html = html.replace(/(<section id="services"[\s\S]*?<\/section>\n)/, (m) => m + f.afterServices);
+  }
+  if (f.beforeContact) {
+    must(/\n[ \t]*<section id="contact"/, 'contact section');
+    html = html.replace(/\n([ \t]*<section id="contact")/, (m, g) => `${f.beforeContact}\n${g}`);
+  }
+  if (f.nav.length) html = html.replace('<a href="#contact">Contact</a>', () => `${f.nav.map(([h, t]) => `<a href="${h}">${t}</a>`).join('\n        ')}\n        <a href="#contact">Contact</a>`);
+  if (f.heroCta) html = html.replace('<a class="btn btn-primary" href="#contact">Send a Message</a>', () => `<a class="btn btn-primary" href="${f.heroCta[0]}">${f.heroCta[1]}</a>`);
+  if (f.bodyClass) html = html.replace(/<body>/, `<body class="${f.bodyClass}">`);
+  if (f.bodyEnd) html = html.replace(/<\/body>(?![\s\S]*<\/body>)/, () => `${f.bodyEnd}\n</body>`);
+  return html;
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 async function main() {
@@ -971,6 +1100,9 @@ async function main() {
       'zelle-phone': { type: 'string' }, 'zelle-email': { type: 'string' }, 'zelle-amount': { type: 'string' },
       licensed: { type: 'boolean', default: false }, years: { type: 'string' }, hours: { type: 'string' },
       chat: { type: 'boolean', default: false },
+      theme: { type: 'string' }, features: { type: 'string' }, 'map-center': { type: 'string' }, 'map-area': { type: 'string' },
+      'booking-url': { type: 'string' }, 'menu-file': { type: 'string' }, 'reviews-file': { type: 'string' }, 'faq-file': { type: 'string' },
+      'before-after': { type: 'string' },
       tagline: { type: 'string' }, 'sample-reviews': { type: 'boolean', default: false },
       out: { type: 'string' }, 'png-dir': { type: 'string' },
       mobile: { type: 'boolean', default: false }, 'no-png': { type: 'boolean', default: false },
@@ -991,6 +1123,8 @@ async function main() {
   const tagline = validateText('tagline', values.tagline, 90);
 
   const { folder, fallback } = resolveTrade(values.trade);
+  const tradeKey = slugify(values.trade);
+  const lib = libraryOptions(values, folder, tradeKey);
   const cfg = TEMPLATES[folder];
   const primary = toHex(parseHex(values.primary || cfg.defaults.primary));
   const accent = toHex(parseHex(values.accent || cfg.defaults.accent));
@@ -1007,13 +1141,13 @@ async function main() {
 
   const ctx = {
     name: values.name, nameHtml: escapeHtml(values.name), phoneDisplay, tel: telHref(values.phone), email, cityName, cityFull, areas,
-    label: tradeLabel(values.trade), payBlock, zelle,
+    label: (tradeKey === folder && cfg.label) || REUSED_DEFAULTS[tradeKey]?.label || tradeLabel(values.trade), payBlock, zelle,
     licensed: values.licensed, years, hours, tagline, sampleReviews: values['sample-reviews'],
   };
 
   const outDir = path.resolve(values.out || path.join(REPO_ROOT, 'mockups', slug));
   const pngDir = path.resolve(values['png-dir'] || path.dirname(outDir));
-  const srcDir = path.join(REPO_ROOT, folder);
+  const srcDir = path.join(REPO_ROOT, cfg.base || folder);
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
   fs.mkdirSync(pngDir, { recursive: true });
@@ -1023,10 +1157,14 @@ async function main() {
   const cssPath = path.join(outDir, 'styles.css');
   let css = fs.readFileSync(cssPath, 'utf8');
   const built = buildHtml(cfg, fs.readFileSync(htmlPath, 'utf8'), ctx);
-  let { html: outHtml, count: galleryCount, removed } = await pruneGallery(built, css);
+  let { html: outHtml, count: galleryCount, removed } = cfg.placeholderPhotos ? { html: built, count: 3, removed: [] } : await pruneGallery(built, css);
+  // Library features (tools/library.mjs). Nothing changes when no --theme/--features and the trade is an original one.
+  Object.assign(ctx, await resolveFeatureData(values, lib, ctx, outDir));
+  if (lib.features.length) outHtml = applyFeatures(outHtml, buildFeatures(lib.features, cfg, ctx));
   let chatFacts = null;
   if (values.chat) {
     chatFacts = buildChatFacts(cfg, ctx);
+    if (lib.features.includes('faq')) chatFacts.faq = buildFaq(cfg, ctx);
     outHtml = addChatTags(outHtml);
     fs.mkdirSync(path.join(outDir, 'chat'), { recursive: true });
     for (const f of ['chat-widget.js', 'chat-widget.css']) fs.copyFileSync(path.join(CHAT_SRC, f), path.join(outDir, 'chat', f));
@@ -1034,7 +1172,12 @@ async function main() {
   }
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
   fs.writeFileSync(htmlPath, values['no-claim'] ? outHtml : addClaimBar(outHtml));
-  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(cfg, primary, accent, galleryCount, { pay: Boolean(payUrl), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
+  const themeCfg = lib.theme ? { ...cfg, dark: THEMES[lib.theme].dark } : cfg;
+  css = replaceAllLiteral(css, cfg.name, values.name) + buildCss(themeCfg, primary, accent, galleryCount, { pay: Boolean(payUrl), zelle: Boolean(zelle), stats: factLines(ctx).length, hours: Boolean(hours) });
+  if (lib.theme || lib.features.length || cfg.placeholderPhotos) {
+    css += `\n:root { --on-accent: ${pickText(accent)}; }\n${cfg.placeholderPhotos ? '.hero::before { background-image: none; }\n' : ''}${FEATURE_CSS}`;
+    if (lib.theme) css += themeCss(lib.theme, primary, accent, { mix, shade });
+  }
   fs.writeFileSync(cssPath, css);
 
   const { problems, warnings } = verify(outHtml, cfg, ctx);
@@ -1053,6 +1196,7 @@ async function main() {
   if (payUrl) console.log('Pay:      hero "Pay" button (Stripe Payment Link)');
   if (zelle) console.log(`Zelle:    plain text next to the call to action${zelle.amount ? ' (amount shown)' : ''}`);
   if (!payUrl && !zelle) console.log('Payments: off (no pay button, no Zelle block)');
+  console.log(`Theme:    ${lib.theme || 'template default'}${lib.features.length ? ` · features ${lib.features.join(', ')}` : ''}${lib.skipped.length ? ` (skipped: ${lib.skipped.join('; ')})` : ''}`);
   console.log(`Chat:     ${chatFacts ? `on (chat/ + chat-facts.json: ${chatFacts.services.length} services, ${chatFacts.areas.length} area(s)${chatFacts.hours ? ', hours' : ', no hours'})` : 'off'}`);
   const optIn = [values.licensed && '--licensed', years && '--years', hours && '--hours', tagline && '--tagline', values['sample-reviews'] && '--sample-reviews'].filter(Boolean);
   console.log(`Claims:   ${optIn.length ? `opt-in ${optIn.join(', ')}` : 'facts only (name, trade, city, phone' + (email ? ', email' : '') + ')'}`);

@@ -66,6 +66,66 @@ Every template includes:
 - Footer with hours, phone, and placeholder address
 - Distinct color palette and hero treatment per niche
 
+## Template library: categories, themes, features
+
+`tools/library.mjs` adds categories, style themes and opt-in sections to `npm run mockup`. Research notes: [`docs/RESEARCH.md`](./docs/RESEARCH.md). Image licenses: [`CREDITS.md`](./CREDITS.md).
+
+**Backward compatible.** The original trades (`pressure-washing`, `landscaping`, `plumbing`, `cleaning`, `restaurant`, `auto-detailing`, `handyman`, generic) build byte-for-byte the same HTML as before unless you pass `--theme` or `--features`. One alias moved: `--trade painting` / `painter` now uses the new `painting` category instead of `handyman`. Existing `prospects/` pages are static and were not rebuilt.
+
+### Categories (`--trade`)
+
+| Category | Default theme | Default features | Notes |
+|---|---|---|---|
+| `roofing` | bold-industrial | call-bar, quote-form, before-after, map, faq | aliases: roofer, gutters, metal-roofing |
+| `hvac` | clean-minimal | call-bar, quote-form, map, faq | heating, cooling, furnace, ac-repair |
+| `electrician` | bold-industrial | call-bar, quote-form, map, faq | electrical, electric |
+| `landscaping` | (original template) | none | reuses `landscaping/` |
+| `painting` | warm-local | call-bar, quote-form, before-after, faq | painter, house-painting |
+| `cleaning` | (original template) | none | reuses `cleaning-service/` |
+| `auto-repair` | bold-industrial | call-bar, quote-form, map, faq | mechanic, car-repair, auto-shop |
+| `salon-barber` | premium-dark | call-bar, booking, map, faq | salon, barber, spa, nail-salon |
+| `restaurant-foodtruck` | warm-local | call-bar, menu, map, faq | reuses `restaurant/`; also food-truck, foodtruck |
+| `fitness` | bold-industrial | call-bar, booking, map, faq | gym, yoga, personal-training |
+| `pet-services` | warm-local | call-bar, booking, map, faq | grooming, dog-walking, pet-sitting |
+| `dental-medical` | clean-minimal | call-bar, booking, map, faq | dentist, clinic, chiropractor |
+| `real-estate` | premium-dark | call-bar, quote-form, map, faq | realtor, realty, broker |
+| `photography` | clean-minimal | booking, faq | photographer, videography |
+
+New categories build on the `generic-business/` HTML with their own services list and CSS placeholder photos (no stock images). `map` in the defaults is skipped unless `--map-center` or `--map-area` is passed (no network call by default); `hours` is skipped unless `--hours` is passed.
+
+### Themes (`--theme`)
+
+`bold-industrial`, `clean-minimal`, `warm-local`, `premium-dark`, or `none`. Works on any category, including the original ones. Themes are CSS variable overrides appended to `styles.css`; `--primary` / `--accent` still set the brand colors.
+
+### Features (`--features a,b,c` or `--features none`)
+
+Passing `--features` replaces the category defaults.
+
+| Feature | What it adds | Data / rules |
+|---|---|---|
+| `call-bar` | Sticky bottom bar on phones (≤700px): Call + the main CTA. Lifts the $200 claim bar above it. | phone from `--phone` |
+| `quote-form` | 3-field quote form (name, phone, what you need). No backend: opens the visitor's email app if `--email` is set, otherwise says to call. Hero button becomes "Request a Quote". | |
+| `reviews` | Reviews section with real reviews | `--reviews-file reviews.json` = `[{"name","text","source"?}]`. Without it, use `--sample-reviews` (labeled samples). Never invented. |
+| `map` | Service-area map (OpenStreetMap iframe, attribution shown) | `--map-center "lat,lon"` (no network) or `--map-area "Aurora, CO"` (geocoded once at build). Default area = `--city`. |
+| `before-after` | Before/after pairs | `--before-after "b1.jpg:a1.jpg,b2.jpg:a2.jpg"` copies client photos into `img/`; otherwise labeled placeholders. |
+| `hours` | Schedule section | only with `--hours "TEXT"` (error otherwise) |
+| `booking` | Booking request form (name, phone, service, preferred time) or a "Book online" button | `--booking-url https://…` links out (not a payment link). |
+| `menu` | Menu section | `--menu-file menu.json` = `[{"section","items":[{"name","desc"?,"price"?}]}]`; otherwise a labeled "Sample Menu" layout with `$—` prices. |
+| `faq` | Questions built only from supplied facts (services, areas, how to reach you, hours if given) | extra Q&A via `--faq-file faq.json` = `[{"q","a"}]`. With `--chat`, the same FAQ goes into `chat-facts.json`. |
+
+Data flags (`--reviews-file`, `--map-center`, `--map-area`, `--before-after`, `--menu-file`, `--booking-url`, `--faq-file`) switch their feature on automatically. All supplied text is treated like other passed values in the claim check; everything else must still pass it. The $200 claim bar, `--chat`, `--pay-url` and Zelle flags work unchanged. No hosting language is added.
+
+### Samples
+
+One per category in [`samples/<category>/`](./samples/), regenerated with `bash tools/build-samples.sh`. Live (after push): `https://trae77.github.io/client-site-templates/samples/<category>/`.
+
+```bash
+npm run mockup -- --name "Acme Roofing" --trade roofing --city "Aurora, CO" --phone 7205550100 \
+  --theme bold-industrial --map-center "39.7294,-104.8319" --out samples/roofing --no-png
+npm run mockup -- --name "Fade Room" --trade salon-barber --city "Denver, CO" --phone 7205550100 \
+  --features call-bar,booking,faq --booking-url https://calendly.com/example
+```
+
 ## Browse locally
 
 ```bash
