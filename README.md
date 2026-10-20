@@ -40,7 +40,7 @@ All opt-in: without these flags, builds are byte-identical to before. `auto` = t
 **Exact pre-push command (routines run this before every mockup push):**
 
 ```bash
-npm ci && npm run check && git status --short
+npx playwright install chromium && npm ci && npm run check && git status --short
 ```
 
 Push only if it exits 0 and the audit prints `✓ no cross-industry features found`. For a new prospect, also run `node tools/audit-industry.mjs prospects/<slug>`.
@@ -48,6 +48,14 @@ Push only if it exits 0 and the audit prints `✓ no cross-industry features fou
 Playwright setup (one time, works in this repo): `npm ci && npx playwright install chromium`.
 
 Roofing mockups use the local Unsplash stock photos in `stock/roofing/` (see CREDITS.md). Each one is captioned "Stock photo" and its alt text says it isn't the business's work.
+
+## Compliance (audit 2026-10-19)
+- Every generated site gets `privacy.html` (a template the business reviews before launch), a footer "Privacy Policy" link, and a consent line under every form that collects contact details: "We'll only use this to reply to your request. See our Privacy Policy." Template folders got the same treatment via `node tools/apply-compliance.mjs`.
+- a11y base, ported from multipage-template: skip link, `prefers-reduced-motion`, and body-text links that are underlined and use the text color. Number chips use the text color too. `npm run test:a11y` runs axe-core on every sample, its privacy page, and one build per palette (19) at 390 and 1440. Any serious or critical violation fails.
+- SMS lead texts (`--notify sms|both`) are a paid add-on and are refused unless you pass `--sms-addon` (only after the client has paid and 10DLC is approved). When on, the form gets an **unchecked** consent box with "Msg & data rates may apply… Reply STOP to opt out, HELP for help." `export-client` refuses SMS without `--sms-addon`, and refuses a pre-checked box.
+- No sample ratings in schema: `audit:industry` and `export-client` fail on `aggregateRating`/`review` in JSON-LD, or on a `"sample": true` review that carries a star rating.
+- Prospects: `node tools/prospect-notice.mjs` adds `<meta name="robots" content="noindex">` and "Design concept for <Business>. Not affiliated." and nothing else. `--check` is in `npm run check` and CI. `mockup.mjs` adds both automatically when `--out` is under `prospects/`.
+- `npm run test:order` runs the pickup-order flow (390/1440). On phones the cart lives in the merged call bar ("Order · 2 · $22.00").
 
 ## Product ladder
 

@@ -37,7 +37,9 @@ import { execFileSync } from 'node:child_process';
 import { COPY, jsonLd, parseHoursJson, faqBank } from './v3.mjs';
 import { MONEY, MONEY_DEFAULTS, MONEY_CSS, MONEY_SCRIPT, buildMoney, buildZip, trustItems } from './money.mjs';
 import { PALETTES, FONT_PAIRS, LAYOUTS, HEROES, resolveDesign, layoutHero, applyLayout, applyHero, heroCss, fontLinks, fontCss, paletteCss } from './design.mjs';
-import { validateBooking, bookingEmbedHtml, BOOKING_CSS, BOOKING_HOSTS, validateNotify, HONEYPOT, payLabel, PAY_DEMO_HTML } from './addons.mjs';
+import { applyCompliance, privacyHtml, A11Y_CSS } from './compliance.mjs';
+import { addNotice } from './prospect-notice.mjs';
+import { validateBooking, bookingEmbedHtml, BOOKING_CSS, BOOKING_HOSTS, validateNotify, SMS_CONSENT_HTML, HONEYPOT, payLabel, PAY_DEMO_HTML } from './addons.mjs';
 import { tradeRules, parseOverride, checkTrade, failMessage } from './industry.mjs';
 import { CATEGORIES, REUSED, REUSED_DEFAULTS, EXTRA_ALIASES, FEATURES, THEMES, FEATURE_CSS, themeCss, buildFeatures, buildFaq, parseCenter, geocode } from './library.mjs';
 
@@ -425,7 +427,7 @@ Library (tools/library.mjs, see README "Template library"):
   --money-link https://...      link-out to a booking/ordering page (not a payment link)
   --text         the phone takes texts: adds Text to the mobile bar and "text a photo" links
   --zips "80011,80012"  "Do you serve my area?" checker (also matches --areas names)
-  --notify email|sms|both  --notify-endpoint https://...  lead alerts (sms/both REQUIRE the endpoint:
+  --notify email|sms|both  --notify-endpoint https://...  lead alerts (sms/both also need --sms-addon (paid, 10DLC approved) and REQUIRE the endpoint:
                      the client's Cloudflare Worker, see docs/NOTIFY-WORKER.md); adds a honeypot field
   --booking-provider calendly|square|tidycal|fresha|link   embed --booking-url (host allow-list) with a
                      click-to-load iframe and an always-visible "Open booking in a new tab" link
@@ -548,7 +550,7 @@ function buildCss(cfg, primary, accent, galleryCount = 0, extras = {}) {
     `.btn-accent { color: ${onLink}; }`,
     `.btn-accent:hover { color: ${onLinkDark}; }`,
     `.section-head h2::after { content: ""; display: block; width: 56px; height: 4px; border-radius: 4px; margin: 0.65rem auto 0; background: var(--brand-accent); }`,
-    `.card-icon { background: ${rgba(accent, 0.22)}; color: ${cfg.dark ? accentOnDark : v.link}; }`,
+    `.card-icon { background: ${rgba(accent, 0.22)}; color: ${ensureContrast(cfg.dark ? accentOnDark : v.link, mix(v.card, accent, 0.22), 4.5)}; }`, // a11y: checked against the tinted chip, not the card
     `.stat { border-top: 3px solid var(--brand-accent); }`,
     `.stat strong { color: ${cfg.dark ? accentOnDark : v.link}; }`,
     `.pill { background: ${rgba(v.link, cfg.dark ? 0.25 : 0.12)}; color: ${cfg.dark ? tint(v.link, 0.4) : v.linkDark}; }`,
@@ -1177,7 +1179,7 @@ async function resolveFeatureData(values, lib, ctx, outDir) {
   out.tradeKey = slugify(values.trade);
   out.textOk = Boolean(values.text);
   if (values['money-endpoint']) out.moneyEndpoint = httpsOnly('money-endpoint', values['money-endpoint']);
-  out.notify = validateNotify(values.notify, values['notify-endpoint'], httpsOnly);
+  out.notify = validateNotify(values.notify, values['notify-endpoint'], httpsOnly, Boolean(values['sms-addon']));
   if (out.notify?.endpoint && !out.moneyEndpoint) out.moneyEndpoint = out.notify.endpoint;
   if (values['money-link']) out.moneyLink = httpsOnly('money-link', values['money-link']);
   if (lib.money === 'pickup-order') { out.orderEndpoint = out.orderEndpoint || out.moneyEndpoint; out.orderUrl = out.orderUrl || out.moneyLink; }
@@ -1324,7 +1326,7 @@ async function main() {
       emergency: { type: 'string' }, badges: { type: 'string' }, checklist: { type: 'string' }, 'steps-file': { type: 'string' },
       'pricing-file': { type: 'string' }, 'team-file': { type: 'string' }, 'order-endpoint': { type: 'string' }, 'order-url': { type: 'string' },
       'allow-feature': { type: 'string' }, 'allow-reason': { type: 'string' }, reason: { type: 'string' },
-      notify: { type: 'string' }, 'notify-endpoint': { type: 'string' }, 'booking-provider': { type: 'string' },
+      notify: { type: 'string' }, 'sms-addon': { type: 'boolean' }, 'notify-endpoint': { type: 'string' }, 'booking-provider': { type: 'string' },
       'pay-label': { type: 'string' }, 'pay-context': { type: 'string' }, 'pay-demo': { type: 'boolean', default: false },
       palette: { type: 'string' }, fonts: { type: 'string' }, layout: { type: 'string' }, hero: { type: 'string' }, 'hero-img': { type: 'string' },
       tagline: { type: 'string' }, 'sample-reviews': { type: 'boolean', default: false },
@@ -1450,9 +1452,10 @@ async function main() {
   outHtml = applyV3(outHtml, cfg, ctx, { folder, tradeKey, lib, libOn: Boolean(lib.theme || lib.features.length || lib.money || ctx.zips || values.text) });
   if (ctx.notify) {
     // B1: forms post to the client's endpoint (Worker for sms/both); honeypot for spam; no response-time promise.
-    const thanks = `We got it. ${ctx.name} will reply by phone${ctx.notify.mode === 'email' ? ' or email' : ' or text'}.`;
+    const sms = ctx.notify.mode !== 'email';
+    const thanks = `We got it. ${ctx.name} will reply by phone or email${sms ? ' (or text, if you checked the box)' : ''}.`;
     let n = 0;
-    outHtml = outHtml.replace(/<form\b([^>]*\bdata-endpoint="[^"]*"[^>]*)>/g, (m, attrs) => (n++, `<form${attrs} data-notify="${ctx.notify.mode}" data-thanks="${escapeHtml(thanks)}">\n          ${HONEYPOT}`));
+    outHtml = outHtml.replace(/<form\b([^>]*\bdata-endpoint="[^"]*"[^>]*)>([\s\S]*?)(<button\b[^>]*type="submit")/g, (m, attrs, mid, btn) => (n++, `<form${attrs} data-notify="${ctx.notify.mode}" data-thanks="${escapeHtml(thanks)}">\n          ${HONEYPOT}${mid}${sms ? SMS_CONSENT_HTML(escapeHtml(ctx.name)) + '\n          ' : ''}${btn}`));
     outHtml = outHtml.split("st.textContent = 'Sent. Thank you.';").join("st.textContent = f.getAttribute('data-thanks') || 'Sent. Thank you.';");
     if (!n) console.warn('! --notify: this build has no money form that posts to an endpoint (add --money <type>); the flag had no effect.');
   }
@@ -1490,6 +1493,9 @@ async function main() {
     for (const f of cfg.stock.files.slice(0, 3)) fs.copyFileSync(path.join(REPO_ROOT, 'stock', cfg.stock.key, f), path.join(outDir, 'img', `stock-${f}`));
   }
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
+  outHtml = applyCompliance(outHtml);
+  if (/(^|\/)prospects\//.test(path.relative(REPO_ROOT, outDir))) outHtml = addNotice(outHtml).html; // noindex + "Design concept for X. Not affiliated."
+  fs.writeFileSync(path.join(outDir, 'privacy.html'), privacyHtml({ name: values.name, phone: values.phone, email: values.email, city: values.city }));
   fs.writeFileSync(htmlPath, values['no-claim'] ? outHtml : addClaimBar(outHtml));
   const ctaPairs = [];
   let themeCfg = lib.theme ? { ...cfg, dark: THEMES[lib.theme].dark } : cfg;
@@ -1509,6 +1515,7 @@ async function main() {
   if (ctx.bookingEmbed?.embed) css += BOOKING_CSS;
   if (design.fonts) css += fontCss(design.fonts);
   if (design.hero) css += heroCss(design.hero, heroImg);
+  css += A11Y_CSS; // last, so it wins over theme/palette colors
   fs.writeFileSync(cssPath, css);
 
   const lowCta = ctaPairs.filter(([, fg, bg]) => contrast(fg, bg) < 4.5);

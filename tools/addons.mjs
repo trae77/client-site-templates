@@ -31,11 +31,12 @@ export function bookingEmbedHtml({ url, embed, provider }, phone, esc) {
 export const BOOKING_CSS = `.booking-frame iframe { width: 100%; min-height: 680px; border: 0; border-radius: 12px; background: #fff; }\n`;
 
 /** B1: --notify email|sms|both. sms/both must have a Worker endpoint (the build fails otherwise). */
-export function validateNotify(notify, endpoint, httpsOnly) {
+export function validateNotify(notify, endpoint, httpsOnly, smsAddon = false) {
   if (notify == null && endpoint == null) return null;
   const mode = notify || 'email';
   if (!['email', 'sms', 'both'].includes(mode)) throw new Error('--notify must be email, sms or both.');
   if (mode !== 'email' && !endpoint) throw new Error(`--notify ${mode} needs --notify-endpoint <https URL of the client's Cloudflare Worker>. Texting leads needs server code to hold the SMS key; see docs/NOTIFY-WORKER.md. Build stopped.`);
+  if (mode !== 'email' && !smsAddon) throw new Error(`--notify ${mode} is the paid SMS add-on and is not built for clients by default (TCPA / 10DLC). Pass --sms-addon only after the client has paid and their 10DLC brand + campaign are approved (docs/NOTIFY-WORKER.md). Build stopped.`);
   return { mode, endpoint: endpoint ? httpsOnly('notify-endpoint', endpoint) : null };
 }
 export const HONEYPOT = '<div hidden aria-hidden="true"><label>Leave this empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label></div>';
@@ -50,3 +51,6 @@ export function payLabel(label, context) {
   return l;
 }
 export const PAY_DEMO_HTML = '<div class="pay-options"><button class="btn btn-pay" type="button" disabled aria-disabled="true">Payment button (demo, not active)</button></div>';
+
+/** SMS consent (TCPA): unchecked by default, never required to submit, STOP/HELP wording. */
+export const SMS_CONSENT_HTML = (name) => `<label class="sms-consent"><input type="checkbox" name="sms_consent" value="yes"> <span>Text me about this request. By checking this box I agree to get text messages from ${name} about my request. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help. Consent is not required to submit this form.</span></label>`;

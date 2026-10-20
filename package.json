@@ -11,8 +11,10 @@
     "upgrade:smoke": "node upgrade/smoke.cjs",
     "export-client": "node tools/export-client.mjs",
     "audit:industry": "node tools/audit-industry.mjs",
-    "check": "bash tools/build-samples.sh && npm run audit:industry",
-    "prepush": "npm run check && git diff --exit-code --stat -- samples"
+    "check": "bash tools/build-samples.sh && npm run audit:industry && node tools/prospect-notice.mjs --check && npm run test:a11y && npm run test:order",
+    "prepush": "npm run check && git diff --exit-code --stat -- samples",
+    "test:a11y": "node tools/a11y-check.mjs && node tools/a11y-check.mjs --palettes",
+    "test:order": "node tests/order-e2e.mjs"
   },
   "engines": {
     "node": ">=18"
@@ -25,6 +27,7 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "axe-core": "^4.14.0",
     "playwright": "^1.63.0"
   }
 }

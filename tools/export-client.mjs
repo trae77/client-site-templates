@@ -15,7 +15,7 @@ import { parseArgs } from 'node:util';
 import { CLAIM_MARK } from './claim-bar.mjs';
 import { tradeOfFile, scanHtml, parseOverride } from './industry.mjs';
 
-const { values } = parseArgs({ options: { site: { type: 'string' }, out: { type: 'string' }, 'site-url': { type: 'string' }, trade: { type: 'string' }, 'allow-feature': { type: 'string' }, 'allow-reason': { type: 'string' }, force: { type: 'boolean', default: false }, help: { type: 'boolean', short: 'h' } } });
+const { values } = parseArgs({ options: { site: { type: 'string' }, out: { type: 'string' }, 'site-url': { type: 'string' }, trade: { type: 'string' }, 'allow-feature': { type: 'string' }, 'allow-reason': { type: 'string' }, force: { type: 'boolean', default: false }, 'sms-addon': { type: 'boolean', default: false }, help: { type: 'boolean', short: 'h' } } });
 if (values.help || !values.site) { console.log('Usage: npm run export-client -- --site <folder> [--trade <trade>] [--out <dir>] [--site-url https://client.com] [--allow-feature <id> --allow-reason TEXT] [--force]'); process.exit(values.help ? 0 : 1); }
 const src = path.resolve(values.site);
 if (!fs.existsSync(path.join(src, 'index.html'))) { console.error(`✗ ${src} has no index.html`); process.exit(1); }
@@ -34,8 +34,14 @@ if (values['site-url']) {
     const [t, why, a] = tradeOfFile(path.join(src, f), values.trade);
     const hits = scanHtml(fs.readFileSync(path.join(src, f), 'utf8'), t, [...allow, ...a]);
     if (hits.length) leaks.push(`${f} [${t.id} via ${why}]: ${hits.join('; ')}`);
+    const html = fs.readFileSync(path.join(src, f), 'utf8');
+    // Compliance (audit 2026-10-19 #3, #7): SMS lead texts are a paid add-on; sample reviews never ship in schema.
+    if (/data-notify="(sms|both)"|name="sms_consent"/.test(html) && !values['sms-addon']) leaks.push(`${f}: SMS add-on present; pass --sms-addon only after the client paid and 10DLC is approved`);
+    if (/name="sms_consent"[^>]*\bchecked/.test(html)) leaks.push(`${f}: SMS consent box is pre-checked (must start unchecked)`);
+    for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) if (/"(aggregateRating|review)"/i.test(m[1]) && /sample|placeholder/i.test(m[1])) leaks.push(`${f}: sample rating/review in JSON-LD`);
   }
-  if (leaks.length) { console.error(`✗ Industry check failed; nothing was exported:\n  - ${leaks.join('\n  - ')}\nRemove the wrong-industry section, or pass --allow-feature <id> --allow-reason "TEXT" if the business really offers it.`); process.exit(5); }
+  if (!fs.existsSync(path.join(src, 'privacy.html'))) console.warn('! No privacy.html in this site. Rebuild with tools/mockup.mjs or add one before launch.');
+  if (leaks.length) { console.error(`✗ Industry/compliance check failed; nothing was exported:\n  - ${leaks.join('\n  - ')}\nRemove the wrong-industry section, or pass --allow-feature <id> --allow-reason "TEXT" if the business really offers it.`); process.exit(5); }
 }
 const out = path.resolve(values.out || path.join('dist-client', path.basename(src)));
 if (out === src || src.startsWith(out + path.sep)) { console.error('✗ --out must be a different folder from --site'); process.exit(1); }

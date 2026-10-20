@@ -291,7 +291,7 @@ section { padding: 4rem 0; }
 .btn-accent { color: #ffffff; }
 .btn-accent:hover { color: #ffffff; }
 .section-head h2::after { content: ""; display: block; width: 56px; height: 4px; border-radius: 4px; margin: 0.65rem auto 0; background: var(--brand-accent); }
-.card-icon { background: rgba(15, 118, 110, 0.22); color: #b45309; }
+.card-icon { background: rgba(15, 118, 110, 0.22); color: #7c2d12; }
 .stat { border-top: 3px solid var(--brand-accent); }
 .stat strong { color: #b45309; }
 .pill { background: rgba(180, 83, 9, 0.12); color: #873e07; }

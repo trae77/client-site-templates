@@ -191,7 +191,7 @@ export function paletteCss(key, { mix, rgba, ensureContrast }) {
   const card = mix(p.bg, dark ? '#ffffff' : '#ffffff', dark ? 0.06 : 0.6);
   const link = ensureContrast(p.primary, card, 4.5);
   const linkBg = ensureContrast(link, p.bg, 4.5);
-  const css = `\n/* Palette: ${key} (specs/spec-v1.md P2) */\n:root { --bg: ${p.bg}; --text: ${p.text}; --muted: ${p.muted}; --card: ${card}; --accent: ${linkBg}; --header-bg: ${rgba(p.bg, 0.94)}; --border: ${dark ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.1)'}; --on-accent: ${p.ctaText}; }\nbody { background: var(--bg); color: var(--text); }\n.hero .lead a, .hero p a:not(.btn):not(.btn-call) { color: inherit; text-decoration: underline; }\n.btn-primary, .call-bar .cb-call { color: ${p.ctaText}; }\n`;
+  const css = `\n/* Palette: ${key} (specs/spec-v1.md P2) */\n:root { --bg: ${p.bg}; --text: ${p.text}; --muted: ${p.muted}; --card: ${card}; --accent: ${linkBg}; --header-bg: ${rgba(p.bg, 0.94)}; --border: ${dark ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.1)'}; --on-accent: ${p.ctaText}; }\nbody { background: var(--bg); color: var(--text); }\n.hero .lead a, .hero p a:not(.btn):not(.btn-call) { color: inherit; text-decoration: underline; }\n.btn-primary, .call-bar .cb-call { color: ${p.ctaText}; }\n.card-icon { background: ${rgba(p.accent, 0.22)}; color: ${ensureContrast(dark ? p.text : link, mix(card, p.accent, 0.22), 4.5)}; }\n`;
   const pairs = [['palette body text', p.text, p.bg], ['palette muted text', p.muted, p.bg], ['palette CTA label', p.ctaText, p.accent], ['palette link on page', linkBg, p.bg]];
   return { css, pairs, dark, primary: p.primary, accent: p.accent };
 }
