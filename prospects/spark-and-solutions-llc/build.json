@@ -1,0 +1,13 @@
+{
+  "trade": "electrician",
+  "resolvedFrom": "electrician",
+  "money": "quote-form",
+  "features": [
+    "call-bar"
+  ],
+  "layout": null,
+  "hero": null,
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

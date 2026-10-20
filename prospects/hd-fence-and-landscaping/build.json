@@ -1,0 +1,15 @@
+{
+  "trade": "fencing",
+  "resolvedFrom": "fencing",
+  "money": "quote-form",
+  "features": [
+    "call-bar",
+    "before-after",
+    "process"
+  ],
+  "layout": null,
+  "hero": null,
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}
