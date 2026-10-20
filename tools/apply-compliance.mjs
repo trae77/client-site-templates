@@ -9,7 +9,8 @@ const SKIP = new Set(['samples', 'prospects', 'directory', 'tools', 'docs', 'upg
 const dirs = fs.readdirSync(ROOT).filter((d) => !SKIP.has(d) && !d.startsWith('.') && fs.existsSync(path.join(ROOT, d, 'index.html')));
 for (const d of dirs) {
   const f = path.join(ROOT, d, 'index.html'); const html = fs.readFileSync(f, 'utf8');
-  const out = applyCompliance(html); if (out !== html) fs.writeFileSync(f, out);
+  let out = applyCompliance(html);
+  if (!/<meta name="x-trade"/.test(out)) out = out.replace(/(<meta\b[^>]*name="viewport"[^>]*>)/, `$1\n  <meta name="x-trade" content="${d}">`); if (out !== html) fs.writeFileSync(f, out);
   const name = (html.match(/<a class="logo"[^>]*>([^<]+)<\/a>/) || [])[1] || 'This business';
   const css = path.join(ROOT, d, 'styles.css');
   fs.writeFileSync(path.join(ROOT, d, 'privacy.html'), privacyHtml({ name: name.trim(), phone: null, email: null }));

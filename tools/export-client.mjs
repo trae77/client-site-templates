@@ -31,7 +31,8 @@ if (values['site-url']) {
   const allow = ov ? [ov.id] : [];
   const leaks = [];
   for (const f of fs.readdirSync(src, { recursive: true }).filter((x) => x.endsWith('.html'))) {
-    const [t, why, a] = tradeOfFile(path.join(src, f), values.trade);
+    const [t, why, a, pr = []] = tradeOfFile(path.join(src, f), values.trade);
+    if (/\.html$/.test(f) && !/privacy\.html$/.test(f)) for (const x of pr) leaks.push(`${f}: ${x}`);
     const hits = scanHtml(fs.readFileSync(path.join(src, f), 'utf8'), t, [...allow, ...a]);
     if (hits.length) leaks.push(`${f} [${t.id} via ${why}]: ${hits.join('; ')}`);
     const html = fs.readFileSync(path.join(src, f), 'utf8');

@@ -1,0 +1,19 @@
+{
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "money": "job-list",
+  "features": [
+    "call-bar",
+    "map",
+    "before-after",
+    "process",
+    "checklist",
+    "faq",
+    "quote-form"
+  ],
+  "layout": null,
+  "hero": null,
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

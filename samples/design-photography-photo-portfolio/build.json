@@ -1,0 +1,11 @@
+{
+  "trade": "photography",
+  "resolvedFrom": "photography",
+  "money": "package-picker",
+  "features": [],
+  "layout": "photo-portfolio",
+  "hero": "portfolio",
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

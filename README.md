@@ -49,6 +49,13 @@ Playwright setup (one time, works in this repo): `npm ci && npx playwright insta
 
 Roofing mockups use the local Unsplash stock photos in `stock/roofing/` (see CREDITS.md). Each one is captioned "Stock photo" and its alt text says it isn't the business's work.
 
+### Spec v5.1 (matrix 5.1.0)
+- `tools/industry-features.json` is now the v5.1 matrix (`specs/spec-v5.1-feature-matrix.json`) in both repos.
+- **Trade resolution** comes from the data. `MATRIX.aliases` (exact, reused names, longest hyphenated alias, then a priority-scored token match; `looseSkip` and `exactOnly` included) replaces `LOOSE_SKIP` and the first-match-in-insertion-order loop. If a business name suggests a different trade, the build warns. For example, painting-and-remodeling now resolves to painting.
+- **Prices:** `pricing` is forbidden on every trade. The only way to show it is `--allow-feature pricing --allow-reason "..." --pricing-file F.json`.
+- **Page trade record:** every build writes `<meta name="x-trade|x-layout|x-hero|x-money">` and a `build.json` (trade, resolvedFrom, money, features, layout, hero, allowFeature/Reason, matrixVersion). `prospects/manifest.json` records the trade of each prospect and where that came from. The audit reads sources in this order: `--trade`, meta, build.json, manifest, folder (legacy), JSON-LD (legacy). Two sources that disagree fail the audit. A missing record warns locally and fails with `--strict` or in CI.
+- `scanHtml` uses the per-id `auditMarkers` (money, features, heroes, multipageActions) plus `meta x-layout`.
+
 ## Compliance (audit 2026-10-19)
 - Every generated site gets `privacy.html` (a template the business reviews before launch), a footer "Privacy Policy" link, and a consent line under every form that collects contact details: "We'll only use this to reply to your request. See our Privacy Policy." Template folders got the same treatment via `node tools/apply-compliance.mjs`.
 - a11y base, ported from multipage-template: skip link, `prefers-reduced-motion`, and body-text links that are underlined and use the text color. Number chips use the text color too. `npm run test:a11y` runs axe-core on every sample, its privacy page, and one build per palette (19) at 390 and 1440. Any serious or critical violation fails.

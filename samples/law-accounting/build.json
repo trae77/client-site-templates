@@ -1,0 +1,17 @@
+{
+  "trade": "law-accounting",
+  "resolvedFrom": "law-accounting",
+  "money": "quote-form",
+  "features": [
+    "map",
+    "process",
+    "team",
+    "faq",
+    "quote-form"
+  ],
+  "layout": null,
+  "hero": null,
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

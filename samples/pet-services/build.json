@@ -1,0 +1,15 @@
+{
+  "trade": "pet-services",
+  "resolvedFrom": "pet-services",
+  "money": "grooming-booking",
+  "features": [
+    "call-bar",
+    "map",
+    "faq"
+  ],
+  "layout": null,
+  "hero": null,
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

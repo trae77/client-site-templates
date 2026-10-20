@@ -1,0 +1,14 @@
+{
+  "trade": "fitness",
+  "resolvedFrom": "fitness",
+  "money": "class-schedule",
+  "features": [
+    "call-bar",
+    "map"
+  ],
+  "layout": "fit-schedule",
+  "hero": "schedule",
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

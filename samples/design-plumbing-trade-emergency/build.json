@@ -1,0 +1,13 @@
+{
+  "trade": "plumbing",
+  "resolvedFrom": "plumbing",
+  "money": "emergency-request",
+  "features": [
+    "map"
+  ],
+  "layout": "trade-emergency",
+  "hero": "emergency",
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

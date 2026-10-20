@@ -13,7 +13,7 @@ jobs:
       - name: Matrix check (rebuild every sample; mockup.mjs refuses forbidden features)
         run: bash tools/build-samples.sh
       - name: Industry audit (samples, prospects, templates)
-        run: npm run audit:industry
+        run: npm run audit:industry -- --strict
       - name: Prospect noindex + concept notice
         run: node tools/prospect-notice.mjs --check
       - name: axe-core (fails on serious/critical), samples + all palettes

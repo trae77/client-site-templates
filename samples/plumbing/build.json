@@ -1,0 +1,18 @@
+{
+  "trade": "plumbing",
+  "resolvedFrom": "plumbing",
+  "money": "emergency-request",
+  "features": [
+    "call-bar",
+    "emergency",
+    "badges",
+    "map",
+    "process",
+    "faq"
+  ],
+  "layout": null,
+  "hero": null,
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

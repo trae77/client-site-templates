@@ -1,0 +1,17 @@
+{
+  "trade": "salon-barber",
+  "resolvedFrom": "salon-barber",
+  "money": "booking",
+  "features": [
+    "call-bar",
+    "map",
+    "booking",
+    "faq",
+    "reviews"
+  ],
+  "layout": null,
+  "hero": null,
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

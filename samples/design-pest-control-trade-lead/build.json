@@ -1,0 +1,15 @@
+{
+  "trade": "pest-control",
+  "resolvedFrom": "pest-control",
+  "money": "quote-form",
+  "features": [
+    "call-bar",
+    "map",
+    "process"
+  ],
+  "layout": "trade-lead",
+  "hero": "split",
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

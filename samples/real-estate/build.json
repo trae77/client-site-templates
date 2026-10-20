@@ -1,0 +1,15 @@
+{
+  "trade": "real-estate",
+  "resolvedFrom": "real-estate",
+  "money": "listing-search",
+  "features": [
+    "call-bar",
+    "map",
+    "faq"
+  ],
+  "layout": null,
+  "hero": null,
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

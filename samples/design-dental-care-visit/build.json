@@ -1,0 +1,15 @@
+{
+  "trade": "dental-medical",
+  "resolvedFrom": "dental-medical",
+  "money": "appointment-request",
+  "features": [
+    "call-bar",
+    "map",
+    "faq"
+  ],
+  "layout": "care-visit",
+  "hero": "centered",
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

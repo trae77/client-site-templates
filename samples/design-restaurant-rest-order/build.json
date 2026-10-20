@@ -1,0 +1,18 @@
+{
+  "trade": "restaurant-foodtruck",
+  "resolvedFrom": "restaurant-foodtruck",
+  "money": "pickup-order",
+  "features": [
+    "call-bar",
+    "map",
+    "hours",
+    "menu",
+    "pickup-order",
+    "faq"
+  ],
+  "layout": "rest-order",
+  "hero": "menu-first",
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

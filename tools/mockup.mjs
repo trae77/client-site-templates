@@ -39,8 +39,9 @@ import { MONEY, MONEY_DEFAULTS, MONEY_CSS, MONEY_SCRIPT, buildMoney, buildZip, t
 import { PALETTES, FONT_PAIRS, LAYOUTS, HEROES, resolveDesign, layoutHero, applyLayout, applyHero, heroCss, fontLinks, fontCss, paletteCss } from './design.mjs';
 import { applyCompliance, privacyHtml, A11Y_CSS } from './compliance.mjs';
 import { addNotice } from './prospect-notice.mjs';
+import { resolveTradeAlias } from './industry.mjs';
 import { validateBooking, bookingEmbedHtml, BOOKING_CSS, BOOKING_HOSTS, validateNotify, SMS_CONSENT_HTML, HONEYPOT, payLabel, PAY_DEMO_HTML } from './addons.mjs';
-import { tradeRules, parseOverride, checkTrade, failMessage } from './industry.mjs';
+import { tradeRules, parseOverride, checkTrade, failMessage, MATRIX } from './industry.mjs';
 import { CATEGORIES, REUSED, REUSED_DEFAULTS, EXTRA_ALIASES, FEATURES, THEMES, FEATURE_CSS, themeCss, buildFeatures, buildFaq, parseCenter, geocode } from './library.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -336,17 +337,13 @@ function insertPayBlock(html, block) {
   return html.replace(re, `$1\n          ${block}$2`);
 }
 
-// Short words that must not pull a trade into another industry on a loose match (e.g. "tiki-bar-repair").
-const LOOSE_SKIP = new Set(['bar', 'food', 'repair', 'repairs', 'detail', 'pressure', 'yard', 'cafe', 'coffee', 'drain', 'maid', 'lawn']);
-function resolveTrade(trade) {
+// Trade resolution (spec v5.1): exact template id first, then MATRIX.aliases tie-break rules (tools/industry.mjs).
+function resolveTrade(trade, name = '') {
   const key = slugify(trade || '');
-  for (const [folder, aliases] of Object.entries(TRADE_ALIASES)) if (aliases.includes(key)) return { folder, fallback: false };
-  // loose match: "mobile-car-detailing" -> detailing, "lawn-mowing-co" -> lawn, etc.
-  for (const [folder, aliases] of Object.entries(TRADE_ALIASES)) {
-    if (folder === 'generic-business') continue;
-    if (aliases.some((a) => (!LOOSE_SKIP.has(a) && key.split('-').includes(a)) || (a.includes('-') && key.includes(a)))) return { folder, fallback: false };
-  }
-  return { folder: 'generic-business', fallback: true };
+  if (TEMPLATES[key] && TRADE_ALIASES[key]?.includes(key)) return { folder: key, fallback: false, warns: [] };
+  const r = resolveTradeAlias(trade, { name });
+  if (!TEMPLATES[r.folder]) return { folder: 'generic-business', fallback: true, warns: [...r.warns, `matrix folder "${r.folder}" has no template here`] };
+  return r;
 }
 
 function parseCity(city) {
@@ -1356,7 +1353,8 @@ async function main() {
   const hours = validateText('hours', values.hours, 120);
   const tagline = validateText('tagline', values.tagline, 90);
 
-  const { folder, fallback } = resolveTrade(values.trade);
+  const { folder, fallback, warns: tradeWarns } = resolveTrade(values.trade, values.name);
+  for (const w of tradeWarns || []) console.warn(`! ${w}`);
   const tradeKey = slugify(values.trade);
   { // Early spec v5 check on the raw flags, so a forbidden implicit add fails before its data checks do.
     const t0 = tradeRules(fallback ? null : tradeKey, fallback ? null : folder); if (fallback) t0.id = tradeKey;
@@ -1367,6 +1365,7 @@ async function main() {
       values.emergency && ['feature', 'emergency', '--emergency implied emergency'], values['pricing-file'] && ['feature', 'pricing', '--pricing-file implied pricing']].filter(Boolean);
     const c0 = checkTrade(t0, raw, ov0);
     if (c0.fails.length) { console.error(`✗ ${failMessage(t0, c0.fails)}`); process.exit(5); }
+    if (ov0?.id === 'pricing' && !values['pricing-file']) { console.error('✗ --allow-feature pricing also needs --pricing-file with the business\'s own prices (spec v5.1 rules.noPrices). Nothing was written.'); process.exit(5); }
   }
   const lib = libraryOptions(values, folder, tradeKey);
   const cfg = TEMPLATES[folder];
@@ -1494,6 +1493,10 @@ async function main() {
   }
   if (removed.length) console.warn(`! Dropped ${removed.length} gallery photo(s) whose URL is gone (404)`);
   outHtml = applyCompliance(outHtml);
+  // pageTradeRecord (spec v5.1): meta tags + build.json, so audits never infer the trade.
+  outHtml = outHtml.replace(/[ \t]*<meta name="x-(trade|layout|hero|money)" content="[^"]*">\n?/g, '');
+  outHtml = outHtml.replace(/(<meta\b[^>]*name="viewport"[^>]*>)/, `$1\n  <meta name="x-trade" content="${trade.id}">\n  <meta name="x-layout" content="${design.layout || 'none'}">\n  <meta name="x-hero" content="${design.hero || 'none'}">\n  <meta name="x-money" content="${lib.money || 'none'}">`);
+  fs.writeFileSync(path.join(outDir, 'build.json'), JSON.stringify({ trade: trade.id, resolvedFrom: values.trade || null, money: lib.money || null, features: [...requested], layout: design.layout || null, hero: design.hero || null, allowFeature: override?.id || null, allowReason: override?.reason || null, matrixVersion: MATRIX.version || null }, null, 2) + '\n');
   if (/(^|\/)prospects\//.test(path.relative(REPO_ROOT, outDir))) outHtml = addNotice(outHtml).html; // noindex + "Design concept for X. Not affiliated."
   fs.writeFileSync(path.join(outDir, 'privacy.html'), privacyHtml({ name: values.name, phone: values.phone, email: values.email, city: values.city }));
   fs.writeFileSync(htmlPath, values['no-claim'] ? outHtml : addClaimBar(outHtml));
@@ -1526,7 +1529,7 @@ async function main() {
   const { problems, warnings } = verify(outHtml, cfg, ctx);
   warnings.forEach((w) => console.warn(`! ${w}`));
   if (problems.length) { console.error(`✗ Verification failed:\n  - ${problems.join('\n  - ')}`); process.exit(2); }
-  const claims = checkClaims(outHtml, ctx);
+  const claims = checkClaims(outHtml.replace(/<meta name="x-[a-z]+" content="[^"]*">/g, ''), ctx); // record tags are not page copy
   if (chatFacts) checkClaims(chatFactsAsHtml(chatFacts), ctx).forEach((c) => claims.push(`chat-facts.json ${c}`));
   if (claims.length) {
     console.error(`✗ Claim check failed. The page states things that were not passed on the command line:\n  - ${claims.join('\n  - ')}\n` +
