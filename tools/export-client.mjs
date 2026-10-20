@@ -76,7 +76,7 @@ if (siteUrl) {
 
 // Pre-launch scan: things a person has to fix with the client's real facts.
 const CHECKS = [
-  ['claim bar / $200 offer', /\$200|Make it yours|data-claim-bar|buy\.stripe\.com\/[^"]*claim/i],
+  ['claim bar / $200 or $400 offer', /\$[24]00|Make it yours|data-claim-bar|buy\.stripe\.com\/[^"]*claim/i],
   ['sample/demo wording', /\b(sample|demo|mockup|design concept|placeholder|goes here|lorem ipsum)\b/i],
   ['555 test phone number', /\b555[-.) ]*01\d\d\b|\(555\)/],
   ['example.com address', /example\.(com|org|net)/i],

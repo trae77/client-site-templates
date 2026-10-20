@@ -16,7 +16,7 @@ Sources (all checked 2026-10-19): [Direct Upload](https://developers.cloudflare.
 - Hand credentials over through the client's password manager, never by email.
 
 ## 1. Make a clean, deploy-ready folder
-Mockups carry things that must not go live: the "Love it? Make it yours for $200" claim bar, "Sample" labels, demo banners, placeholder text and 555 phone numbers.
+Mockups carry things that must not go live: the "Love it? Make it yours for $400" claim bar (RJ Plumbing: $200), "Sample" labels, demo banners, placeholder text and 555 phone numbers.
 
 ```bash
 npm run export-client -- --site prospects/<slug> --site-url https://www.clientdomain.com
@@ -81,7 +81,7 @@ Our pages never run server code. Contact/quote forms post to a form service in t
 Tick every line before telling the client it's live.
 
 **Content (the export tool catches most of this, but read the page anyway)**
-- [ ] **Claim bar removed**: no "$200", "Make it yours", "Get this site".
+- [ ] **Claim bar removed**: no "$200", "$400", "Make it yours", "Get this site".
 - [ ] **Demo labels removed**: no "Sample", "mockup", "design concept", "placeholder", "goes here", demo banners.
 - [ ] **Real facts only**: client approved the name, phone, email, address, hours and service areas. No invented years, licences, reviews, ratings, prices or response times. Grep for `Sample`, `555-01`, `(555)` and `example.com`.
 - [ ] Reviews are real and attributable (or the section is off); link to the Google Business Profile.

@@ -1,5 +1,5 @@
-// "Love it? Make it yours for $200" bar shown on prospect mockups.
-// The link is the $200 One-page website Stripe Payment Link (see tools/claim-link.json).
+// "Love it? Make it yours for $400" bar shown on prospect mockups.
+// The link is the $400 One-page website Stripe Payment Link (see tools/claim-link.json).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,7 +18,7 @@ export function claimUrl() {
 
 export function claimBarHtml(url) {
   return `<div ${CLAIM_MARK} style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;background:rgba(17,24,39,.92);color:#fff;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.25);font:500 15px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;width:max-content;max-width:calc(100% - 24px);box-sizing:border-box;">
-  <span>Love it? Make it yours for $200</span>
+  <span>Love it? Make it yours for $400</span>
   <a href="${url}" rel="noopener noreferrer" style="background:#22c55e;color:#06210f;text-decoration:none;font-weight:700;padding:8px 16px;border-radius:999px;white-space:nowrap;">Get this site</a>
 </div>
 `;
