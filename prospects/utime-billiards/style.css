@@ -1,4 +1,4 @@
-*{box-sizing:border-box}html{scroll-behavior:smooth}
+*{box-sizing:border-box}html{scroll-behavior:smooth}section[id]{scroll-margin-top:72px}
 body{margin:0;font-family:Barlow,system-ui,sans-serif;font-size:17px;background:#0A1220;color:#F2F5F8;line-height:1.6;padding-bottom:72px}
 h1,h2,h3,.eyebrow,.day{font-family:Oswald,Impact,sans-serif;text-transform:uppercase;letter-spacing:.5px;line-height:1.15}
 h2{font-size:clamp(1.8rem,4vw,2.4rem);margin:0 0 1rem}h3{color:#2BB0EA;margin:.2rem 0 .5rem;font-size:1.25rem}
