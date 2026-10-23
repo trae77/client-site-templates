@@ -17,6 +17,7 @@ Site owner plans also get a 30-day money-back guarantee: refund of the first mon
 
 ## One-time
 - One-page site $500 · Multi-page site $1,200. Pay upfront: the client owns the site outright from the day they pay (no 12-month wait).
+- Pay-once hosting & domain (approved by William 2026-10-23): we set up free static hosting (Cloudflare Pages or GitHub Pages) at no monthly cost. The client registers and renews their own domain in their own name (about $10–20/yr at registrar cost; never say the domain is free). Care $69/mo is optional for edits and support. Pay once = no monthly payments to us.
 - Fixes $75–150 · Go-live fix $150
 - Logo and brand kit $350 ($250 with a plan)
 
