@@ -1,41 +1,82 @@
-# Search + AI search crawlers welcome (ChatGPT search, Perplexity, Claude, Gemini, Copilot/Bing, Apple)
+# Search + AI search crawlers welcome (ChatGPT search, Perplexity, Claude, Gemini, Copilot/Bing, Apple).
+# Booking, review and owner pages are private (also noindex).
+
 User-agent: *
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: Googlebot
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: GPTBot
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: Perplexity-User
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: Claude-SearchBot
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: Claude-User
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 User-agent: Applebot-Extended
 Allow: /
+Disallow: /book/
+Disallow: /review/
+Disallow: /review-requests/
 
 Sitemap: https://utimebilliards.com/sitemap.xml

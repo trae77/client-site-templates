@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex, nofollow">
+<title>Review requests | U-TIME International Billiards & Sports Bar</title><link rel="stylesheet" href="../addons.css"></head><body class="ao">
+<header class="top"><a href="../index.html">U-TIME International Billiards & Sports Bar</a></header><p class="pv">Preview built by TTA Web Design. Not live yet.</p>
+<main class="bk"><h1>Review requests</h1><p class="muted">Make a personal review link and copy a ready-to-send message. <strong>Nothing is sent from here</strong>: sending texts or emails is off.</p>
+<form id="rf" class="card"><label for="cn">Customer first name</label><input id="cn" required maxlength="40"><label for="cp">Phone (optional)</label><input id="cp" type="tel"><label for="ce">Email (optional)</label><input id="ce" type="email"><div class="row"><button class="btn" type="submit">Make link + messages</button></div></form>
+<div id="out" class="card" hidden><p><strong>Link:</strong> <a id="lk" target="_blank" rel="noopener"></a></p><h2>Text message</h2><div class="tpl" id="sms"></div><div class="row"><button class="btn ghost" type="button" data-copy="sms">Copy text</button></div>
+<h2>Email</h2><div class="tpl" id="em"></div><div class="row"><button class="btn ghost" type="button" data-copy="em">Copy email</button></div><p class="muted" id="who"></p></div>
+<h2>Inbox</h2><form id="tf" class="card"><label for="tk">Admin token</label><input id="tk" type="password" autocomplete="current-password"><div class="row"><button class="btn" type="submit">Load chat leads + private feedback</button></div><p class="err" id="er"></p></form>
+<div id="inbox" class="card" hidden></div>
+<script>
+(() => {
+const BASE = "https://utimebilliards.com/review/", API = "https://utime-api.ttawebdev.com", BIZ = "U-TIME International Billiards & Sports Bar", K = "utime_addons_admin";
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+rf.onsubmit = e => {
+  e.preventDefault(); const n = cn.value.trim(), ref = Math.random().toString(36).slice(2, 10);
+  const url = BASE + "?n=" + encodeURIComponent(n) + "&r=" + ref;
+  lk.href = url; lk.textContent = url;
+  sms.textContent = `Hi ${n}, thanks for choosing ${BIZ}! Could you take 30 seconds to tell us how we did? ${url}`;
+  em.textContent = `Subject: How did we do, ${n}?\n\nHi ${n},\n\nThank you for choosing ${BIZ}. We'd love to hear how it went. It takes about 30 seconds:\n${url}\n\nThank you!\n${BIZ}`;
+  who.textContent = [cp.value && "Phone: " + cp.value, ce.value && "Email: " + ce.value].filter(Boolean).join(" · ") + " (saved nowhere; copy and send yourself)";
+  out.hidden = false;
+};
+document.querySelectorAll("[data-copy]").forEach(b => b.onclick = () => navigator.clipboard.writeText(document.getElementById(b.dataset.copy).textContent).then(() => { b.textContent = "Copied"; }));
+tk.value = sessionStorage.getItem(K) || "";
+tf.onsubmit = async e => {
+  e.preventDefault(); er.textContent = "";
+  const h = { Authorization: "Bearer " + tk.value.trim() };
+  try {
+    const [l, f] = await Promise.all([fetch(API + "/leads", { headers: h }).then(r => r.json()), fetch(API + "/feedback", { headers: h }).then(r => r.json())]);
+    if (l.error) throw new Error(l.error); sessionStorage.setItem(K, tk.value.trim());
+    inbox.hidden = false;
+    inbox.innerHTML = `<h2>Chat leads (${l.count})</h2><table><tbody>${l.leads.map(x => `<tr><td>${esc(new Date(x.timestamp).toLocaleString())}</td><td>${esc(x.name)}<br>${esc(x.contact)}</td><td>${esc(x.need)}</td></tr>`).join("") || "<tr><td>None yet</td></tr>"}</tbody></table>
+    <h2>Private feedback (${f.count})</h2><table><tbody>${f.feedback.map(x => `<tr><td>${esc(new Date(x.timestamp).toLocaleString())}</td><td>${x.rating}/5</td><td>${esc(x.name)}<br>${esc(x.contact)}</td><td>${esc(x.message)}</td></tr>`).join("") || "<tr><td>None yet</td></tr>"}</tbody></table>`;
+  } catch (err) { inbox.hidden = true; er.textContent = err.message === "unauthorized" ? "Wrong token." : err.message; }
+};
+})();
+</script></main></body></html>

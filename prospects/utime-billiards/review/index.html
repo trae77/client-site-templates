@@ -1,0 +1,34 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex, nofollow">
+<title>Rate your visit | U-TIME International Billiards & Sports Bar</title><link rel="stylesheet" href="../addons.css"></head><body class="ao">
+<header class="top"><a href="../index.html">U-TIME International Billiards & Sports Bar</a></header><p class="pv">Preview built by TTA Web Design. Not live yet.</p>
+<main class="bk"><h1>How was your visit?</h1><p class="muted" id="hi">Thanks for choosing U-TIME International Billiards & Sports Bar. Tap a rating.</p>
+<div class="card"><div class="stars" role="group" aria-label="Rating"><button type="button" data-r="1" aria-label="1 star">★1</button><button type="button" data-r="2" aria-label="2 stars">★2</button><button type="button" data-r="3" aria-label="3 stars">★3</button><button type="button" data-r="4" aria-label="4 stars">★4</button><button type="button" data-r="5" aria-label="5 stars">★5</button></div></div>
+<div id="good" class="card" hidden><h2>Thank you!</h2><p>Would you share that on Google? It really helps.</p><p><a id="glink" class="btn" href="#" rel="noopener">Leave a Google review</a></p><p class="muted" id="gtodo" hidden>Google review link not set yet (TODO: Place ID).</p></div>
+<div id="bad" class="card" hidden><h2>We're sorry. Tell us what happened.</h2><p class="muted">This goes straight to the owner, privately.</p>
+<form id="fb"><label for="fn">Name (optional)</label><input id="fn" autocomplete="name"><label for="fc">Phone or email (optional, if you'd like a reply)</label><input id="fc" autocomplete="email"><label for="fm">What could we do better?</label><textarea id="fm" rows="5" required></textarea><div class="row"><button class="btn" type="submit">Send privately</button></div><p class="err" id="fe" aria-live="polite"></p></form>
+<p class="muted">You can also <a id="glink2" href="#" rel="noopener">post a public Google review</a>.</p></div>
+<div id="done" class="card" hidden><h2>Thanks. Your message was sent to the owner.</h2></div>
+<script>
+(() => {
+// TODO(William): Google review link, e.g. https://search.google.com/local/writereview?placeid=PLACE_ID
+const GOOGLE_REVIEW_URL = "";
+const API = "https://utime-api.ttawebdev.com";
+const q = new URLSearchParams(location.search), n = (q.get("n") || "").slice(0, 40), ref = (q.get("r") || "").slice(0, 40);
+let rating = 0;
+if (n) document.getElementById("hi").textContent = "Hi " + n + ", thanks for choosing U-TIME International Billiards & Sports Bar. Tap a rating.";
+for (const id of ["glink", "glink2"]) { const a = document.getElementById(id); if (GOOGLE_REVIEW_URL) { a.href = GOOGLE_REVIEW_URL; a.target = "_blank"; } else { a.removeAttribute("href"); a.setAttribute("aria-disabled", "true"); } }
+if (!GOOGLE_REVIEW_URL) document.getElementById("gtodo").hidden = false;
+document.querySelectorAll("[data-r]").forEach(b => b.onclick = () => {
+  rating = +b.dataset.r; document.querySelectorAll("[data-r]").forEach(x => x.classList.toggle("sel", x === b));
+  document.getElementById("good").hidden = rating < 4; document.getElementById("bad").hidden = rating >= 4;
+});
+document.getElementById("fb").onsubmit = async e => {
+  e.preventDefault(); const fe = document.getElementById("fe"); fe.textContent = "";
+  try {
+    const r = await fetch(API + "/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rating, ref, name: fn.value, contact: fc.value, message: fm.value }) });
+    const j = await r.json(); if (!r.ok) throw new Error(j.error || "Error");
+    document.getElementById("bad").hidden = true; document.getElementById("done").hidden = false;
+  } catch (err) { fe.textContent = err.message; }
+};
+})();
+</script></main></body></html>
