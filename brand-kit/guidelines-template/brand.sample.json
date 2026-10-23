@@ -1,0 +1,20 @@
+{
+  "business_name": "TTA Web Dev",
+  "tagline": "Websites that win local customers",
+  "slug": "tta-web-dev",
+  "kit_dir": "../sample/out/tta-web-dev-brand-kit",
+  "colors": [
+    {"name": "Primary Blue", "hex": "#0F4C81", "role": "Primary (60%)"},
+    {"name": "Signal Gold", "hex": "#F2A900", "role": "Accent (10%)"},
+    {"name": "Charcoal", "hex": "#333333", "role": "Text / neutral (30%)"},
+    {"name": "Paper", "hex": "#F7F7F5", "role": "Background"}
+  ],
+  "heading_font": "Montserrat",
+  "body_font": "Inter",
+  "voice_adjectives": ["Friendly", "Straight-talking", "Local", "Reliable"],
+  "voice_do": ["Use plain words a busy owner understands", "Lead with the result (more calls, more bookings)", "Keep sentences short"],
+  "voice_dont": ["Tech jargon", "Hype or ALL CAPS", "Vague promises"],
+  "contact": "wpollak@ttawebdev.com · ttawebdev.com",
+  "version": "1.0",
+  "date": "October 2026"
+}

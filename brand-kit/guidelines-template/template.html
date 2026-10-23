@@ -1,0 +1,81 @@
+<!doctype html><html><head><meta charset="utf-8"><title>{{BUSINESS_NAME}} Brand Guidelines</title>
+<link href="{{FONT_URL}}" rel="stylesheet">
+<style>
+@page{size:11in 8.5in;margin:0}*{box-sizing:border-box}
+body{margin:0;font-family:'{{BODY_FONT}}',Arial,sans-serif;color:#222}
+h1,h2,h3{font-family:'{{HEADING_FONT}}',Arial,sans-serif;margin:0 0 .4em}
+.pg{width:11in;height:8.5in;padding:.7in .8in;position:relative;page-break-after:always;overflow:hidden}
+.pg h2{font-size:30px;color:{{C1}};border-bottom:4px solid {{C2}};display:inline-block;padding-bottom:6px;margin-bottom:24px}
+.n{position:absolute;bottom:.35in;right:.8in;font-size:11px;color:#888}.n:before{content:"{{BUSINESS_NAME}} · Brand Guidelines v{{VERSION}} · "}
+.cover{background:{{C1}};color:#fff;display:flex;flex-direction:column;justify-content:center}
+.cover h1{font-size:54px}.cover img{height:1.6in;margin-bottom:.5in;align-self:flex-start}
+.grid{display:grid;gap:22px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.tile{border:1px solid #ddd;border-radius:10px;padding:22px;display:flex;align-items:center;justify-content:center;height:1.9in;flex-direction:column}
+.tile img{max-width:90%;max-height:1.2in}.tile small{margin-top:10px;color:#666;font-size:11px}
+.dark{background:#1d1d1d}.brand{background:{{C1}}}.dark small,.brand small{color:#ddd}
+.sw .chip{height:1.4in;border-radius:10px;border:1px solid #ddd;margin-bottom:8px}.sw b{display:block}.sw small{color:#666;display:block}.sw code{font-size:12px;display:block;margin-top:6px}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px solid #eee;padding:6px;text-align:left}.pair{display:inline-block;padding:3px 10px;border-radius:4px;font-weight:700;border:1px solid #ddd}
+.bad{position:relative}.bad:after{content:"✕";position:absolute;top:8px;right:12px;color:#c00;font-size:22px;font-weight:700}
+.cs{position:relative;padding:.45in;border:2px dashed {{C2}};display:inline-block}.cs img{height:1.1in;display:block}
+ul{line-height:1.6}p{line-height:1.55}
+.card{width:3.5in;height:2in;border-radius:6px;box-shadow:0 2px 10px #0003;padding:.25in;display:flex;flex-direction:column;justify-content:space-between}
+</style></head><body>
+
+<section class="pg cover"><img src="{{LOGO_PRIMARY_WHITE}}"><h1>Brand Guidelines</h1><p style="font-size:20px">{{TAGLINE}}</p><p>Version {{VERSION}} · {{DATE}}</p></section>
+
+<section class="pg"><h2>Contents &amp; How to Use</h2><div class="grid g2"><ol style="font-size:17px;line-height:2">
+<li>Logo suite</li><li>Clear space &amp; minimum size</li><li>Logo misuse</li><li>Color palette</li><li>Color contrast</li><li>Typography</li><li>Voice &amp; tone</li><li>Applications</li><li>Files &amp; contact</li></ol>
+<div><p>This guide keeps <b>{{BUSINESS_NAME}}</b> looking the same everywhere: website, signs, trucks, shirts, and social media. Share it with anyone who prints or designs for you (sign shops, printers, web designers).</p><p>Always use the supplied files. Never redraw, retype, or screenshot the logo.</p></div></div><div class="n">2</div></section>
+
+<section class="pg"><h2>Logo Suite</h2><div class="grid g2">
+<div class="tile"><img src="{{LOGO_PRIMARY_FULL_COLOR}}"><small>Primary: use whenever possible</small></div>
+<div class="tile"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}"><small>Horizontal: headers, wide signs, trucks</small></div>
+<div class="tile"><img src="{{LOGO_STACKED_FULL_COLOR}}"><small>Stacked: square spaces, shirts</small></div>
+<div class="tile"><img src="{{LOGO_ICON_FULL_COLOR}}"><small>Icon: favicon, social avatar, app</small></div></div><div class="n">3</div></section>
+
+<section class="pg"><h2>Color Versions</h2><div class="grid g3">
+<div class="tile"><img src="{{LOGO_STACKED_FULL_COLOR}}"><small>Full color: white/light backgrounds</small></div>
+<div class="tile"><img src="{{LOGO_STACKED_BLACK}}"><small>Black: one-color print, fax, stamps</small></div>
+<div class="tile dark"><img src="{{LOGO_STACKED_WHITE}}"><small>White: dark backgrounds &amp; photos</small></div>
+<div class="tile brand"><img src="{{LOGO_ICON_WHITE}}"><small>White on brand color</small></div>
+<div class="tile"><img src="{{LOGO_ICON_BLACK}}"><small>Icon, one color</small></div>
+<div class="tile dark"><img src="{{LOGO_ICON_WHITE}}"><small>Icon, reversed</small></div></div><div class="n">4</div></section>
+
+<section class="pg"><h2>Clear Space &amp; Minimum Size</h2><div class="grid g2"><div>
+<div class="cs"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}"></div><p>Keep empty space around the logo equal to at least the height of the icon's "T" crossbar (dashed line). No text, edges, or images inside it.</p></div>
+<div><h3>Minimum sizes</h3><table><tr><th>Version</th><th>Print</th><th>Screen</th></tr>
+<tr><td>Primary / horizontal</td><td>1.25 in wide</td><td>120 px wide</td></tr><tr><td>Stacked</td><td>0.75 in wide</td><td>80 px wide</td></tr><tr><td>Icon</td><td>0.25 in</td><td>16 px</td></tr></table>
+<p>Below these sizes, switch to the icon.</p></div></div><div class="n">5</div></section>
+
+<section class="pg"><h2>Logo Misuse</h2><div class="grid g3">
+<div class="tile bad"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}" style="transform:scaleX(1.5)"><small>Don't stretch or squash</small></div>
+<div class="tile bad"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}" style="filter:hue-rotate(140deg)"><small>Don't change colors</small></div>
+<div class="tile bad"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}" style="transform:rotate(-15deg)"><small>Don't rotate</small></div>
+<div class="tile bad"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}" style="filter:drop-shadow(6px 6px 3px #000a)"><small>Don't add effects/shadows</small></div>
+<div class="tile bad" style="background:linear-gradient(45deg,#e66,#6ae,#ee6)"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}"><small>Don't place on busy backgrounds</small></div>
+<div class="tile bad dark"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}"><small>Don't use full color on dark: use white</small></div></div><div class="n">6</div></section>
+
+<section class="pg"><h2>Color Palette</h2><div class="grid g4">{{SWATCHES}}</div><p style="margin-top:22px">Use about 60% primary, 30% neutral, 10% accent. Use HEX/RGB on screens, CMYK for print. Ask the printer for a proof before large runs.</p><div class="n">7</div></section>
+
+<section class="pg"><h2>Color Contrast (WCAG 2.2 AA)</h2><table><tr><th>Sample</th><th>Pair</th><th>Ratio</th><th>Use</th></tr>{{CONTRAST_ROWS}}</table><p>AA needs 4.5:1 for normal text and 3:1 for large text (24px+, or 19px+ bold) and icons.</p><div class="n">8</div></section>
+
+<section class="pg"><h2>Typography</h2><div class="grid g2"><div>
+<p style="font-family:'{{HEADING_FONT}}';font-size:46px;font-weight:700;margin:0;color:{{C1}}">{{HEADING_FONT}}</p><p>Headings · Bold 700 / Regular 400</p>
+<p style="font-family:'{{HEADING_FONT}}';font-size:22px">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz 0123456789</p></div><div>
+<p style="font-family:'{{BODY_FONT}}';font-size:46px;margin:0">{{BODY_FONT}}</p><p>Body text · Regular 400 / Semibold 600</p>
+<p style="font-family:'{{BODY_FONT}}';font-size:16px">The quick brown fox jumps over the lazy dog. Use 16px+ on the web, 10–11pt in print.</p></div></div>
+<table style="margin-top:20px"><tr><th>Level</th><th>Font</th><th>Web size</th></tr><tr><td>H1</td><td>{{HEADING_FONT}} 700</td><td>40–48px</td></tr><tr><td>H2</td><td>{{HEADING_FONT}} 700</td><td>28–32px</td></tr><tr><td>Body</td><td>{{BODY_FONT}} 400</td><td>16–18px</td></tr><tr><td>Fallback</td><td colspan="2">Arial, Helvetica, sans-serif</td></tr></table>
+<p>Both fonts are free from Google Fonts under the SIL Open Font License: fine for commercial use, logos, and print.</p><div class="n">9</div></section>
+
+<section class="pg"><h2>Voice &amp; Tone</h2><p style="font-size:24px;color:{{C1}};font-weight:700">{{ADJ}}</p><div class="grid g2"><div><h3>Do</h3><ul>{{VOICE_DO}}</ul></div><div><h3>Don't</h3><ul>{{VOICE_DONT}}</ul></div></div><div class="n">10</div></section>
+
+<section class="pg"><h2>Applications</h2><div class="grid g3">
+<div class="card" style="background:#fff"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}" style="height:.45in;align-self:flex-start"><small>Name · Title<br>{{CONTACT}}</small></div>
+<div class="card" style="background:{{C1}};align-items:center;justify-content:center"><img src="{{LOGO_STACKED_WHITE}}" style="height:1.2in"></div>
+<div class="tile" style="height:2in"><img src="{{LOGO_ICON_FULL_COLOR}}" style="border-radius:50%;width:1.2in"><small>Social avatar (icon, circular crop)</small></div></div>
+<div style="margin-top:28px;height:1.8in;border-radius:12px;background:#ececec;display:flex;align-items:center;padding:0 .5in;position:relative"><div style="width:65%;height:1.3in;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;border-bottom:10px solid {{C2}}"><img src="{{LOGO_HORIZONTAL_FULL_COLOR}}" style="height:.8in"></div><small style="margin-left:20px">Truck / sign panel: horizontal logo, white field, accent stripe</small></div><div class="n">11</div></section>
+
+<section class="pg"><h2>Files &amp; Contact</h2><table><tr><th>Folder</th><th>Use</th></tr>
+<tr><td>logos/…/svg</td><td>Websites, editing, sign shops (vector)</td></tr><tr><td>logos/…/pdf</td><td>Printers &amp; vinyl/sign cutting (vector)</td></tr><tr><td>logos/…/png</td><td>Docs, social, slides (transparent)</td></tr><tr><td>favicon/</td><td>Website browser icons</td></tr><tr><td>templates/</td><td>Business card, email signature, social images</td></tr><tr><td>legal/</td><td>Ownership transfer &amp; font licenses</td></tr></table>
+<p style="margin-top:30px">Questions or new materials: <b>{{CONTACT}}</b></p><div class="n">12</div></section>
+</body></html>
