@@ -1,5 +1,5 @@
 # TTA Web Dev — Pro Logo & Brand Kit Toolkit
-Price (unchanged): **$350**, or **$250 with a website**. Scope: **3 concepts + 2 revision rounds**. Free tools only (Inkscape, Figma free, Google Fonts, Chrome/Playwright, Python + Pillow).
+Price: **$350**, or **$250 with a plan**. Scope: **3 concepts + 2 revision rounds**. Free tools only (Inkscape, Figma free, Google Fonts, Chrome/Playwright, Python + Pillow).
 
 ## Workflow
 1. **Intake:** send `intake-questionnaire.pdf` (or the `.md`/`.html`), then hold a 20-minute call. Confirm the scope line is checked.
