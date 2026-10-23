@@ -1,24 +1,27 @@
-# TTA Web Dev price sheet (locked 2026-10-22)
+# TTA Web Dev price sheet (locked 2026-10-22; Total Growth, add-ons and Care definition approved by William 2026-10-23)
 
 ## $0-down monthly plans
 6-month minimum, then month-to-month. Client owns the site after 12 paid months (paying upfront instead = owned from day one). 30-day money-back guarantee.
-- **Plan buyout / switch to owning (approved by William 2026-10-23, option 4: site size tied to plan):** available only after the 6-month minimum. Website plan ($129 $0-down) = one-page site, $500 value, ≈$41.67 credit/payment: buyout $250 after 6, $125 after 9, $0 after 12. Get Found ($249) and Never Miss a Lead ($349) = multi-page site, $1,200 value, $100 credit/payment: buyout $600 after 6, $300 after 9, $0 after 12. Buyout ends the plan with no other fee; site moves to free hosting (Cloudflare/GitHub Pages); client pays own domain. Get Found / Never Miss a Lead clients who buy out lose plan tools (booking, SEO, AI chat bot, lead responder, review requests, GBP management) unless they move to the $199 or $279 site owner plan. Care $69/mo = edits and support only.
+- **Month 13 auto step-down (approved by William 2026-10-23):** after 12 paid months the client owns the site and the bill automatically drops to the site-owner rate from month 13: Website $129 → Care $69, Get Found $249 → $199, Never Miss a Lead $349 → $279, Total Growth $449 → $379. Same features (Website → Care keeps edits/support).
+- **Plan buyout / switch to owning (approved by William 2026-10-23, option 4: site size tied to plan):** available only after the 6-month minimum. Website plan ($129 $0-down) = one-page site, $500 value, ≈$41.67 credit/payment: buyout $250 after 6, $125 after 9, $0 after 12. Get Found ($249), Never Miss a Lead ($349) and Total Growth ($449) = multi-page site, $1,200 value, $100 credit/payment: buyout $600 after 6, $300 after 9, $0 after 12. Buyout ends the plan with no other fee; site moves to free hosting (Cloudflare/GitHub Pages); client pays own domain. Get Found / Never Miss a Lead / Total Growth clients who buy out lose plan tools (booking, SEO, AI chat bot, lead responder, review requests, GBP management, text-back, campaigns, social posts, back-office tool) unless they move to the $199, $279 or $379 site owner plan. After a buyout the site is on free hosting only (no edits, support or monitoring) unless they add Care. Care ($69/mo, optional) adds monthly content edits, security updates, uptime monitoring, backups, fix-it help when something breaks, and plan-client prices on all add-ons.
 - **Website, $129/mo:** one-page site, hosting, security, small monthly edits
 - **Get Found, $249/mo (most popular):** Website + multi-page site, Google Business Profile setup, Local SEO with AI search, review requests
-- **Never Miss a Lead, $349/mo:** Get Found + AI chat bot and lead responder, online booking, payments setup
+- **Never Miss a Lead, $349/mo:** Get Found + AI chat bot and lead responder, online booking, payments setup, missed-call text-back (+ $19 one-time carrier setup)
+- **Total Growth, $449/mo:** Never Miss a Lead + email and text campaigns, social posts from job photos (up to 8/mo), and ONE back-office tool of the client's choice (quotes/invoices/pay links OR maintenance plan signups). Multi-page site, $1,200 buyout basis, 6-month minimum. + $19 one-time text-back carrier setup.
 
 ## Site owner plans (paid upfront for the site and own it)
 Month-to-month, no minimum.
-- **Care, $69/mo:** hosting, security, small monthly edits
+- **Care, $69/mo:** monthly content edits, security updates, uptime monitoring, backups, fix-it help when something breaks, and plan-client prices on all add-ons
 - **Get Found, $199/mo:** Care + Google Business Profile, Local SEO with AI search, review requests
-- **Never Miss a Lead, $279/mo:** Get Found + AI chat bot and lead responder, booking, payments
+- **Never Miss a Lead, $279/mo:** Get Found + AI chat bot and lead responder, booking, payments, missed-call text-back (+ $19 one-time carrier setup)
+- **Total Growth, $379/mo:** same features as Total Growth $449 (no buyout needed) + $19 one-time text-back carrier setup
 
 Site owner plans also get a 30-day money-back guarantee: refund of the first month's plan fee if they cancel within 30 days. The upfront site payment ($500 / $1,200) follows its own terms.
 
 
 ## One-time
 - One-page site $500 · Multi-page site $1,200. Pay upfront: the client owns the site outright from the day they pay (no 12-month wait).
-- Pay-once hosting & domain (approved by William 2026-10-23): we set up free static hosting (Cloudflare Pages or GitHub Pages) at no monthly cost. The client registers and renews their own domain in their own name (about $10–20/yr at registrar cost; never say the domain is free). Care $69/mo is optional for edits and support. Pay once = no monthly payments to us.
+- Pay-once hosting & domain (approved by William 2026-10-23): we set up free static hosting (Cloudflare Pages or GitHub Pages) at no monthly cost. The client registers and renews their own domain in their own name (about $10–20/yr at registrar cost; never say the domain is free). Pay once = free hosting ONLY: no edits, no support, no monitoring, and no monthly payments to us. Care ($69/mo, optional) adds monthly content edits, security updates, uptime monitoring, backups, fix-it help when something breaks, and plan-client prices on all add-ons.
 - Fixes $75–150 · Go-live fix $150
 - Logo and brand kit $350 ($250 with a plan)
 
@@ -27,9 +30,19 @@ Cold emails: no prices. Quote only after the mockup.
 
 ## More services (added 2026-10-23)
 - Website rescue $199 one-time; plan clients $149; waived with a monthly plan signup. Speed, mobile, HTTPS/security, broken links/forms, before/after report, 14 days of follow-up fixes. Single fixes stay $75–150.
-- Google Business Profile setup & cleanup $199 one-time; Website/Care clients $149; free in Get Found and Never Miss a Lead. Optional management $99/mo.
-- AI search optimization $299 one-time; Website/Care clients $199; free in Get Found and Never Miss a Lead.
-- Online ordering for restaurants $299 setup + $79/mo; plan clients $149 setup + $59/mo. 0% commission, pickup ordering, card payments, order alerts, menu updates. Not sold online yet (no Stripe link).
+- Google Business Profile setup & cleanup $199 one-time; Website/Care clients $149; free in Get Found and up. Optional management $99/mo.
+- AI search optimization $299 one-time; Website/Care clients $199; free in Get Found and up.
+- Online ordering for restaurants $299 setup + $99/mo; plan clients $149 setup + $59/mo. 0% commission, pickup ordering, card payments, order alerts, menu updates. "Ask about it" only (no Stripe link).
+
+## Add-ons (approved by William 2026-10-23): standalone / plan-client price
+- Missed-call text-back: $49 setup + $79/mo / $19 setup + $39/mo. Included in Never Miss a Lead and Total Growth; carrier setup is $19 for ALL plan clients (incl. NML and Total Growth), $49 standalone.
+- Email & text campaigns: $99 setup + $99/mo / $0 setup + $49/mo. Included in Total Growth.
+- Social posts from job photos (up to 8/mo): $199/mo / $129/mo. Included in Total Growth.
+- Quotes, invoices & pay links: $149 setup + $49/mo / $99 setup + $29/mo.
+- Maintenance plan signups: $249 setup + $59/mo / $149 setup + $39/mo.
+- Directory listing cleanup (Yelp, Bing, Apple…): $199 one-time; $99 Website/Care clients; free in Get Found and up.
+- Tiers are never named after clients.
+Stripe links: products/stripe-links.md.
 
 ## Competitor comparison (reference only, checked 2026-10-23)
 Published starting prices from each company's own pricing page. Say "starting at" / "as of Oct 23, 2026"; no attack language; re-check before quoting. Sources: townsendswebdesign.com/pricing, onewebcare.com/denver, frontrangegraphics.com/web-design-packages, kemafy.com/web-design-denver-website-designer-in-colorado, wix.com/plans, squarespace.com/pricing.
