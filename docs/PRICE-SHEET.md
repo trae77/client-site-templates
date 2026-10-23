@@ -1,7 +1,8 @@
 # TTA Web Dev price sheet (locked 2026-10-22)
 
 ## $0-down monthly plans
-6-month minimum, then month-to-month. Client owns the site after 12 paid months (paying upfront instead = owned from day one). Early exit: keep the site by paying build value minus payments made, or it comes down. 30-day money-back guarantee.
+6-month minimum, then month-to-month. Client owns the site after 12 paid months (paying upfront instead = owned from day one). Early exit: keep the site by paying the buyout balance below, or it comes down. 30-day money-back guarantee.
+- **Plan buyout / switch to owning (approved by William 2026-10-23):** available once the 6-month minimum is complete. Each monthly payment credits 1/12 of the site's one-time price toward ownership ($500 one-page ≈ $41.67/payment; $1,200 multi-page = $100/payment); the rest covers hosting, edits and lead tools. Buyout = one-time price − (credit × payments made). Once paid: owned from that day, the monthly plan ends (no other fee), hosting moves to the free pay-once setup, client renews own domain, Care $69/mo optional. Example: Website $129/mo after 6 payments = $500 − $250 = $250; after 12 payments = $0 (matches owned after 12 paid months). Build value = the one-page/multi-page box checked in the client's agreement (Website plan default: one-page $500).
 - **Website, $129/mo:** site up to 5 pages, hosting, security, small monthly edits
 - **Get Found, $249/mo (most popular):** Website + Google Business Profile setup, Local SEO with AI search, review requests
 - **Never Miss a Lead, $349/mo:** Get Found + AI chat bot and lead responder, online booking, payments setup
