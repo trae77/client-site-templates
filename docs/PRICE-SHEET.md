@@ -49,10 +49,15 @@ Site owner plans get the same guarantee: 30-day money-back guarantee covering mo
 | Google Search Ads setup (incl. management on GF+) | $299 | $199 (https://buy.stripe.com/5kQdR9a85eSicFS6i07ss1i) | Get Found and up |
 | Google Local Services Ads setup (incl. management on GF+) | $199 | $149 (https://buy.stripe.com/14AdR94NLcKa7ly7m47ss1j) | Get Found and up |
 | Call tracking setup (incl. reports on GF+) | $149 | $99 (https://buy.stripe.com/4gM7sL3JH11s6hubCk7ss1k) | Get Found and up |
-| Directory listing cleanup | $199 | $99 | Get Found and up |
+| Directory listing cleanup (Yelp, Bing Places, Apple Business, more) | $199 | $99 | Get Found and up |
 | Private events page / Careers page | $249 each | $199 each (https://buy.stripe.com/8x2bJ13JHbG68pCfSA7ss1l / https://buy.stripe.com/3cIeVdeoldOeaxK49S7ss1m) | Total Growth (1 free page) |
 | Financing page / TV menu boards (up to 3) | $149 each | $119 each (https://buy.stripe.com/5kQ28rgwt7pQaxK7m47ss1n / https://buy.stripe.com/8x25kDeol8tU49m5dW7ss1o) | Total Growth (1 free page) |
 | eGift card page | $99 | $79 (https://buy.stripe.com/6oU28reol9xYgW821K7ss1p) | Total Growth (1 free page) |
+| City/service-area pages (real service areas only) | $199 each / 5 for $849 (https://buy.stripe.com/00w5kDbc9aC2cFS8q87ss1A / https://buy.stripe.com/9B67sL3JH5hI0Xa8q87ss1B) | Standalone only | — |
+| Conversion audit (credited toward a plan) | $149 (https://buy.stripe.com/28EcN5a85bG635ibCk7ss1C) | Standalone only | — |
+| Spanish version (machine-translated and reviewed) | $399 one page / $799 multi-page (https://buy.stripe.com/dRm14n4NLcKa49mcGo7ss1D / https://buy.stripe.com/6oU5kD3JHdOedJW21K7ss1E) | Standalone only | — |
+| Managed review replies (48 hrs) + monthly report | $99/mo (https://buy.stripe.com/9B6dR95RP6lMbBObCk7ss1F) | Standalone only | — |
+| Done-for-you monthly newsletter | $149/mo (https://buy.stripe.com/28EfZhgwteSi35iayg7ss1G) | Standalone only | — |
 | Accessibility check (10 pages) | $399 | $299 (https://buy.stripe.com/cNi00j0xv7pQ0Xa8q87ss1h) | Custom |
 | Online ordering (ask about it, no link) | $99/mo + $299 | $59/mo + $149 | Custom |
 | Private AI Assistant (pitch privacy; never compare price) | $750 + $149/mo (https://buy.stripe.com/00wfZh941bG68pCfSA7ss1d / https://buy.stripe.com/aFa9ATbc9fWm8pCayg7ss1f) | $499 + $119/mo (https://buy.stripe.com/14A00j6VT8tU8pC35O7ss1q / https://buy.stripe.com/dRmeVd4NL9xY9tG6i07ss1r); Total Growth $250 + $99/mo (https://buy.stripe.com/14AbJ1cgd11s9tGeOw7ss1s / https://buy.stripe.com/14A3cv941eSi7lybCk7ss1t) | — |
