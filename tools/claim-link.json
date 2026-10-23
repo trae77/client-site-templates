@@ -1,1 +1,1 @@
-{ "url": "https://buy.stripe.com/cNiaEXbc94dEcFSbCk7ss06", "note": "$400 One-page website Payment Link (LIVE mode). Rerun after changes: node tools/claim-bar.mjs prospects/*/index.html" }
+{ "own": "https://buy.stripe.com/cNiaEX2FD6lM21eeOw7ss0i", "monthly": "https://buy.stripe.com/7sY6oH94139A21edKs7ss0c", "note": "LIVE Payment Links: $500 One-page website and $129/mo Website plan ($0 down). Rerun after changes: node tools/claim-bar.mjs prospects/*/index.html (skip rj-plumbing / Rick's $200 link)" }
