@@ -80,12 +80,11 @@ More published prices, checked Oct 23, 2026 (national; all cost more than ours):
 - Podium: $399-599/mo, 12-month contract (https://teamshift.io/compare/podium-pricing). Ours: text-back, chatbot, reviews in Never Miss a Lead $349/mo.
 - Thryv Marketing Center: $204-255/mo + $250 onboarding (https://www.thryv.com/getstarted/). Ours: campaigns $49/mo plan clients, included in Total Growth.
 - Hibu: from $449/mo (https://www.capterra.com/p/207701/Hibu/pricing/). Social agencies $500-900/mo (https://vizibleagency.com/pricing/social-media-cost). Ours: social posts $199/mo standalone, $129 plan clients, included in Total Growth.
-- Housecall Pro Max: $299-329/mo for recurring service plans (https://www.housecallpro.com/pricing/). Ours: maintenance signups $39/mo plan clients, included in Total Growth.
 ### Plan savings
 (vs the same tools from other providers, low end of published prices, checked Oct 23, 2026; yearly = 12 x monthly):
 - Website $129/mo vs Southern Maine Web Design $199/mo + $299 setup: save $70/mo, $840/yr, plus $299 setup.
 - Get Found $249/mo vs monthly site $199 + Ziwi GBP management $297/mo ($450 setup) + OptimizeAISearch audit $499 = $496/mo + $949 setup: save $247/mo, $2,964/yr.
 - Never Miss a Lead $349/mo vs Get Found pieces $496 + Podium from $399/mo = $895/mo: save $546/mo, $6,552/yr.
-- Total Growth $449/mo vs $895 + Thryv Marketing Center from $204/mo ($250 onboarding) + Hibu from $449/mo + Housecall Pro Max from $299/mo = $1,847/mo: save $1,398/mo, $16,776/yr.
+- Total Growth $449/mo vs $895 + Thryv Marketing Center from $204/mo ($250 onboarding) + Hibu from $449/mo = $1,548/mo: save $1,099/mo, $13,188/yr.
 All plans: $0 down, own the site after 12 payments, bill drops to the site-owner rate in month 13 ($69/$199/$279/$379; right away if they already own the site), 30-day money-back on the monthly plan fee only. Budget buyers: pay once $500/$1,200, no monthly fees from us.
 Used on: ttawebdev.com "How we compare", brochure services.pdf, chatbot prompt.
