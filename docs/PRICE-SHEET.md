@@ -25,11 +25,13 @@ Site owner plans get the same guarantee: 30-day money-back guarantee on the mont
 - Pay-once hosting & domain (approved by William 2026-10-23): Deployed to your own hosting account (free-tier compatible). We recommend Care at $69/mo for edits, backups, monitoring and support. The client registers and renews their own domain in their own name (about $10–20/yr at registrar cost; never say the domain is free). No monthly payments to us and no promise of support on pay once; support comes with Care ($69/mo: monthly content edits, security updates, uptime monitoring, backups, fix-it help, plan-client prices on all add-ons).
 - Fixes $75–150 · Go-live fix $150
 - Logo and brand kit $350 ($250 with a plan)
+- AI Website Chatbot $499 once (includes custom knowledge base training and 12 months of AI hosting/usage; $15/mo starting month 13 to cover AI running costs). Plan members (Website/Care, Get Found) $349 once + $15/mo after year 1. Free on Never Miss a Lead and up.
 
 ## Add-on grid (approved by William 2026-10-23)
 | Add-on | Standalone | Website/Care clients | Included free in |
 |---|---|---|---|
 | Website rescue | $199 | $149 | Get Found and up (waived) |
+| AI Website Chatbot | $499 once (+$15/mo after yr 1) | $349 once (+$15/mo after yr 1; Website/Care and Get Found) | Never Miss a Lead and up |
 | Google Business Profile setup & cleanup | $199 | $149 | Get Found and up |
 | Google Business Profile management | $99/mo | $69/mo (https://buy.stripe.com/9B6fZheol4dE9tG0XG7ss0V) | Get Found and up |
 | AI search optimization | $299 | $199 | Get Found and up |
