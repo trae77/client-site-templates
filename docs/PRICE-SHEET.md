@@ -45,19 +45,25 @@ Cold emails: no prices. Quote only after the mockup.
 Stripe links: products/stripe-links.md.
 
 ## Competitor comparison (reference only, checked 2026-10-23)
-Published starting prices from each company's own pricing page. Say "starting at" / "as of Oct 23, 2026"; no attack language; re-check before quoting. Sources: townsendswebdesign.com/pricing, onewebcare.com/denver, frontrangegraphics.com/web-design-packages, kemafy.com/web-design-denver-website-designer-in-colorado, wix.com/plans, squarespace.com/pricing.
-- Townsends Web Design (Denver): $499 setup + $49/mo required; first 5 pages, hosting/SSL, copywriting included.
-- OneWebCare (Denver): Starter $599 (6 pages), Standard $799 (12), Pro $1,599 (20); 1 year hosting + domain; zero-down payment plans.
-- Front Range Graphics (Denver, Squarespace): one-page from $1,500; 5 pages from $2,500; 10 pages from $5,000.
+Published starting prices from each company's own pricing page. Say "starting at" / "as of Oct 23, 2026"; no attack language; re-check before quoting. Only list matchups where we win. Sources: frontrangegraphics.com/web-design-packages, kemafy.com/web-design-denver-website-designer-in-colorado.
+- Front Range Graphics (Denver): one-page from $1,500; 5 pages from $2,500; 10 pages from $5,000.
 - Kemafy (Denver): Starter $1,500 (5 pages); Standard $3,000; Premium $4,500 (live chat, booking, callbacks); Ultimate $7,500.
-- DIY: Wix Light $17/mo, Wix Core $29/mo (payments, bookings); Squarespace Basic $19/mo (billed yearly).
 More published prices, checked Oct 23, 2026 (national; all cost more than ours):
-- Grippy Code: Landing $99/mo, Starter 5 pages $199/mo, Growth 10 pages $349/mo, Premium $499/mo; $0 down, month to month, site licensed while subscribed. https://grippycode.com/website-subscription
+- Grippy Code: Starter 5 pages $199/mo, Growth 10 pages $349/mo; $0 down, month to month, site licensed while subscribed. https://grippycode.com/website-subscription
 - StellareX: up to 5 pages $199/mo, up to 10 pages $299/mo, unlimited $399/mo; hosting + maintenance. SEO from $499/mo (3-month min, includes GBP setup). https://www.stellarextech.com/index.html
 - Southern Maine Web Design: $199/mo + $299 setup (1-3 pages), $299/mo + $399 (5-7), $399/mo + $499 (8-12); 12-month minimum. https://www.southernmainewebdesign.com/monthly-website-packages
 - Cloud Digital: $199/mo 4 pages (template copy), $299/mo 5 pages, $399/mo 6 pages; 12-month commitment. https://cloud-suite.io/smb-pricing/
 - Ziwi Marketing: Google Business Profile setup $450 once; management $297/mo per location, month to month. https://ziwimarketing.com/pricing/google-business-profile-management-cost/
 - OptimizeAISearch: AI SEO audit $499 one-time; schema setup $799; monthly from $100. https://optimizeaisearch.com/pricing
-Quote only / not verified (left out of tables): GoDaddy Website Design Services, Network Solutions/Web.com, Thryv, Housecall Pro, Denver Website Foundry.
-Where we're honestly behind: Townsends' $49/mo is lower than our $129/mo, and OneWebCare bundles a year of hosting/domain.
+- Podium: $399-599/mo, 12-month contract (https://teamshift.io/compare/podium-pricing). Ours: text-back, chat bot, reviews in Never Miss a Lead $349/mo.
+- Thryv Marketing Center: $204-255/mo + $250 onboarding (https://www.thryv.com/getstarted/). Ours: campaigns $49/mo plan clients, included in Total Growth.
+- Hibu: from $449/mo (https://www.capterra.com/p/207701/Hibu/pricing/). Social agencies $500-900/mo (https://vizibleagency.com/pricing/social-media-cost). Ours: social posts $199/mo standalone, $129 plan clients, included in Total Growth.
+- Housecall Pro Max: $299-329/mo for recurring service plans (https://www.housecallpro.com/pricing/). Ours: maintenance signups $39/mo plan clients, included in Total Growth.
+### Plan savings
+(vs the same pieces bought elsewhere, low end of published prices, checked Oct 23, 2026; yearly = 12 x monthly):
+- Website $129/mo vs Southern Maine Web Design $199/mo + $299 setup: save $70/mo, $840/yr, plus $299 setup.
+- Get Found $249/mo vs monthly site $199 + Ziwi GBP management $297/mo ($450 setup) + OptimizeAISearch audit $499 = $496/mo + $949 setup: save $247/mo, $2,964/yr.
+- Never Miss a Lead $349/mo vs Get Found pieces $496 + Podium from $399/mo = $895/mo: save $546/mo, $6,552/yr.
+- Total Growth $449/mo vs $895 + Thryv Marketing Center from $204/mo ($250 onboarding) + Hibu from $449/mo + Housecall Pro Max from $299/mo = $1,847/mo: save $1,398/mo, $16,776/yr.
+All plans: $0 down, own the site after 12 payments, bill drops to the site-owner rate in month 13 ($69/$199/$279/$379), 30-day money-back guarantee. Budget buyers: pay once $500/$1,200, no monthly fees from us.
 Used on: ttawebdev.com "How we compare", brochure services.pdf, chat bot prompt.
