@@ -116,8 +116,8 @@ More published prices, checked Oct 23, 2026 (national; all cost more than ours):
 (vs the same tools from other providers, low end of published prices, checked Oct 23, 2026; yearly = 12 x monthly):
 - Starter $129/mo vs $199/mo + $299 setup: save $70/mo.
 - Get Found $249/mo vs $496/mo + $949 setup: save $247/mo.
-- Never Miss a Lead $349/mo vs $949/mo: save $600/mo.
-- Total Growth $449/mo vs $1,252/mo: save $803/mo.
+- Never Miss a Lead $349/mo vs $945/mo: save $596/mo.
+- Total Growth $449/mo vs $1,248/mo: save $799/mo.
 - Features and terms differ by company. After month 12, our prices drop further because you own the site. No comparison for All-In or the Private AI Assistant.
 - Features and terms differ by company. After month 12, our prices drop further because you own the site. No comparison for All-In or the Private AI Assistant.
 All plans: $0 down, own the site after 12 payments, bill drops to the site-owner rate in month 13 ($69/$199/$279/$379; right away if they already own the site), 30-day money-back on the monthly plan fee only. Budget buyers: pay once $500/$1,200, no monthly fees from us.
