@@ -42,13 +42,30 @@ Site owner plans get the same guarantee: 30-day money-back guarantee covering mo
 | Google Business Profile management | $99/mo | $69/mo (https://buy.stripe.com/9B6fZheol4dE9tG0XG7ss0V) | Get Found and up |
 | AI search optimization | $299 | $199 | Get Found and up |
 | Missed-call text-back | $79/mo + $49 setup | $39/mo + $19 carrier setup | Never Miss a Lead and up ($19 carrier setup still applies) |
-| Email & text campaigns | $99/mo + $99 setup + $19 carrier reg. if not active | $49/mo + $19 carrier reg. if not active | Total Growth |
+| Email & text campaigns (Includes VIP list setup) | $99/mo + $99 setup + $19 carrier reg. if not active | $49/mo + $19 carrier reg. if not active | Total Growth |
 | Social posts (AI-assisted, templated, from job photos, up to 8/mo) | $199/mo | $129/mo | Total Growth |
 | Quotes, invoices & pay links | $49/mo + $149 setup | $29/mo + $99 setup | Total Growth (one back-office tool) |
 | Maintenance plan signups | $59/mo + $249 setup | $39/mo + $149 setup | Total Growth (one back-office tool) |
 
 SEO, GBP, review requests, booking, payments and the AI lead responder are sold only inside plans.
 Cold emails: no prices. Quote only after the mockup.
+
+## Specialized Page & Growth Add-Ons (One-Time Builds) (approved by William 2026-10-23 3:23 PM MT)
+Setup is free on every monthly plan. Third-party costs (ad spend, call-tracking software, financing/gift-card provider fees, signage software beyond free tiers, TVs/players) are always paid by the client. The price below is for clients without a plan. Accessibility improvements and risk reduction; not a legal guarantee or certification of ADA/WCAG compliance.
+
+| Add-On Service | Price | Best For / Details |
+|---|---|---|
+| Accessibility check & fixes (up to 10 pages) | $399 (https://buy.stripe.com/28E28reolaC2fS46i07ss11) | Accessibility improvements & risk reduction |
+| Google Search Ads setup | $299 (https://buy.stripe.com/6oU3cv4NL6lMcFScGo7ss12) | Paid search setup (ongoing management free on Get Found & up) |
+| Private events page | $249 (https://buy.stripe.com/dRm28rcgdfWmaxKdKs7ss14) | Custom page build & lead capture |
+| Careers page + applicant follow-up | $249 (https://buy.stripe.com/fZu28rgwtfWmcFS7m47ss15) | Job board page + basic automation |
+| Google Local Services Ads (LSA) setup | $199 (https://buy.stripe.com/8x29AT941eSi8pCfSA7ss13) | Verified local leads setup (ongoing management free on Get Found & up) |
+| Call tracking setup | $149 (https://buy.stripe.com/3cIcN53JHh0q6hu21K7ss16) | Number routing & campaign attribution (monthly lead report on Get Found & up) |
+| Financing page | $149 (https://buy.stripe.com/dRm00jbc9aC28pC49S7ss17) | Financing application integration |
+| TV menu boards (up to 3) | $149 (https://buy.stripe.com/5kQ8wP4NL11s6hufSA7ss18) | Digital menu design & setup |
+| eGift card page | $99 (https://buy.stripe.com/8x200j941bG65dq0XG7ss19) | Page setup & checkout integration |
+
+Email VIP list setup is merged into Email & text campaigns (Includes VIP list setup), no price change.
 
 ## More services (added 2026-10-23)
 - Website rescue $199 one-time; $149 for Website/Care clients; waived on Get Found and up. Speed, mobile, HTTPS/security, broken links/forms, before/after report, 14 days of follow-up fixes. Single fixes stay $75–150.
