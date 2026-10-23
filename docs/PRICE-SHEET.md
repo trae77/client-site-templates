@@ -82,7 +82,7 @@ More published prices, checked Oct 23, 2026 (national; all cost more than ours):
 - Hibu: from $449/mo (https://www.capterra.com/p/207701/Hibu/pricing/). Social agencies $500-900/mo (https://vizibleagency.com/pricing/social-media-cost). Ours: social posts $199/mo standalone, $129 plan clients, included in Total Growth.
 - Housecall Pro Max: $299-329/mo for recurring service plans (https://www.housecallpro.com/pricing/). Ours: maintenance signups $39/mo plan clients, included in Total Growth.
 ### Plan savings
-(vs the same pieces bought elsewhere, low end of published prices, checked Oct 23, 2026; yearly = 12 x monthly):
+(vs the same tools from other providers, low end of published prices, checked Oct 23, 2026; yearly = 12 x monthly):
 - Website $129/mo vs Southern Maine Web Design $199/mo + $299 setup: save $70/mo, $840/yr, plus $299 setup.
 - Get Found $249/mo vs monthly site $199 + Ziwi GBP management $297/mo ($450 setup) + OptimizeAISearch audit $499 = $496/mo + $949 setup: save $247/mo, $2,964/yr.
 - Never Miss a Lead $349/mo vs Get Found pieces $496 + Podium from $399/mo = $895/mo: save $546/mo, $6,552/yr.
