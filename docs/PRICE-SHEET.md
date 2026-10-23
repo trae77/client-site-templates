@@ -10,14 +10,14 @@
 - **Referral credit (approved by William 2026-10-23):** Refer another local business owner who signs up for a monthly plan, and your next month of care/hosting is 100% free once their first monthly payment clears. Credit = one month of the referrer's current plan fee, applied as a Stripe customer balance credit after the referred client's first paid invoice.
 - **Which plan is right for me:** Website & Care is for startups needing a clean 1-page storefront. Get Found is for local businesses invisible on Google Maps & AI search. Never Miss a Lead is for service pros who miss calls and need instant booking & chat. Total Growth is for established businesses wanting email, SMS, social and back-office tools.
 - **Website, $129/mo:** one-page site, hosting, security, small monthly edits
-- **Get Found, $249/mo (most popular):** Website + multi-page site, Google Business Profile setup, Local SEO with AI search, review requests
+- **Get Found, $249/mo:** Website + multi-page site, Google Business Profile setup, Local SEO with AI search
 - **Never Miss a Lead, $349/mo:** Get Found + AI chat bot and lead responder, online booking, payments setup, missed-call text-back (+ $19 one-time carrier setup)
 - **Total Growth, $449/mo:** Never Miss a Lead + email and text campaigns, AI-assisted, templated social posts from the client's job photos (up to 8/mo), and ONE back-office tool of the client's choice (quotes/invoices/pay links OR maintenance plan signups). Multi-page site, $1,200 buyout basis, 6-month minimum. + $19 one-time text-back carrier setup.
 
 ## Site owner plans (paid upfront for the site and own it)
 Month-to-month, no minimum.
 - **Care, $69/mo:** monthly content edits, security updates, uptime monitoring, backups, fix-it help when something breaks, and plan-client prices on all add-ons
-- **Get Found, $199/mo:** Care + Google Business Profile, Local SEO with AI search, review requests
+- **Get Found, $199/mo:** Care + Google Business Profile, Local SEO with AI search
 - **Never Miss a Lead, $279/mo:** Get Found + AI chat bot and lead responder, booking, payments, missed-call text-back (+ $19 one-time carrier setup)
 - **Total Growth, $379/mo:** same features as Total Growth $449 (no buyout needed) + $19 one-time text-back carrier setup
 
