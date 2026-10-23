@@ -36,5 +36,13 @@ Published starting prices from each company's own pricing page. Say "starting at
 - Front Range Graphics (Denver, Squarespace): one-page from $1,500; 5 pages from $2,500; 10 pages from $5,000.
 - Kemafy (Denver): Starter $1,500 (5 pages); Standard $3,000; Premium $4,500 (live chat, booking, callbacks); Ultimate $7,500.
 - DIY: Wix Light $17/mo, Wix Core $29/mo (payments, bookings); Squarespace Basic $19/mo (billed yearly).
+More published prices, checked Oct 23, 2026 (national; all cost more than ours):
+- Grippy Code: Landing $99/mo, Starter 5 pages $199/mo, Growth 10 pages $349/mo, Premium $499/mo; $0 down, month to month, site licensed while subscribed. https://grippycode.com/website-subscription
+- StellareX: up to 5 pages $199/mo, up to 10 pages $299/mo, unlimited $399/mo; hosting + maintenance. SEO from $499/mo (3-month min, includes GBP setup). https://www.stellarextech.com/index.html
+- Southern Maine Web Design: $199/mo + $299 setup (1-3 pages), $299/mo + $399 (5-7), $399/mo + $499 (8-12); 12-month minimum. https://www.southernmainewebdesign.com/monthly-website-packages
+- Cloud Digital: $199/mo 4 pages (template copy), $299/mo 5 pages, $399/mo 6 pages; 12-month commitment. https://cloud-suite.io/smb-pricing/
+- Ziwi Marketing: Google Business Profile setup $450 once; management $297/mo per location, month to month. https://ziwimarketing.com/pricing/google-business-profile-management-cost/
+- OptimizeAISearch: AI SEO audit $499 one-time; schema setup $799; monthly from $100. https://optimizeaisearch.com/pricing
+Quote only / not verified (left out of tables): GoDaddy Website Design Services, Network Solutions/Web.com, Thryv, Housecall Pro, Denver Website Foundry.
 Where we're honestly behind: Townsends' $49/mo is lower than our $129/mo, and OneWebCare bundles a year of hosting/domain.
 Used on: ttawebdev.com "How we compare", brochure services.pdf, chat bot prompt.
