@@ -22,3 +22,9 @@ Site owner plans also get a 30-day money-back guarantee: refund of the first mon
 
 SEO, GBP, review requests, booking, payments and the AI lead responder are sold only inside plans.
 Cold emails: no prices. Quote only after the mockup.
+
+## More services (added 2026-10-23)
+- Website rescue $199 one-time; plan clients $149; waived with a monthly plan signup. Speed, mobile, HTTPS/security, broken links/forms, before/after report, 14 days of follow-up fixes. Single fixes stay $75–150.
+- Google Business Profile setup & cleanup $199 one-time; Website/Care clients $149; free in Get Found and Never Miss a Lead. Optional management $99/mo.
+- AI search optimization $299 one-time; Website/Care clients $199; free in Get Found and Never Miss a Lead.
+- Online ordering for restaurants $299 setup + $79/mo; plan clients $149 setup + $59/mo. 0% commission, pickup ordering, card payments, order alerts, menu updates. Not sold online yet (no Stripe link).
