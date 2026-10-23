@@ -1,8 +1,8 @@
 # TTA Web Dev price sheet (locked 2026-10-22; Total Growth, add-ons and Care definition approved by William 2026-10-23)
 
 ## $0-down monthly plans
-6-month minimum, then month-to-month. Client owns the site after 12 paid months (paying upfront instead = owned from day one). 30-day money-back guarantee on the monthly plan fee only. It does not cover third-party fees (the $19 text-back carrier registration, domain registration), and if you take the refund, your access to and license for the site build end.
-- **Site-owner rate (approved by William 2026-10-23):** The site-owner rate starts at month 13, or right away if you already own your site or paid $500/$1,200 upfront. Buying out early ends the plan; to keep plan tools after a buyout, move to the matching site-owner plan.
+6-month minimum, then month-to-month. Client owns the site after 12 paid months (paying upfront instead = owned from day one). 30-day money-back guarantee covering monthly subscription fees only. It excludes third-party domain and carrier fees (such as the $19 carrier registration), and the site license ends on a refund.
+- **Site-owner rate (approved by William 2026-10-23):** The lower monthly rate starts at Month 13, or Day 1 if you already own your site (bring your own or pay-once). An early buyout (after the 6-month minimum) transfers the site and code to you right away, but the lower monthly rate still starts at Month 13.
 - **Month 13 auto step-down (approved by William 2026-10-23):** after 12 paid months the client owns the site and the bill automatically drops to the site-owner rate from month 13: Website $129 → Care $69, Get Found $249 → $199, Never Miss a Lead $349 → $279, Total Growth $449 → $379. Same features (Website → Care keeps edits/support).
 - **Plan buyout / switch to owning (approved by William 2026-10-23, option 4: site size tied to plan):** available only after the 6-month minimum. Website plan ($129 $0-down) = one-page site, $500 value, ≈$41.67 credit/payment: buyout $250 after 6, $125 after 9, $0 after 12. Get Found ($249), Never Miss a Lead ($349) and Total Growth ($449) = multi-page site, $1,200 value, $100 credit/payment: buyout $600 after 6, $300 after 9, $0 after 12. Buyout ends the plan with no other fee; site moves to free hosting (Cloudflare/GitHub Pages); client pays own domain. Get Found / Never Miss a Lead / Total Growth clients who buy out lose plan tools (booking, SEO, AI chat bot, lead responder, review requests, GBP management, text-back, campaigns, social posts, back-office tool) unless they move to the $199, $279 or $379 site owner plan. After a buyout the site is on free hosting only (no edits, support or monitoring) unless they add Care. Care ($69/mo, optional) adds monthly content edits, security updates, uptime monitoring, backups, fix-it help when something breaks, and plan-client prices on all add-ons.
 - **Website, $129/mo:** one-page site, hosting, security, small monthly edits
@@ -17,18 +17,20 @@ Month-to-month, no minimum.
 - **Never Miss a Lead, $279/mo:** Get Found + AI chat bot and lead responder, booking, payments, missed-call text-back (+ $19 one-time carrier setup)
 - **Total Growth, $379/mo:** same features as Total Growth $449 (no buyout needed) + $19 one-time text-back carrier setup
 
-Site owner plans get the same guarantee: 30-day money-back guarantee on the monthly plan fee only. It does not cover third-party fees (the $19 text-back carrier registration, domain registration), and if you take the refund, your access to and license for the site build end. The upfront site payment ($500 / $1,200) follows its own terms.
+Site owner plans get the same guarantee: 30-day money-back guarantee covering monthly subscription fees only. It excludes third-party domain and carrier fees (such as the $19 carrier registration), and the site license ends on a refund. The upfront site payment ($500 / $1,200) follows its own terms.
 
 
 ## One-time
 - One-page site $500 · Multi-page site $1,200. Pay upfront: the client owns the site outright from the day they pay (no 12-month wait).
-- Pay-once hosting & domain (approved by William 2026-10-23): Deployed to your own hosting account (free-tier compatible). We recommend Care at $69/mo for edits, backups, monitoring and support. The client registers and renews their own domain in their own name (about $10–20/yr at registrar cost; never say the domain is free). No monthly payments to us and no promise of support on pay once; support comes with Care ($69/mo: monthly content edits, security updates, uptime monitoring, backups, fix-it help, plan-client prices on all add-ons).
+- Pay-once hosting & domain (approved by William 2026-10-23): The site is yours from day one, deployed to your own free-tier compatible hosting, or pair with our $69/mo Care plan anytime. The client registers and renews their own domain in their own name (about $10–20/yr at registrar cost; never say the domain is free). No monthly payments to us and no promise of support on pay once; support comes with Care ($69/mo: monthly content edits, security updates, uptime monitoring, backups, fix-it help, plan-client prices on all add-ons).
 - Fixes $75–150 · Go-live fix $150
 - Logo and brand kit $350 ($250 with a plan)
 - AI Website Chatbot $499 once (includes custom knowledge base training and 12 months of AI hosting/usage; $15/mo starting month 13 to cover AI running costs). Plan members (Website/Care, Get Found) $349 once + $15/mo after year 1. Free on Never Miss a Lead and up.
 
 ## Add-on grid (approved by William 2026-10-23)
-| Add-on | Standalone | Website/Care clients | Included free in |
+- Care ($69/mo) covers hosting, backups and monthly edits for ANY site you own, one-page or multi-page. The $129/mo Website plan is the one-page build. Upgrading from a one-page to a multi-page plan carries your earned buyout credit over dollar-for-dollar. The lead responder, review requests and booking are not sold on their own; they come with Never Miss a Lead and up. Lower rate: The lower monthly rate starts at Month 13, or Day 1 if you already own your site (bring your own or pay-once). An early buyout (after the 6-month minimum) transfers the site and code to you right away, but the lower monthly rate still starts at Month 13. Guarantee: 30-day money-back guarantee covering monthly subscription fees only. It excludes third-party domain and carrier fees (such as the $19 carrier registration), and the site license ends on a refund.
+
+| Service | Standalone (No Plan) | Plan Member Price | Included Free In... |
 |---|---|---|---|
 | Website rescue | $199 | $149 | Get Found and up (waived) |
 | AI Website Chatbot | $499 once (+$15/mo after yr 1) | $349 once (+$15/mo after yr 1; Website/Care and Get Found) | Never Miss a Lead and up |
@@ -36,7 +38,7 @@ Site owner plans get the same guarantee: 30-day money-back guarantee on the mont
 | Google Business Profile management | $99/mo | $69/mo (https://buy.stripe.com/9B6fZheol4dE9tG0XG7ss0V) | Get Found and up |
 | AI search optimization | $299 | $199 | Get Found and up |
 | Missed-call text-back | $79/mo + $49 setup | $39/mo + $19 carrier setup | Never Miss a Lead and up ($19 carrier setup still applies) |
-| Email & text campaigns | $99/mo + $99 setup | $49/mo | Total Growth |
+| Email & text campaigns | $99/mo + $99 setup + $19 carrier reg. if not active | $49/mo + $19 carrier reg. if not active | Total Growth |
 | Social posts (AI-assisted, templated, from job photos, up to 8/mo) | $199/mo | $129/mo | Total Growth |
 | Quotes, invoices & pay links | $49/mo + $149 setup | $29/mo + $99 setup | Total Growth (one back-office tool) |
 | Maintenance plan signups | $59/mo + $249 setup | $39/mo + $149 setup | Total Growth (one back-office tool) |
