@@ -1,7 +1,7 @@
 # TTA Web Dev price sheet (locked 2026-10-22)
 
 ## $0-down monthly plans
-6-month minimum, then month-to-month. Client owns the site after 12 paid months. Early exit: keep the site by paying build value minus payments made, or it comes down. 30-day money-back guarantee.
+6-month minimum, then month-to-month. Client owns the site after 12 paid months (paying upfront instead = owned from day one). Early exit: keep the site by paying build value minus payments made, or it comes down. 30-day money-back guarantee.
 - **Website, $129/mo:** site up to 5 pages, hosting, security, small monthly edits
 - **Get Found, $249/mo (most popular):** Website + Google Business Profile setup, Local SEO with AI search, review requests
 - **Never Miss a Lead, $349/mo:** Get Found + AI chat bot and lead responder, online booking, payments setup
@@ -16,7 +16,7 @@ Site owner plans also get a 30-day money-back guarantee: refund of the first mon
 
 
 ## One-time
-- One-page site $500 · Multi-page site $1,200
+- One-page site $500 · Multi-page site $1,200. Pay upfront: the client owns the site outright from the day they pay (no 12-month wait).
 - Fixes $75–150 · Go-live fix $150
 - Logo and brand kit $350 ($250 with a plan)
 
