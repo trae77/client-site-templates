@@ -12,6 +12,9 @@ Month-to-month, no minimum.
 - **Get Found, $199/mo:** Care + Google Business Profile, Local SEO with AI search, review requests
 - **Never Miss a Lead, $279/mo:** Get Found + AI chat bot and lead responder, booking, payments
 
+Site owner plans also get a 30-day money-back guarantee: refund of the first month's plan fee if they cancel within 30 days. The upfront site payment ($500 / $1,200) follows its own terms.
+
+
 ## One-time
 - One-page site $500 · Multi-page site $1,200
 - Fixes $75–150 · Go-live fix $150
