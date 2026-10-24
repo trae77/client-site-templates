@@ -512,3 +512,7 @@ These are starter kits for sold one-pager deliverables: clone a niche folder, sw
 ## License
 
 Templates are provided as-is for use on client projects. Placeholder images are from Unsplash / Picsum — replace with licensed client photos before commercial launch when required by those services’ terms.
+
+## Mockup open counter (first-party)
+Every generated mockup and every page in `prospects/` loads a 1x1 image from our own worker: `https://api.ttawebdev.com/v.gif?s=<slug>`. The worker stores only the slug, a timestamp, a coarse referrer class (none/site/search/social/email/other) and a device class (mobile/desktop/bot) in KV for 180 days. It stores no IP address and sets no cookies, and it does no fingerprinting. Build with `--no-track` to leave it out.
+Read opens: `/workspace/lead-responder/views.sh [slug]` (calls the token-protected `GET /views`; the token is read from file and never printed).

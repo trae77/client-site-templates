@@ -1309,6 +1309,7 @@ async function main() {
       primary: { type: 'string' }, accent: { type: 'string' }, areas: { type: 'string' }, email: { type: 'string' },
       'pay-url': { type: 'string' },
       'no-claim': { type: 'boolean' },
+      'no-track': { type: 'boolean' },
       'zelle-phone': { type: 'string' }, 'zelle-email': { type: 'string' }, 'zelle-amount': { type: 'string' },
       licensed: { type: 'boolean', default: false }, years: { type: 'string' }, hours: { type: 'string' },
       chat: { type: 'boolean', default: false },
@@ -1499,6 +1500,7 @@ async function main() {
   fs.writeFileSync(path.join(outDir, 'build.json'), JSON.stringify({ trade: trade.id, resolvedFrom: values.trade || null, money: lib.money || null, features: [...requested], layout: design.layout || null, hero: design.hero || null, allowFeature: override?.id || null, allowReason: override?.reason || null, matrixVersion: MATRIX.version || null }, null, 2) + '\n');
   if (/(^|\/)prospects\//.test(path.relative(REPO_ROOT, outDir))) outHtml = addNotice(outHtml).html; // noindex + "Design concept for X. Not affiliated."
   fs.writeFileSync(path.join(outDir, 'privacy.html'), privacyHtml({ name: values.name, phone: values.phone, email: values.email, city: values.city }));
+  if (!values['no-track']) outHtml = addViewPixel(outHtml, slug);
   fs.writeFileSync(htmlPath, values['no-claim'] ? outHtml : addClaimBar(outHtml));
   const ctaPairs = [];
   let themeCfg = lib.theme ? { ...cfg, dark: THEMES[lib.theme].dark } : cfg;
@@ -1567,3 +1569,11 @@ async function main() {
 }
 
 main().catch((err) => { console.error(`✗ ${err.message}`); process.exit(1); });
+
+// First-party open counter for hidden mockups: a 1x1 image from our own worker (api.ttawebdev.com/v.gif).
+// Logs only slug, time and a coarse referrer/device class. No cookies, no IP stored. Opt out with --no-track.
+export function addViewPixel(html, slug) {
+  if (html.includes('api.ttawebdev.com/v.gif')) return html;
+  const tag = `<img src="https://api.ttawebdev.com/v.gif?s=${encodeURIComponent(slug)}" alt="" width="1" height="1" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" referrerpolicy="strict-origin-when-cross-origin">`;
+  return html.replace(/<\/body>(?![\s\S]*<\/body>)/, () => `${tag}\n</body>`);
+}
