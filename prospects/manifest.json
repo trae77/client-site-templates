@@ -99,6 +99,11 @@
   "resolvedFrom": "template fingerprint (0.5)",
   "matrixVersion": "5.1.0"
  },
+ "ace-of-diamonds-painting": {
+  "trade": "painting",
+  "resolvedFrom": "painting",
+  "matrixVersion": "5.1.0"
+ },
  "affordable-junk-removal": {
   "trade": "generic-business",
   "resolvedFrom": "generic-business",
@@ -172,6 +177,11 @@
  "apex-handyman-services": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
+  "matrixVersion": "5.1.0"
+ },
+ "appliance-factory-outlet": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
   "matrixVersion": "5.1.0"
  },
  "arc-gutter-cleaning": {
@@ -369,6 +379,11 @@
   "resolvedFrom": "template fingerprint (1)",
   "matrixVersion": "5.1.0"
  },
+ "clean-theory": {
+  "trade": "cleaning-service",
+  "resolvedFrom": "cleaning-service",
+  "matrixVersion": "5.1.0"
+ },
  "coast-home-remodeling": {
   "trade": "handyman",
   "resolvedFrom": "page label \"Remodeling\"",
@@ -377,6 +392,11 @@
  "commercial-flooring-installation-llc": {
   "trade": "generic-business",
   "resolvedFrom": "business slug \"commercial-flooring-installation-llc\" (no build record; inferred)",
+  "matrixVersion": "5.1.0"
+ },
+ "commercial-roofing-solutions": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
   "matrixVersion": "5.1.0"
  },
  "community-lawn-care-home-services": {
@@ -474,6 +494,11 @@
   "resolvedFrom": "tree-service",
   "matrixVersion": "5.1.0"
  },
+ "day-nite-cleaning-service": {
+  "trade": "cleaning-service",
+  "resolvedFrom": "cleaning-service",
+  "matrixVersion": "5.1.0"
+ },
  "dees-cleaning-service": {
   "trade": "cleaning",
   "resolvedFrom": "template fingerprint (0.5)",
@@ -532,6 +557,11 @@
  "dono-s-handyman-home-repair": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
+  "matrixVersion": "5.1.0"
+ },
+ "dons-handyman-service": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
   "matrixVersion": "5.1.0"
  },
  "drywall-pros": {
@@ -652,6 +682,11 @@
  "fire-stone-wood-fired-grill": {
   "trade": "restaurant",
   "resolvedFrom": "restaurant",
+  "matrixVersion": "5.1.0"
+ },
+ "five-star-fort-collins-painters": {
+  "trade": "painting",
+  "resolvedFrom": "painting",
   "matrixVersion": "5.1.0"
  },
  "flooring-outlet": {
@@ -837,6 +872,11 @@
  "hebron-lawn-care": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (0.4)",
+  "matrixVersion": "5.1.0"
+ },
+ "highroad-roofing": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
   "matrixVersion": "5.1.0"
  },
  "hms-handyman-and-maintenance-services": {
@@ -1624,6 +1664,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "steampower-colorado": {
+  "trade": "pressure-washing",
+  "resolvedFrom": "pressure-washing",
+  "matrixVersion": "5.1.0"
+ },
  "stephanies-cleaning-services": {
   "trade": "cleaning",
   "resolvedFrom": "template fingerprint (0.5)",
@@ -1877,6 +1922,11 @@
  "westbrook-landscaping": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (1)",
+  "matrixVersion": "5.1.0"
+ },
+ "wfx-fire-lock-security": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
   "matrixVersion": "5.1.0"
  },
  "whipples-lawn-care-and-landscaping": {
