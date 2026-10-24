@@ -639,6 +639,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "friendly-plumbing-thornton": {
+  "trade": "plumbing",
+  "resolvedFrom": "plumbing",
+  "matrixVersion": "5.1.0"
+ },
  "fritz-fence": {
   "trade": "generic-business",
   "resolvedFrom": "business slug \"fritz-fence\" (no build record; inferred)",
@@ -822,6 +827,11 @@
  "humphries-handyman-services": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
+  "matrixVersion": "5.1.0"
+ },
+ "iga-handyman-services-thornton": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
   "matrixVersion": "5.1.0"
  },
  "indiana-power-clean-llc": {
