@@ -19,6 +19,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "5280-painting": {
+  "trade": "painting",
+  "resolvedFrom": "painting",
+  "matrixVersion": "5.1.0"
+ },
  "616-painting": {
   "trade": "painting",
   "resolvedFrom": "meta x-trade (rebuilt 2026-10-19)",
@@ -69,6 +74,11 @@
   "resolvedFrom": "template fingerprint (1)",
   "matrixVersion": "5.1.0"
  },
+ "aarons-handyman-and-remodel": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "matrixVersion": "5.1.0"
+ },
  "abacus-cabinetry": {
   "trade": "handyman",
   "resolvedFrom": "handyman",
@@ -117,6 +127,11 @@
  "alberti-concrete": {
   "trade": "concrete",
   "resolvedFrom": "page label \"Concrete\"",
+  "matrixVersion": "5.1.0"
+ },
+ "all-american-handyman": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
   "matrixVersion": "5.1.0"
  },
  "all-clean-pressure-washing-llc": {
@@ -424,6 +439,11 @@
   "resolvedFrom": "template fingerprint (0.5)",
   "matrixVersion": "5.1.0"
  },
+ "dan-the-handyman": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "matrixVersion": "5.1.0"
+ },
  "daniel-s-green-services-and-handyman": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
@@ -442,6 +462,11 @@
  "daves-deck-li": {
   "trade": "generic-business",
   "resolvedFrom": "business slug \"daves-deck-li\" (no build record; inferred)",
+  "matrixVersion": "5.1.0"
+ },
+ "david-padillas-home-improvements": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
   "matrixVersion": "5.1.0"
  },
  "davids-tree-service": {
@@ -674,6 +699,11 @@
   "resolvedFrom": "template fingerprint (1)",
   "matrixVersion": "5.1.0"
  },
+ "g24-handyman": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "matrixVersion": "5.1.0"
+ },
  "garrett-landscapes": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (1)",
@@ -732,6 +762,11 @@
  "green-acres-tree-landscaping-service": {
   "trade": "tree-service",
   "resolvedFrom": "template fingerprint (0.5)",
+  "matrixVersion": "5.1.0"
+ },
+ "green-gutter-services": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
   "matrixVersion": "5.1.0"
  },
  "griggs-fence-co": {
@@ -1217,6 +1252,11 @@
  "mk-ultra-lawn-care": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (0.4)",
+  "matrixVersion": "5.1.0"
+ },
+ "mls-lawn-and-landscapes": {
+  "trade": "landscaping",
+  "resolvedFrom": "landscaping",
   "matrixVersion": "5.1.0"
  },
  "morales-lawn-service-and-handyman": {
