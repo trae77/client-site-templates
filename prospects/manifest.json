@@ -19,6 +19,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "5280-painting": {
+  "trade": "painting",
+  "resolvedFrom": "painting",
+  "matrixVersion": "5.1.0"
+ },
  "616-painting": {
   "trade": "painting",
   "resolvedFrom": "meta x-trade (rebuilt 2026-10-19)",
@@ -69,6 +74,16 @@
   "resolvedFrom": "template fingerprint (1)",
   "matrixVersion": "5.1.0"
  },
+ "aarons-handyman-and-remodel": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "matrixVersion": "5.1.0"
+ },
+ "abacus-cabinetry": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "matrixVersion": "5.1.0"
+ },
  "abc-tree-and-landscaping-services": {
   "trade": "tree-service",
   "resolvedFrom": "template fingerprint (0.5)",
@@ -82,6 +97,16 @@
  "absolute-cleaning": {
   "trade": "cleaning",
   "resolvedFrom": "template fingerprint (0.5)",
+  "matrixVersion": "5.1.0"
+ },
+ "ace-of-diamonds-painting": {
+  "trade": "painting",
+  "resolvedFrom": "painting",
+  "matrixVersion": "5.1.0"
+ },
+ "affordable-junk-removal": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
   "matrixVersion": "5.1.0"
  },
  "aiken-s-handyman-service": {
@@ -107,6 +132,11 @@
  "alberti-concrete": {
   "trade": "concrete",
   "resolvedFrom": "page label \"Concrete\"",
+  "matrixVersion": "5.1.0"
+ },
+ "all-american-handyman": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
   "matrixVersion": "5.1.0"
  },
  "all-clean-pressure-washing-llc": {
@@ -147,6 +177,11 @@
  "apex-handyman-services": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
+  "matrixVersion": "5.1.0"
+ },
+ "appliance-factory-outlet": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
   "matrixVersion": "5.1.0"
  },
  "arc-gutter-cleaning": {
@@ -237,6 +272,11 @@
  "bmf-lawn-care-llc": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (1)",
+  "matrixVersion": "5.1.0"
+ },
+ "bowling-green-garage-doors": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
   "matrixVersion": "5.1.0"
  },
  "bradford-landscapes": {
@@ -339,6 +379,11 @@
   "resolvedFrom": "template fingerprint (1)",
   "matrixVersion": "5.1.0"
  },
+ "clean-theory": {
+  "trade": "cleaning-service",
+  "resolvedFrom": "cleaning-service",
+  "matrixVersion": "5.1.0"
+ },
  "coast-home-remodeling": {
   "trade": "handyman",
   "resolvedFrom": "page label \"Remodeling\"",
@@ -347,6 +392,11 @@
  "commercial-flooring-installation-llc": {
   "trade": "generic-business",
   "resolvedFrom": "business slug \"commercial-flooring-installation-llc\" (no build record; inferred)",
+  "matrixVersion": "5.1.0"
+ },
+ "commercial-roofing-solutions": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
   "matrixVersion": "5.1.0"
  },
  "community-lawn-care-home-services": {
@@ -409,6 +459,11 @@
   "resolvedFrom": "template fingerprint (0.5)",
   "matrixVersion": "5.1.0"
  },
+ "dan-the-handyman": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "matrixVersion": "5.1.0"
+ },
  "daniel-s-green-services-and-handyman": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
@@ -429,9 +484,29 @@
   "resolvedFrom": "business slug \"daves-deck-li\" (no build record; inferred)",
   "matrixVersion": "5.1.0"
  },
+ "david-padillas-home-improvements": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "matrixVersion": "5.1.0"
+ },
+ "davids-tree-service": {
+  "trade": "tree-service",
+  "resolvedFrom": "tree-service",
+  "matrixVersion": "5.1.0"
+ },
+ "day-nite-cleaning-service": {
+  "trade": "cleaning-service",
+  "resolvedFrom": "cleaning-service",
+  "matrixVersion": "5.1.0"
+ },
  "dees-cleaning-service": {
   "trade": "cleaning",
   "resolvedFrom": "template fingerprint (0.5)",
+  "matrixVersion": "5.1.0"
+ },
+ "del-carmens-pizza": {
+  "trade": "restaurant",
+  "resolvedFrom": "restaurant",
   "matrixVersion": "5.1.0"
  },
  "details-details-powerwashing": {
@@ -482,6 +557,11 @@
  "dono-s-handyman-home-repair": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
+  "matrixVersion": "5.1.0"
+ },
+ "dons-handyman-service": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
   "matrixVersion": "5.1.0"
  },
  "drywall-pros": {
@@ -539,6 +619,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "elite-roofing-and-solar": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
+  "matrixVersion": "5.1.0"
+ },
  "excellence-painting-and-remodeling": {
   "trade": "painting",
   "resolvedFrom": "template fingerprint (0.71)",
@@ -594,6 +679,16 @@
   "resolvedFrom": "template fingerprint (0.5)",
   "matrixVersion": "5.1.0"
  },
+ "fire-stone-wood-fired-grill": {
+  "trade": "restaurant",
+  "resolvedFrom": "restaurant",
+  "matrixVersion": "5.1.0"
+ },
+ "five-star-fort-collins-painters": {
+  "trade": "painting",
+  "resolvedFrom": "painting",
+  "matrixVersion": "5.1.0"
+ },
  "flooring-outlet": {
   "trade": "generic-business",
   "resolvedFrom": "page label \"Flooring installation\"",
@@ -619,6 +714,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "friendly-plumbing-thornton": {
+  "trade": "plumbing",
+  "resolvedFrom": "plumbing",
+  "matrixVersion": "5.1.0"
+ },
  "fritz-fence": {
   "trade": "generic-business",
   "resolvedFrom": "business slug \"fritz-fence\" (no build record; inferred)",
@@ -632,6 +732,11 @@
  "g-and-g-lawncare-and-construction": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (1)",
+  "matrixVersion": "5.1.0"
+ },
+ "g24-handyman": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
   "matrixVersion": "5.1.0"
  },
  "garrett-landscapes": {
@@ -692,6 +797,11 @@
  "green-acres-tree-landscaping-service": {
   "trade": "tree-service",
   "resolvedFrom": "template fingerprint (0.5)",
+  "matrixVersion": "5.1.0"
+ },
+ "green-gutter-services": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
   "matrixVersion": "5.1.0"
  },
  "griggs-fence-co": {
@@ -764,6 +874,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "highroad-roofing": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
+  "matrixVersion": "5.1.0"
+ },
  "hms-handyman-and-maintenance-services": {
   "trade": "handyman",
   "resolvedFrom": "page label \"Handyman\"",
@@ -804,6 +919,11 @@
   "resolvedFrom": "template fingerprint (0.6)",
   "matrixVersion": "5.1.0"
  },
+ "iga-handyman-services-thornton": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "matrixVersion": "5.1.0"
+ },
  "indiana-power-clean-llc": {
   "trade": "pressure-washing",
   "resolvedFrom": "template fingerprint (0.71)",
@@ -837,6 +957,16 @@
  "jaimes-drywall": {
   "trade": "painting",
   "resolvedFrom": "template fingerprint (0.33)",
+  "matrixVersion": "5.1.0"
+ },
+ "jake-the-snake-drain-cleaning": {
+  "trade": "plumbing",
+  "resolvedFrom": "plumbing",
+  "matrixVersion": "5.1.0"
+ },
+ "jansen-electric": {
+  "trade": "electrician",
+  "resolvedFrom": "electrician",
   "matrixVersion": "5.1.0"
  },
  "jc-carpet-cleaning": {
@@ -877,6 +1007,11 @@
  "jim-cannady-construction": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
+  "matrixVersion": "5.1.0"
+ },
+ "jim-coffey-and-son-plumbing": {
+  "trade": "plumbing",
+  "resolvedFrom": "plumbing",
   "matrixVersion": "5.1.0"
  },
  "jlm-handyman-services": {
@@ -1039,14 +1174,29 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "longs-heating-air-conditioning": {
+  "trade": "hvac",
+  "resolvedFrom": "hvac",
+  "matrixVersion": "5.1.0"
+ },
  "lopez-landscaping": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "m-and-r-fencing": {
+  "trade": "fencing",
+  "resolvedFrom": "fencing",
+  "matrixVersion": "5.1.0"
+ },
  "m-and-r-home-improvements": {
   "trade": "handyman",
   "resolvedFrom": "page label \"Remodeling\"",
+  "matrixVersion": "5.1.0"
+ },
+ "m-and-v-roofing": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
   "matrixVersion": "5.1.0"
  },
  "maddox-lawn-care": {
@@ -1144,6 +1294,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "mls-lawn-and-landscapes": {
+  "trade": "landscaping",
+  "resolvedFrom": "landscaping",
+  "matrixVersion": "5.1.0"
+ },
  "morales-lawn-service-and-handyman": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
@@ -1197,6 +1352,11 @@
  "noahs-landscaping": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (0.4)",
+  "matrixVersion": "5.1.0"
+ },
+ "nohos-hawaiian-cafe": {
+  "trade": "restaurant",
+  "resolvedFrom": "restaurant",
   "matrixVersion": "5.1.0"
  },
  "nsn-painting": {
@@ -1504,6 +1664,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "steampower-colorado": {
+  "trade": "pressure-washing",
+  "resolvedFrom": "pressure-washing",
+  "matrixVersion": "5.1.0"
+ },
  "stephanies-cleaning-services": {
   "trade": "cleaning",
   "resolvedFrom": "template fingerprint (0.5)",
@@ -1694,6 +1859,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "unlock-button": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
+  "matrixVersion": "5.1.0"
+ },
  "upstream-painting": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
@@ -1752,6 +1922,11 @@
  "westbrook-landscaping": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (1)",
+  "matrixVersion": "5.1.0"
+ },
+ "wfx-fire-lock-security": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
   "matrixVersion": "5.1.0"
  },
  "whipples-lawn-care-and-landscaping": {
