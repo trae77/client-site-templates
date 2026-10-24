@@ -1,0 +1,14 @@
+{
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
+  "money": "inspection-request",
+  "features": [
+    "call-bar",
+    "before-after"
+  ],
+  "layout": null,
+  "hero": null,
+  "allowFeature": null,
+  "allowReason": null,
+  "matrixVersion": "5.1.0"
+}

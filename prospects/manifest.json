@@ -69,6 +69,11 @@
   "resolvedFrom": "template fingerprint (1)",
   "matrixVersion": "5.1.0"
  },
+ "abacus-cabinetry": {
+  "trade": "handyman",
+  "resolvedFrom": "handyman",
+  "matrixVersion": "5.1.0"
+ },
  "abc-tree-and-landscaping-services": {
   "trade": "tree-service",
   "resolvedFrom": "template fingerprint (0.5)",
@@ -82,6 +87,11 @@
  "absolute-cleaning": {
   "trade": "cleaning",
   "resolvedFrom": "template fingerprint (0.5)",
+  "matrixVersion": "5.1.0"
+ },
+ "affordable-junk-removal": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
   "matrixVersion": "5.1.0"
  },
  "aiken-s-handyman-service": {
@@ -554,6 +564,11 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "elite-roofing-and-solar": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
+  "matrixVersion": "5.1.0"
+ },
  "excellence-painting-and-remodeling": {
   "trade": "painting",
   "resolvedFrom": "template fingerprint (0.71)",
@@ -867,6 +882,11 @@
  "jaimes-drywall": {
   "trade": "painting",
   "resolvedFrom": "template fingerprint (0.33)",
+  "matrixVersion": "5.1.0"
+ },
+ "jake-the-snake-drain-cleaning": {
+  "trade": "plumbing",
+  "resolvedFrom": "plumbing",
   "matrixVersion": "5.1.0"
  },
  "jansen-electric": {
@@ -1752,6 +1772,11 @@
  "united-lawn-care-and-landscaping": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (0.4)",
+  "matrixVersion": "5.1.0"
+ },
+ "unlock-button": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
   "matrixVersion": "5.1.0"
  },
  "upstream-painting": {
