@@ -239,6 +239,11 @@
   "resolvedFrom": "template fingerprint (1)",
   "matrixVersion": "5.1.0"
  },
+ "bowling-green-garage-doors": {
+  "trade": "generic-business",
+  "resolvedFrom": "generic-business",
+  "matrixVersion": "5.1.0"
+ },
  "bradford-landscapes": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (0.4)",
@@ -429,9 +434,19 @@
   "resolvedFrom": "business slug \"daves-deck-li\" (no build record; inferred)",
   "matrixVersion": "5.1.0"
  },
+ "davids-tree-service": {
+  "trade": "tree-service",
+  "resolvedFrom": "tree-service",
+  "matrixVersion": "5.1.0"
+ },
  "dees-cleaning-service": {
   "trade": "cleaning",
   "resolvedFrom": "template fingerprint (0.5)",
+  "matrixVersion": "5.1.0"
+ },
+ "del-carmens-pizza": {
+  "trade": "restaurant",
+  "resolvedFrom": "restaurant",
   "matrixVersion": "5.1.0"
  },
  "details-details-powerwashing": {
@@ -592,6 +607,11 @@
  "fenise-cleaning-llc": {
   "trade": "cleaning",
   "resolvedFrom": "template fingerprint (0.5)",
+  "matrixVersion": "5.1.0"
+ },
+ "fire-stone-wood-fired-grill": {
+  "trade": "restaurant",
+  "resolvedFrom": "restaurant",
   "matrixVersion": "5.1.0"
  },
  "flooring-outlet": {
@@ -839,6 +859,11 @@
   "resolvedFrom": "template fingerprint (0.33)",
   "matrixVersion": "5.1.0"
  },
+ "jansen-electric": {
+  "trade": "electrician",
+  "resolvedFrom": "electrician",
+  "matrixVersion": "5.1.0"
+ },
  "jc-carpet-cleaning": {
   "trade": "cleaning-service",
   "resolvedFrom": "business slug \"jc-carpet-cleaning\" (no build record; inferred)",
@@ -877,6 +902,11 @@
  "jim-cannady-construction": {
   "trade": "handyman",
   "resolvedFrom": "template fingerprint (0.6)",
+  "matrixVersion": "5.1.0"
+ },
+ "jim-coffey-and-son-plumbing": {
+  "trade": "plumbing",
+  "resolvedFrom": "plumbing",
   "matrixVersion": "5.1.0"
  },
  "jlm-handyman-services": {
@@ -1039,14 +1069,29 @@
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "longs-heating-air-conditioning": {
+  "trade": "hvac",
+  "resolvedFrom": "hvac",
+  "matrixVersion": "5.1.0"
+ },
  "lopez-landscaping": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (0.4)",
   "matrixVersion": "5.1.0"
  },
+ "m-and-r-fencing": {
+  "trade": "fencing",
+  "resolvedFrom": "fencing",
+  "matrixVersion": "5.1.0"
+ },
  "m-and-r-home-improvements": {
   "trade": "handyman",
   "resolvedFrom": "page label \"Remodeling\"",
+  "matrixVersion": "5.1.0"
+ },
+ "m-and-v-roofing": {
+  "trade": "roofing",
+  "resolvedFrom": "roofing",
   "matrixVersion": "5.1.0"
  },
  "maddox-lawn-care": {
@@ -1197,6 +1242,11 @@
  "noahs-landscaping": {
   "trade": "landscaping",
   "resolvedFrom": "template fingerprint (0.4)",
+  "matrixVersion": "5.1.0"
+ },
+ "nohos-hawaiian-cafe": {
+  "trade": "restaurant",
+  "resolvedFrom": "restaurant",
   "matrixVersion": "5.1.0"
  },
  "nsn-painting": {
