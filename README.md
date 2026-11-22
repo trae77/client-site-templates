@@ -24,6 +24,18 @@ All opt-in: without these flags, builds are byte-identical to before. `auto` = t
 - **B3 pay button:** `--pay-url` (Stripe hosts only) with `--pay-label` / `--pay-context deposit|invoice|package`. No `--pay-url` means no button at all. Labels with numbers or currency are rejected (never an amount). `--pay-demo` (samples only) shows a disabled "Payment button (demo, not active)".
 - **B4 polish audit for existing Wix/Squarespace sites:** [docs/WIX-SQUARESPACE-POLISH.md](docs/WIX-SQUARESPACE-POLISH.md).
 
+## One-command client site kit
+
+Intake answers in, gated noindex preview out (ship guard, copy proofread, axe WCAG 2.2 AA at 1280 and 390, ux-gate at 1280 and 390, Lychee):
+
+```
+npm ci
+npm run kit -- kit/samples/juniper-ridge-painting.intake.json
+```
+
+Input format, gates, options, and the go-live steps: [kit/README.md](kit/README.md).
+
+
 ## Industry feature matrix (spec v5) — checks before every push
 
 `tools/industry-features.json` is the single source of truth for which features each trade may use (spec v5 matrix, plus `auditMarkers` regexes used by the audit). The same file is vendored into `multipage-template/tools/`; keep both copies identical.

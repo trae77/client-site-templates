@@ -1,0 +1,33 @@
+{
+  "_sample": true,
+  "_note": "Fictional sample client for testing the kit. Not a real business. 555-01xx phone and example.com email are reserved for fiction.",
+  "services": ["lead-engine"],
+  "contact-name": "Sam Sample",
+  "contact-role": "Owner",
+  "contact-email": "owner@example.com",
+  "contact-phone": "(555) 010-0100",
+  "reach": "text",
+  "legal-name": "Juniper Ridge Painting LLC",
+  "public-name": "Juniper Ridge Painting",
+  "trade": "painting",
+  "address": "service-area only, hide address",
+  "public-phone": "(555) 010-0142",
+  "public-email": "hello@example.com",
+  "city": "Lakewood, CO",
+  "service-area": "Lakewood, Golden, Wheat Ridge, Arvada",
+  "hours_mode": "custom",
+  "hours": "Monday to Friday, 7 a.m. to 5 p.m.",
+  "lead-email": "leads@example.com",
+  "avoid": "Do not mention competitors or promise same-day work.",
+  "services-list": [
+    "Interior painting | Walls, ceilings, doors, and trim, with furniture moved and floors covered.",
+    "Exterior painting | Siding, trim, and doors, with scraping and priming where needed.",
+    "Cabinet painting | Kitchen and bathroom cabinets, cleaned, sanded, and sprayed.",
+    "Deck and fence staining | Cleaning and stain for wood decks and fences."
+  ],
+  "prices": "call for quote",
+  "logo_mode": "none",
+  "photo_mode": "none",
+  "colors": "#1f4e5f, #b45309",
+  "text_ok": true
+}

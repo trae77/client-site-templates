@@ -1,0 +1,25 @@
+{
+  "_sample": true,
+  "_note": "Fictional sample client (prices shown, no texting). Not a real business.",
+  "services": ["starter"],
+  "contact-name": "Riley Sample",
+  "contact-email": "riley@example.com",
+  "contact-phone": "(555) 010-0111",
+  "legal-name": "Copper Hollow Home Repair LLC",
+  "public-name": "Copper Hollow Handyman",
+  "trade": "handyman",
+  "address": "service-area only, hide address",
+  "public-phone": "(555) 010-0177",
+  "public-email": "",
+  "service-area": "Littleton, Englewood, Centennial",
+  "city": "Littleton, CO",
+  "hours_mode": "hide",
+  "services-list": [
+    "Drywall patching | Small holes and cracks patched, sanded, and ready for paint. | from $150",
+    "Door repair | Sticking doors planed, hinges and latches adjusted. | from $95",
+    "Fixture swaps | Light fixtures, faucets, and ceiling fans replaced. | from $120"
+  ],
+  "prices": "show these prices",
+  "logo_mode": "none",
+  "photo_mode": "none"
+}

@@ -13,3 +13,4 @@ upgrade/data.db-*
 *.sqlite
 *.sqlite3
 dist-client/
+kit/out/
