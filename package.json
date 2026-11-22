@@ -5,6 +5,8 @@
   "description": "Static one-pager templates for small US businesses, plus a quick homepage mockup generator.",
   "type": "module",
   "scripts": {
+    "kit": "node kit/client-site.mjs",
+    "test:kit": "node --test tests/kit.test.mjs",
     "mockup": "node tools/mockup.mjs",
     "upgrade:init": "node upgrade/init.cjs",
     "upgrade": "node upgrade/server.cjs",
