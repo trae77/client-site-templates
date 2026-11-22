@@ -148,7 +148,7 @@ try {
     const pj = pdir ? readJson(path.join(pdir, 'proofread.json')) : null;
     const c = await run(process.execPath, [path.join(KIT, 'gates/copy-check.mjs'), '--facts', factsFile, '--out', path.join(outRoot, 'copy-check.json'), ...urls]);
     const cj = readJson(path.join(outRoot, 'copy-check.json'));
-    const pc = pj?.counts ? `${pj.counts.total} findings (${pj.counts.embarrassing} embarrassing, ${pj.counts.medium} medium, ${pj.counts.minor} minor), Gemini ${pj.gemini?.ran ? `ran (kept ${pj.gemini.kept})` : 'skipped (no GEMINI_API_KEY)'}` : `exit ${r.code}`;
+    const pc = pj?.counts ? `${pj.counts.total} findings (${pj.counts.embarrassing} embarrassing, ${pj.counts.medium} medium, ${pj.counts.minor} minor), Gemini ${pj.gemini?.ran ? `ran (kept ${pj.gemini.kept})` : `not run (${process.env.GEMINI_API_KEY ? pj.gemini?.reason || 'error' : 'no GEMINI_API_KEY'})`}` : `exit ${r.code}`;
     const cc = cj ? `${cj.findings.length} findings (${cj.counts.embarrassing} embarrassing, ${cj.counts.medium} medium, ${cj.counts.minor} minor), codespell ${cj.codespell ? 'ran' : 'missing'}` : `exit ${c.code}`;
     record('2 proofread', r.code === 0 && c.code === 0, `proofread-gate ${r.code === 0 ? 'PASS' : 'FAIL'}: ${pc}; kit copy-check ${c.code === 0 ? 'PASS' : 'FAIL'}: ${cc}; ${urls.length} pages`, pdir);
   }
